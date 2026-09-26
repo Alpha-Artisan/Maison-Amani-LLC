@@ -1,0 +1,13 @@
+node_modules/
+qa/
+.DS_Store
+assets/
+Claude outputs/
+Branding Assets/
+sketches/
+f/
+g/
+gm/
+*.stl
+maison-amani-standalone.html
+index-previous.html

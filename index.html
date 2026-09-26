@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Maison Amani — Extra-Terra 001</title>
+<meta name="description" content="Extra-Terra 001. Maison Amani.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wght@300;400&display=swap">
+<style>
+:root{
+  --night:#08080A; --deep:#050506;
+  --paper:#E8E5DF;
+  --mineral:#E9E4DA; --silver:#B4AFA6; --muted:#6B675F;
+  --display:'Prata',Georgia,serif;
+  --sans:'Archivo',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --gutter:clamp(22px,5vw,110px);
+  --rule:rgba(233,228,218,.12);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--night);color:var(--silver);
+  font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+::selection{background:#26231E;color:var(--mineral)}
+
+.meta{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400}
+.d{font-family:var(--display);font-weight:400;letter-spacing:-.015em;line-height:1.03;margin:0;color:var(--mineral)}
+.d-xl{font-size:clamp(42px,8vw,132px)}
+.d-l{font-size:clamp(30px,5vw,76px)}
+
+/* masthead */
+.mast{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:clamp(16px,2.4vh,26px) var(--gutter);pointer-events:none}
+.mast .lock{position:relative;display:block;width:clamp(96px,8.6vw,128px);aspect-ratio:440/251;line-height:0}
+.mast .lock img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s ease}
+.mast .lock .ink{opacity:0}
+.mast.on-light .lock .bone{opacity:0}
+.mast.on-light .lock .ink{opacity:1}
+.mast .ref{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:#8A847B;transition:color .8s ease}
+.mast.on-light .ref{color:#6C665C}
+@media(max-width:620px){.mast .ref{display:none}}
+
+/* 01 arrival */
+.arrival{position:relative;height:430vh;background:var(--night)}
+@media(max-width:820px){.arrival{height:360vh}}
+.pin{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.halo{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(var(--hs,1));z-index:0;
+  width:min(128vw,116svh,1320px);aspect-ratio:1;mix-blend-mode:screen;opacity:var(--ho,0);pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,
+    rgba(255,248,232,.98) 0%, rgba(255,232,190,.76) 8%, rgba(255,206,142,.48) 18%,
+    rgba(232,148,68,.24) 32%, rgba(146,98,54,.10) 48%, transparent 68%);
+  filter:blur(26px)}
+.halo::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:44%;aspect-ratio:1;border-radius:50%;filter:blur(40px);
+  background:radial-gradient(circle,rgba(255,252,244,.95) 0%,rgba(255,226,176,.55) 46%,transparent 72%)}
+.nova{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) scale(var(--ns,.3));z-index:2;
+  width:min(150vw,150svh,1500px);aspect-ratio:1;pointer-events:none;mix-blend-mode:screen;opacity:var(--no,0);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,250,236,.92) 0%, rgba(255,232,190,.48) 6%, rgba(255,198,126,.16) 15%, transparent 38%),
+    conic-gradient(from 0deg, rgba(255,240,214,.09) 0deg, transparent 10deg, rgba(255,240,214,.06) 26deg, transparent 38deg,
+      rgba(255,240,214,.09) 62deg, transparent 76deg, rgba(255,240,214,.05) 100deg, transparent 118deg,
+      rgba(255,240,214,.08) 154deg, transparent 168deg, rgba(255,240,214,.06) 210deg, transparent 226deg,
+      rgba(255,240,214,.07) 266deg, transparent 282deg, rgba(255,240,214,.06) 322deg, transparent 338deg);
+  filter:blur(26px)}
+.pin figure{margin:0;z-index:1;width:min(86vw,74svh,860px);aspect-ratio:1/1;position:relative}
+.pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.arrival .id{position:absolute;left:var(--gutter);bottom:clamp(26px,6vh,56px);opacity:0;transition:opacity 1.4s ease}
+.arrival .id.on{opacity:1}
+
+/* a held breath between chapters */
+.hold{height:52vh}
+.hold--s{height:22vh}
+
+/* 02 the object — a single plate, centred, nothing else */
+.object{padding:clamp(80px,14vh,190px) var(--gutter) clamp(60px,10vh,140px);display:grid;justify-items:center;gap:clamp(30px,6vh,72px)}
+.object figure{margin:0;width:min(74vw,62svh,620px)}
+.object img{width:100%;height:auto}
+.object .line{text-align:center}
+
+/* the one sentence that is not a riddle */
+.label{margin:0;text-align:center;color:#7B766D;font-size:clamp(13px,1.2vw,15px);
+  letter-spacing:.04em;font-weight:300}
+.object .label{margin-top:clamp(-14px,-1.4vh,-8px)}
+
+/* 03 the surface — full bleed band */
+.surface{margin:0;position:relative}
+.surface img{width:100%;height:min(74svh,760px);object-fit:cover;object-position:center 42%}
+.surface .meta{position:absolute;left:var(--gutter);bottom:clamp(20px,4vh,40px)}
+
+/* 04 the dome */
+.dome{padding:clamp(90px,16vh,220px) var(--gutter);display:grid;justify-items:center;gap:clamp(26px,5vh,56px);background:var(--night)}
+.dome figure{margin:0;width:min(82vw,60svh,720px)}
+.dome img{width:100%;height:auto}
+
+/* 05 the vessel */
+.vessel{padding:clamp(110px,22vh,280px) var(--gutter) clamp(90px,16vh,200px)}
+.vessel .l1{display:block}
+.vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#6E6A62}
+
+/* the unreadable */
+.macro{margin:0;position:relative;background:#050506}
+.macro img{width:100%;height:min(86svh,880px);object-fit:cover;object-position:center 50%;opacity:.92}
+.macro::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(var(--night) 0%, transparent 16%, transparent 84%, var(--night) 100%)}
+
+/* the opening */
+.opening{position:relative;height:330vh;background:var(--night)}
+@media(max-width:820px){.opening{height:280vh}}
+.opening .pin figure{margin:0;z-index:1;width:min(86vw,74svh,860px);aspect-ratio:1/1;position:relative}
+.opening .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+@media(prefers-reduced-motion:reduce){.opening{height:auto}.opening .pin{position:relative;height:auto;padding:14vh 0}}
+
+/* 06 two states — one object, one line, two skies */
+.states{position:relative;height:100svh;min-height:620px;overflow:hidden;user-select:none;touch-action:pan-y;background:#05070C}
+.states .layer{position:absolute;inset:0}
+.states .sky-night,.states .sky-day{top:-190px;bottom:-190px;will-change:transform}
+.states .flock,.states .stars{top:-170px;bottom:-170px;height:auto}
+.states .weather{will-change:transform}
+.states .day,.states .clip-day{clip-path:inset(0 0 0 var(--x,50%))}
+.states .sky{z-index:0}
+.states .weather{z-index:2}
+.sky-night{position:absolute;left:0;right:0;background:
+  radial-gradient(120% 96% at 81% 14%, #24304A 0%, #151F35 30%, #0A1020 62%, #05070E 100%)}
+.sky-day{position:absolute;left:0;right:0;background:
+  radial-gradient(120% 96% at 81% 14%, #E6F0F9 0%, #CEE1F2 32%, #B2CFE9 66%, #9FC2E0 100%)}
+
+/* the seat: sun and moon occupy the same sky */
+.orb{position:absolute;right:19%;top:14%;width:clamp(58px,6.6vw,96px);aspect-ratio:1;border-radius:50%}
+.sun{background:radial-gradient(circle at 50% 50%, #FFFFFF 0%, #FFFCF2 24%, #FFF2D4 42%, rgba(255,235,186,.42) 62%, rgba(255,232,176,0) 78%);
+  box-shadow:0 0 70px 22px rgba(255,248,226,.85), 0 0 200px 90px rgba(255,238,196,.40), 0 0 520px 260px rgba(255,240,204,.16)}
+.moon{background:radial-gradient(circle at 38% 34%, #F7F3E9 0%, #E7E1D3 44%, #CBC5B6 74%, #ADA79A 100%);
+  box-shadow:0 0 60px 14px rgba(232,228,214,.20), 0 0 200px 80px rgba(150,176,214,.14), inset -6px -8px 18px rgba(0,0,0,.28)}
+.moon::after{content:'';position:absolute;inset:0;border-radius:50%;opacity:.42;
+  background:radial-gradient(circle at 62% 58%, rgba(0,0,0,.16) 0 11%, transparent 12%),
+             radial-gradient(circle at 34% 64%, rgba(0,0,0,.11) 0 8%, transparent 9%),
+             radial-gradient(circle at 56% 30%, rgba(0,0,0,.09) 0 6%, transparent 7%),
+             radial-gradient(circle at 44% 46%, rgba(0,0,0,.07) 0 5%, transparent 6%)}
+.stars,.flock{position:absolute;inset:0}
+.flock{z-index:1;pointer-events:none}
+
+/* weather: everything drifts, nothing is still */
+.cloud{position:absolute;left:0;top:0;border-radius:50%;will-change:transform,opacity;
+  transform-origin:50% 50%}
+.cloud::before,.cloud::after{content:'';position:absolute;border-radius:50%;background:inherit}
+.cloud::before{width:64%;height:164%;left:6%;top:-56%}
+.cloud::after{width:46%;height:132%;right:5%;top:-30%}
+.cloud.n{background:rgba(126,146,184,.13);filter:blur(30px)}
+.cloud.d{background:rgba(255,255,255,.86);filter:blur(22px)}
+@keyframes drift{from{transform:translate3d(-46vw,0,0)}to{transform:translate3d(146vw,0,0)}}
+.states .obj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(52vw,58svh,580px);z-index:3;pointer-events:none}
+.states .obj img{width:100%;height:auto}
+.states .shade{position:absolute;left:50%;bottom:-3%;transform:translateX(-50%);
+  width:78%;height:9%;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(22px);z-index:-1}
+.states .cut{position:absolute;top:0;bottom:0;left:var(--x,50%);width:1px;background:#fff;z-index:5;
+  mix-blend-mode:difference}
+.states .grip{position:absolute;top:50%;left:var(--x,50%);transform:translate(-50%,-50%);z-index:6;
+  width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.62);
+  background:rgba(255,255,255,.12);cursor:ew-resize;display:grid;place-items:center;
+  box-shadow:0 0 0 1px rgba(0,0,0,.18), 0 6px 26px rgba(0,0,0,.22)}
+.states .grip::before{content:'';width:14px;height:1px;background:rgba(255,255,255,.85);box-shadow:0 -5px 0 rgba(255,255,255,.85),0 5px 0 rgba(255,255,255,.85)}
+.states .tag{position:absolute;bottom:clamp(22px,5vh,48px);z-index:6;font-size:10px;letter-spacing:.36em;text-transform:uppercase}
+.states .tag-n{left:var(--gutter);color:#9FA8BC}
+.states .tag-d{right:var(--gutter);color:#4A5666}
+@media(prefers-reduced-motion:reduce){.cloud,.bird,.bird .w{animation:none!important}}
+
+.sub{color:var(--dim);margin-top:14px;letter-spacing:.24em}
+.object .sub,.after .sub{text-align:center}
+.say{max-width:46ch;margin:0;color:var(--dim);font-size:clamp(13px,1.15vw,15px);line-height:1.85;letter-spacing:.012em}
+.states .hint{position:absolute;left:50%;transform:translateX(-50%);top:clamp(22px,5vh,48px);z-index:6;
+  font-size:8px;letter-spacing:.42em;text-transform:uppercase;color:rgba(255,255,255,.34);
+  mix-blend-mode:difference;animation:breathe 5.2s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.26}50%{opacity:.6}}
+@media(prefers-reduced-motion:reduce){.states .hint{animation:none}}
+
+/* 07 first edition */
+.first{position:relative;min-height:96svh;display:grid;align-items:center;background:var(--deep);padding:clamp(80px,14vh,160px) 0}
+.first .inner{position:relative;z-index:2;padding:0 var(--gutter);max-width:32rem}
+.join{margin-top:clamp(26px,5vh,52px)}
+.join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(233,228,218,.2);padding-bottom:10px;max-width:24rem}
+.join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:15px;padding:6px 0}
+.join input::placeholder{color:#57534C}
+.join button{background:none;border:0;padding:6px 0;cursor:pointer;color:var(--silver);font-family:var(--sans);font-size:10px;letter-spacing:.32em;text-transform:uppercase}
+.join button:hover{color:var(--mineral)}
+.join .note{margin-top:14px;min-height:1.2em}
+
+/* 08 afterimage */
+.after{min-height:92svh;display:grid;place-items:center;text-align:center;background:var(--night);padding:0 var(--gutter)}
+.after .wm{margin:clamp(48px,9vh,110px) auto 0;width:clamp(132px,13vw,186px);aspect-ratio:440/251}
+.after .wm img{width:100%;height:100%;object-fit:contain;opacity:.86}
+footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule)}
+
+.rise{opacity:0;transform:translateY(14px);transition:opacity 1.6s cubic-bezier(.2,.7,.2,1),transform 1.6s cubic-bezier(.2,.7,.2,1)}
+.rise.in{opacity:1;transform:none}
+.fade{opacity:0;transition:opacity 2s ease}
+.fade.in{opacity:1}
+@media(prefers-reduced-motion:reduce){.rise,.fade{opacity:1;transform:none;transition:none}.arrival{height:auto}.pin{position:relative;height:auto;padding:14vh 0}}
+@media(max-width:620px){
+  .states .hint{top:auto;bottom:clamp(58px,10vh,92px)}
+  .states .grip{top:74%}
+  .orb{right:14%;top:11%;width:clamp(54px,16vw,80px)}
+  .sun{box-shadow:0 0 46px 14px rgba(255,248,226,.80), 0 0 120px 50px rgba(255,238,196,.30), 0 0 300px 150px rgba(255,240,204,.12)}
+}
+</style>
+</head>
+<body>
+
+<header class="mast" id="mast" aria-label="Maison Amani">
+  <a class="lock" href="#arrival" aria-label="Maison Amani">
+    <img class="bone" src="img/lockup-bone.png" width="440" height="251" alt="Maison Amani">
+    <img class="ink"  src="img/lockup-ink.png"  width="440" height="251" alt="" aria-hidden="true">
+  </a>
+  <span class="ref">Art&nbsp;objects</span>
+</header>
+
+<main>
+
+<!-- 01 -->
+<section class="arrival" id="arrival" aria-label="Extra-Terra 001">
+  <div class="pin">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div class="halo" id="halo" aria-hidden="true"></div>
+    <figure>
+      <img id="shot" src="hm/00.webp" width="1400" height="1400" fetchpriority="high" decoding="async"
+           alt="Extra-Terra 001">
+    </figure>
+    <div class="id" id="id">
+      <p class="meta">Extra&#8209;Terra</p>
+      <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
+    </div>
+  </div>
+</section>
+
+<div class="hold"></div>
+
+<!-- 02 -->
+<section class="object" aria-label="The object">
+  <figure class="fade">
+    <img src="img/a-object-black-b.webp" width="1652" height="1854" loading="lazy" decoding="async"
+         alt="Extra-Terra 001, black">
+  </figure>
+  <p class="d d-l line rise">Not from here.</p>
+  <p class="label rise">A vessel for light and scent.</p>
+</section>
+
+<div class="hold hold--s"></div>
+
+<!-- 03 -->
+<figure class="surface" aria-label="Surface">
+  <img src="img/a-surface-b.webp" width="2600" height="1417" loading="lazy" decoding="async" alt="Surface, close">
+  <figcaption class="meta">The surface</figcaption>
+</figure>
+
+<div class="hold hold--s"></div>
+
+<!-- 04 -->
+<figure class="macro" aria-hidden="true">
+  <img src="img/a-macro-b.webp" width="2800" height="1225" loading="lazy" decoding="async" alt="">
+</figure>
+
+<div class="hold hold--s"></div>
+
+<!-- 05 -->
+<section class="dome" aria-label="From above">
+  <p class="d d-l line rise" style="margin-bottom:clamp(26px,5vh,54px)">The rest is still sealed.</p>
+  <figure class="fade">
+    <img src="img/a-dome-top-b.webp" width="1907" height="1484" loading="lazy" decoding="async" alt="The dome, from above">
+  </figure>
+</section>
+
+<!-- 06 -->
+<section class="states" id="states" aria-label="Two skies">
+  <div class="layer sky night" aria-hidden="true">
+    <div class="sky-night"></div>
+    <canvas class="stars" id="starfield"></canvas>
+    <div class="orb moon"></div>
+  </div>
+
+  <div class="layer sky day" id="dayLayer" aria-hidden="true">
+    <div class="sky-day"></div>
+    <div class="orb sun"></div>
+  </div>
+
+  <canvas class="flock" id="flock" aria-hidden="true"></canvas>
+
+  <div class="layer weather" aria-hidden="true">
+    <div class="cloud n" data-d=".22" style="width:58vw;height:13vh;top:57%"></div>
+    <div class="cloud n" data-d=".34" style="width:42vw;height:9vh;top:31%"></div>
+    <div class="cloud n" data-d=".62" style="width:30vw;height:7vh;top:77%"></div>
+    <div class="cloud n" data-d=".80" style="width:22vw;height:5vh;top:20%"></div>
+  </div>
+
+  <div class="layer weather clip-day" aria-hidden="true">
+    <div class="cloud d" data-d=".20" style="width:52vw;height:12vh;top:53%"></div>
+    <div class="cloud d" data-d=".38" style="width:36vw;height:8vh;top:29%"></div>
+    <div class="cloud d" data-d=".64" style="width:27vw;height:6vh;top:74%"></div>
+    <div class="cloud d" data-d=".84" style="width:19vw;height:4.5vh;top:19%"></div>
+  </div>
+
+  <div class="obj">
+    <span class="shade" aria-hidden="true"></span>
+    <img src="img/a-front-black-b.webp" width="1905" height="1803" loading="lazy" decoding="async" alt="Extra-Terra 001 at night">
+    <img src="img/a-front-bone-b.webp" width="1905" height="1803" loading="lazy" decoding="async" alt="Extra-Terra 001 in daylight"
+         id="objDay" style="position:absolute;inset:0;clip-path:inset(0 0 0 var(--ox,50%))">
+  </div>
+
+  <div class="cut" id="cut"></div>
+  <div class="grip" id="grip" role="slider" tabindex="0" aria-label="Night and day" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
+  <p class="hint">Move</p>
+  <p class="tag tag-n">Night</p>
+  <p class="tag tag-d">Day</p>
+</section>
+
+<!-- 07 -->
+<section class="vessel" aria-label="The vessel stays">
+  <p class="d d-xl rise"><span class="l1">The vessel stays.</span><span class="l2">The light changes.</span></p>
+</section>
+
+<!-- 08 — the opening -->
+<section class="opening" id="opening" aria-label="The opening">
+  <div class="pin">
+    <div class="halo" id="halo2" aria-hidden="true"></div>
+    <figure>
+      <img id="shot2" src="om/58.webp" width="1800" height="1800" loading="lazy" decoding="async"
+           alt="Extra-Terra 001, opening">
+    </figure>
+    <div class="nova" id="nova" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- 09 -->
+<section class="first" aria-label="First edition">
+  <div class="inner rise">
+    <p class="d d-l" style="margin:0">001</p>
+    <form class="join" id="join" novalidate>
+      <label class="meta" for="email">Leave an address</label>
+      <div class="row" style="margin-top:12px">
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="Email" required>
+        <button type="submit">Submit</button>
+      </div>
+      <p class="meta note" id="note" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="after" aria-label="Light, in form">
+  <div>
+    <p class="d d-xl fade">Light, in form.</p>
+    <div class="wm fade"><img src="img/lockup-bone.png" width="440" height="251" alt="Maison Amani" loading="lazy"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p class="meta">Maison Amani</p>
+  <p class="meta">Art objects</p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var clamp = function(v,a,b){ return Math.max(a, Math.min(b,v)); };
+  var arrival = document.getElementById('arrival');
+
+  /* ---- the arrival: it turns, and it stays shut ---- */
+  var N = 72, SEALED = 57, pad = function(i){ return String(i).padStart(2,'0'); };
+  var SET = innerWidth > 760 ? 'h' : 'hm';
+  var FRAMES = Array.from({length:N}, function(_,i){ return SET + '/' + pad(i) + '.webp'; });
+  var cache = [], shot = document.getElementById('shot'), shot2 = document.getElementById('shot2');
+  function warm(i){ if(cache[i]) return; var im = new Image(); im.decoding='async'; im.src = FRAMES[i]; cache[i]=im; }
+  for(var i=0;i<6;i++) warm(i);
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,400); })(function(){ for(var i=6;i<=SEALED;i++) warm(i); });
+  shot.src = FRAMES[0];
+  if(shot2) shot2.src = (innerWidth > 760 ? 'o' : 'om') + '/58.webp';
+
+  function seq(el, from, to){          /* holds which frame is showing, swaps only when it changes */
+    var cur = -1;
+    return function(n){
+      n = Math.max(from, Math.min(to, n));
+      if(n === cur) return;
+      cur = n; warm(n);
+      var im = cache[n];
+      if(im.complete && im.naturalWidth) el.src = FRAMES[n];
+      else im.onload = function(){ if(cur === n) el.src = FRAMES[n]; };
+    };
+  }
+  var OSET = innerWidth > 760 ? 'o' : 'om';
+  var OPEN = Array.from({length:N}, function(_,i){ return OSET + '/' + pad(i) + '.webp'; });
+  var ocache = [];
+  function warmO(i){ if(ocache[i]) return; var im = new Image(); im.decoding='async'; im.src = OPEN[i]; ocache[i]=im; }
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,900); })(function(){ for(var i=SEALED+1;i<N;i++) warmO(i); });
+  function seqO(el){
+    var cur = -1;
+    return function(n){
+      n = Math.max(SEALED+1, Math.min(N-1, n));
+      if(n === cur) return;
+      cur = n; warmO(n);
+      var im = ocache[n];
+      if(im.complete && im.naturalWidth) el.src = OPEN[n];
+      else im.onload = function(){ if(cur === n) el.src = OPEN[n]; };
+    };
+  }
+  var putHero = seq(shot, 0, SEALED);
+  var putOpen = shot2 ? seqO(shot2) : null;
+
+  var idc = document.getElementById('id'),
+      halo = document.getElementById('halo'), halo2 = document.getElementById('halo2'),
+      nova = document.getElementById('nova'), queued = false;
+  var opening = document.getElementById('opening');
+  var glow = 0, live = true;
+
+  function onScroll(){
+    queued = false;
+    var r = arrival.getBoundingClientRect(), span = r.height - innerHeight;
+    live = r.bottom > 0 && r.top < innerHeight;
+    var p = clamp(-r.top/(span||1), 0, 1);
+    putHero(Math.round(p*SEALED));
+    idc.classList.toggle('on', p > 0.34);
+
+    /* light already behind it, pressing to get out */
+    glow = p < 0.10 ? (0.74 + 0.26*(p/0.10))
+         : p < 0.32 ? 1 - (p-0.10)/0.22
+         : 0;
+    halo.style.setProperty('--ho', glow.toFixed(3));
+
+    /* ---- the opening: what the page has been withholding ---- */
+    if(opening && putOpen){
+      var o = opening.getBoundingClientRect(), ospan = o.height - innerHeight;
+      var q = clamp(-o.top/(ospan||1), 0, 1);
+      putOpen(SEALED + 1 + Math.round(q*(N-1-SEALED-1)));
+      /* the chamber lights before the dome moves */
+      var pre = q < 0.42 ? q/0.42 : 1;
+      halo2.style.setProperty('--ho', (pre*0.72).toFixed(3));
+      halo2.style.setProperty('--hs', (0.66 + pre*0.34).toFixed(3));
+      var b = q < 0.56 ? 0 : (q-0.56)/0.44;
+      var ease = b*b*(3-2*b);
+      var flare = Math.sin(Math.PI*Math.min(ease*1.02,1));
+      nova.style.setProperty('--no', (Math.max(flare, ease*0.42)*0.82).toFixed(3));
+      nova.style.setProperty('--ns', (0.24 + ease*1.30).toFixed(3));
+    }
+  }
+  function tick(){ if(!queued){ queued = true; requestAnimationFrame(onScroll); } }
+  /* the light breathes even when nothing is scrolling */
+  (function breathe(t){
+    if(live && glow > 0.01){
+      var pulse = 1 + 0.045*Math.sin(t/1250) + 0.018*Math.sin(t/430);
+      halo.style.setProperty('--hs', ((0.80 + glow*0.34)*pulse).toFixed(3));
+      halo.style.setProperty('--ho', (glow*(0.88 + 0.12*Math.sin(t/900))).toFixed(3));
+    }
+    requestAnimationFrame(breathe);
+  })(0);
+  if(!reduce){ addEventListener('scroll', tick, {passive:true}); addEventListener('resize', tick, {passive:true}); onScroll(); }
+  else { shot.src = FRAMES[SEALED]; if(shot2) shot2.src = (innerWidth>760?'o':'om') + '/71.webp'; idc.classList.add('on'); }
+
+  /* ---- hero sky: a field, and one star that falls ---- */
+  (function(){
+    var cv = document.getElementById('sky'); if(!cv || reduce) return;
+    var g = cv.getContext('2d'), W=0,H=0,D=1,stars=[],run=false,last=0,t=0,meteor=null,next=6000;
+    function rnd(a,b){ return a+Math.random()*(b-a); }
+    function build(){
+      D = Math.min(devicePixelRatio||1,2); W = cv.clientWidth; H = cv.clientHeight;
+      cv.width = Math.round(W*D); cv.height = Math.round(H*D); g.setTransform(D,0,0,D,0,0);
+      stars = Array.from({length: W<700?60:112}, function(){
+        var dep = Math.random();
+        return {x:Math.random()*W, y:Math.random()*H, r:.3+dep*1.1, a:.08+dep*.4, tw:rnd(.1,.32), ph:rnd(0,6.28), dep:.15+dep*.85};
+      });
+    }
+    function fall(){
+      var L = Math.random()<.55, y0 = rnd(H*.06,H*.4);
+      meteor = {x:L?-W*.12:W*1.12, y:y0, vx:(L?1:-1)*rnd(W*.16,W*.26), vy:rnd(H*.05,H*.1), life:0, span:rnd(1.5,2.1)};
+    }
+    function frame(now){
+      if(!run) return;
+      var dt = last ? Math.min(.05,(now-last)/1000) : .016; last = now; t += dt;
+      g.clearRect(0,0,W,H);
+      for(var i=0;i<stars.length;i++){
+        var s = stars[i], x = s.x + Math.sin(t*.08+s.ph)*2.2*s.dep, y = s.y - t*.7*s.dep;
+        if(y < -6){ s.y += H+12; y += H+12; }
+        g.globalAlpha = s.a*(.66+.34*Math.sin(t*s.tw*2+s.ph));
+        g.fillStyle = '#EFE9DE'; g.beginPath(); g.arc(x,y,s.r,0,6.283); g.fill();
+      }
+      next -= dt*1000;
+      if(!meteor && next<=0){ fall(); next = rnd(16000,30000); }
+      if(meteor){
+        meteor.life += dt; var k = meteor.life/meteor.span;
+        meteor.x += meteor.vx*dt; meteor.y += meteor.vy*dt;
+        var tail = 150+90*Math.sin(Math.PI*Math.min(k,1));
+        var ux=-meteor.vx, uy=-meteor.vy, m=Math.hypot(ux,uy)||1; ux=ux/m*tail; uy=uy/m*tail;
+        var peak = Math.sin(Math.PI*clamp(k,0,1));
+        var grad = g.createLinearGradient(meteor.x,meteor.y,meteor.x+ux,meteor.y+uy);
+        grad.addColorStop(0,'rgba(244,238,228,'+(.5*peak).toFixed(3)+')');
+        grad.addColorStop(1,'rgba(244,238,228,0)');
+        g.globalAlpha=1; g.strokeStyle=grad; g.lineWidth=1.05; g.lineCap='round';
+        g.beginPath(); g.moveTo(meteor.x,meteor.y); g.lineTo(meteor.x+ux,meteor.y+uy); g.stroke();
+        g.globalAlpha=.6*peak; g.fillStyle='#F6F0E6';
+        g.beginPath(); g.arc(meteor.x,meteor.y,1.1,0,6.283); g.fill();
+        if(k>1) meteor=null;
+      }
+      g.globalAlpha=1; requestAnimationFrame(frame);
+    }
+    build(); addEventListener('resize', build, {passive:true});
+    new IntersectionObserver(function(es){
+      if(es[0].isIntersecting && !run){ run=true; last=0; requestAnimationFrame(frame); }
+      if(!es[0].isIntersecting) run=false;
+    }).observe(arrival);
+  })();
+
+  /* ---- two states: one line, dragged ---- */
+  (function(){
+    var sec = document.getElementById('states'); if(!sec) return;
+    var grip = document.getElementById('grip'), day = document.getElementById('objDay');
+    var x = 50, dragging = false;
+    function put(v){
+      x = clamp(v,4,96);
+      sec.style.setProperty('--x', x + '%');
+      var r = sec.getBoundingClientRect(), ob = document.querySelector('.states .obj').getBoundingClientRect();
+      var local = clamp(((r.left + r.width*x/100) - ob.left) / ob.width * 100, 0, 100);
+      day.style.setProperty('--ox', local + '%');
+      grip.setAttribute('aria-valuenow', Math.round(x));
+      window.__cut = x;
+    }
+    function fromEvent(e){
+      var r = sec.getBoundingClientRect();
+      var cx = (e.touches ? e.touches[0].clientX : e.clientX);
+      put((cx - r.left)/r.width*100);
+    }
+    sec.addEventListener('pointerdown', function(e){ dragging = true; sec.setPointerCapture(e.pointerId); fromEvent(e); });
+    sec.addEventListener('pointermove', function(e){ if(dragging) fromEvent(e); });
+    sec.addEventListener('pointerup', function(){ dragging = false; });
+    sec.addEventListener('pointercancel', function(){ dragging = false; });
+    grip.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowLeft'){ put(x-3); e.preventDefault(); }
+      if(e.key === 'ArrowRight'){ put(x+3); e.preventDefault(); }
+    });
+    addEventListener('resize', function(){ put(x); }, {passive:true});
+    put(50);
+
+    /* the night field — slow, and only occasionally does one catch the light */
+    var cv = document.getElementById('starfield'); if(cv && !reduce){
+      var g = cv.getContext('2d'), W,H,D, pts=[], shoot=null, nextShot=9000;
+      function rnd(a,b){ return a+Math.random()*(b-a); }
+      function build(){
+        D = Math.min(devicePixelRatio||1,2); W = sec.clientWidth; H = sec.clientHeight + 340;
+        cv.width = Math.round(W*D); cv.height = Math.round(H*D); g.setTransform(D,0,0,D,0,0);
+        pts = Array.from({length: W<700?110:210}, function(){
+          var dep = Math.random();                       /* depth: far stars are small and dim */
+          return {x:Math.random()*W, y:Math.random()*H*0.94,
+                  r:.20+dep*1.05, a:.10+dep*.44,
+                  sp:rnd(.16,.42), ph:Math.random()*6.283,      /* 15–39s breath */
+                  gl:Math.random()<0.10, nx:rnd(9000,26000), on:0};
+        });
+      }
+      function star(p, t, dt){
+        var tw = p.a*(.62+.38*Math.sin(t*p.sp+p.ph));
+        if(p.gl){
+          p.nx -= dt;
+          if(p.nx <= 0){ p.on = 1; p.nx = rnd(14000,34000); }
+          if(p.on > 0) p.on = Math.max(0, p.on - dt/3400);      /* a 3.4s bloom, not a blink */
+        }
+        var f = p.on>0 ? Math.sin(p.on*Math.PI) : 0;
+        f = f*f;                                                 /* soft in, soft out */
+        if(f > 0.02){                                            /* the glisten: a halo, never a cross */
+          var R = p.r*9;
+          var gr = g.createRadialGradient(p.x,p.y,0,p.x,p.y,R);
+          gr.addColorStop(0,'rgba(255,253,246,'+(0.42*f).toFixed(3)+')');
+          gr.addColorStop(.45,'rgba(226,236,255,'+(0.12*f).toFixed(3)+')');
+          gr.addColorStop(1,'rgba(226,236,255,0)');
+          g.globalAlpha = 1; g.fillStyle = gr;
+          g.beginPath(); g.arc(p.x,p.y,R,0,6.283); g.fill();
+        }
+        g.globalAlpha = Math.min(1, tw + f*.45);
+        g.fillStyle = '#EDF2FB';
+        g.beginPath(); g.arc(p.x, p.y, p.r*(1+f*.35), 0, 6.283); g.fill();
+      }
+      var running = false, prev = 0;
+      function draw(now){
+        if(!running) return;
+        var t = now/1000, dt = prev ? Math.min(now-prev, 60) : 16; prev = now;
+        g.clearRect(0,0,W,H);
+        for(var i=0;i<pts.length;i++) star(pts[i], t, dt);
+
+        nextShot -= dt;
+        if(!shoot && nextShot <= 0){
+          shoot = {x:rnd(W*0.30,W*0.92), y:rnd(H*0.04,H*0.30), vx:-rnd(0.16,0.26), vy:rnd(0.05,0.09), life:0, len:rnd(130,240)};
+          nextShot = rnd(22000,46000);
+        }
+        if(shoot){
+          shoot.life += dt; shoot.x += shoot.vx*dt; shoot.y += shoot.vy*dt;
+          var k = shoot.life/2600, fade = k<.22 ? k/.22 : 1-(k-.22)/.78;
+          if(k >= 1 || shoot.x < -260) shoot = null;
+          else {
+            var gx = g.createLinearGradient(shoot.x, shoot.y, shoot.x+shoot.len, shoot.y-shoot.len*0.34);
+            gx.addColorStop(0,'rgba(255,255,255,'+(0.72*fade).toFixed(3)+')');
+            gx.addColorStop(1,'rgba(255,255,255,0)');
+            g.globalAlpha = 1; g.strokeStyle = gx; g.lineWidth = 1.2; g.lineCap='round';
+            g.beginPath(); g.moveTo(shoot.x, shoot.y);
+            g.lineTo(shoot.x+shoot.len, shoot.y-shoot.len*0.34); g.stroke();
+            g.globalAlpha = fade*.8; g.fillStyle='#fff';
+            g.beginPath(); g.arc(shoot.x, shoot.y, 1.3, 0, 6.283); g.fill();
+          }
+        }
+        g.globalAlpha=1; requestAnimationFrame(draw);
+      }
+      build(); addEventListener('resize', build, {passive:true});
+      new IntersectionObserver(function(es){
+        if(es[0].isIntersecting && !running){ running = true; prev = 0; requestAnimationFrame(draw); }
+        if(!es[0].isIntersecting){ running = false; prev = 0; }
+      }).observe(sec);
+    }
+
+    /* ---- the sky above the object: birds, then weather ---- */
+    var fk = document.getElementById('flock');
+    var clouds = [].slice.call(sec.querySelectorAll('.cloud'));
+
+    if(!reduce){
+      var f = fk ? fk.getContext('2d') : null;
+      var FW=0, FH=0, FD=1, CEIL=0, FLOOR=0;          /* the sky band birds may use */
+      var CW = 136, CH = 132, AX = 59, AY = 77, NF = 8;
+      var sheet = new Image(), ready = false, tint = {};
+      var birds = [], drift = null, wait = 4000;
+      function r2(a,b){ return a+Math.random()*(b-a); }
+
+      sheet.onload = function(){
+        ready = true;
+        ['#DEE8F8','#141C28'].forEach(function(c){
+          var o = document.createElement('canvas');
+          o.width = sheet.width; o.height = sheet.height;
+          var g2 = o.getContext('2d');
+          g2.drawImage(sheet,0,0);
+          g2.globalCompositeOperation = 'source-in';
+          g2.fillStyle = c; g2.fillRect(0,0,o.width,o.height);
+          tint[c] = o;
+        });
+      };
+      if(fk) sheet.src = 'img/flock.png';
+
+      /* the object owns the middle of the frame; the birds get the sky above it */
+      function measure(){
+        FD = Math.min(devicePixelRatio||1,2); FW = sec.clientWidth;
+        var SH = sec.clientHeight; FH = SH + 340;             /* the canvas overhangs the section */
+        if(fk){ fk.width = Math.round(FW*FD); fk.height = Math.round(FH*FD); f.setTransform(FD,0,0,FD,0,0); }
+        var o = sec.querySelector('.states .obj'), sr = sec.getBoundingClientRect();
+        var top = (o ? (o.getBoundingClientRect().top - sr.top) : SH*0.4) + 170;   /* into canvas space */
+        CEIL  = Math.max(SH*0.075, 70) + 170;                 /* under the masthead, over the object */
+        FLOOR = Math.max(CEIL + SH*0.10, top - Math.max(46, SH*0.07));
+        clouds.forEach(function(el){ el._w = el.offsetWidth; el._h = el.offsetHeight; });
+      }
+
+      /* ---------- the flock ---------- */
+      function launch(){
+        var n = 7 + Math.floor(Math.random()*5);
+        var band = FLOOR - CEIL;
+        var base = -FW/r2(96,136);                     /* px per second, right to left */
+        drift = {
+          y: CEIL + band*r2(0.26,0.78), vx: base,
+          f1: r2(.055,.085), f2: r2(.101,.147), f3: r2(.173,.223),   /* never commensurate */
+          p1: Math.random()*6.283, p2: Math.random()*6.283, p3: Math.random()*6.283,
+          a1: band*r2(.06,.13), a2: band*r2(.02,.05), a3: band*r2(.008,.02)
+        };
+        birds = [];
+        for(var i=0;i<n;i++){
+          var d = r2(0.42, 1.0);                       /* depth: 0 far, 1 near */
+          var arm = i === 0 ? 0 : (i % 2 ? 1 : -1);
+          var k = Math.ceil(i/2);
+          var beat = r2(.94,1.48);
+          birds.push({
+            d: d, s: 0.175*(0.52 + 0.62*d),
+            x: FW + 60 + k*r2(46,96) + r2(-24,24),
+            ox: 0, oy: arm*k*r2(11,19) + r2(-13,13) - k*r2(0,6),
+            vmul: 0.80 + 0.36*d,                       /* far birds cross more slowly */
+            beat: beat, beatNow: beat*r2(.9,1.1), ph: Math.random(),
+            amp: r2(.62,1.0) * (0.86 + 0.16*d),        /* nearer birds articulate more */
+            pitch: r2(.03,.085), bank: 0,
+            sw: r2(.06,.15), sp: Math.random()*6.283,  /* its own slow rise and fall */
+            beats: 0, till: 2 + Math.floor(Math.random()*6),
+            gliding: Math.random() < .3, glide: r2(.6,2.4),
+            kPrev: 0, yPrev: null, surge: 0, alpha: 0.30 + 0.62*d
+          });
+        }
+      }
+      function ease(t){ return t*t*(3-2*t); }
+      function stroke(u, amp){
+        /* down fast, recover slow — the asymmetry is what makes it read as a bird */
+        var D = 0.40, v;
+        if(u < D){ v = ease(u/D); }
+        else { var t = (u-D)/(1-D); v = 1 - ease(t*t*(3-2*t)); }
+        return (0.06 + 0.94*v) * amp * (NF-1);
+      }
+      function driftY(t, x){
+        return drift.y
+             + drift.a1*Math.sin(t*drift.f1*6.283 + drift.p1)
+             + drift.a2*Math.sin(t*drift.f2*6.283 + drift.p2)
+             + drift.a3*Math.sin(t*drift.f3*6.283 + drift.p3);
+      }
+      function stepBirds(t, dt){
+        for(var i=0;i<birds.length;i++){
+          var b = birds[i];
+
+          /* the wingbeat clock: every beat a slightly different length, so nothing repeats */
+          if(b.gliding){
+            b.glide -= dt;
+            if(b.glide <= 0){ b.gliding = false; b.beats = 0; b.till = 2 + Math.floor(Math.random()*6); }
+          } else {
+            b.ph += dt/b.beatNow;
+            if(b.ph >= 1){
+              b.ph -= 1; b.beats++;
+              b.beatNow = b.beat*r2(0.88,1.14);
+              if(b.beats >= b.till){ b.gliding = true; b.glide = r2(0.7,3.1); }
+            }
+          }
+          var k = b.gliding ? 3.4 + 0.5*Math.sin(t*0.6 + b.sp) : stroke(b.ph, b.amp);
+
+          /* the downstroke drives the body forward; the recovery coasts */
+          var dk = (k - b.kPrev)/Math.max(dt,0.001); b.kPrev = k;
+          b.surge += ((dk > 0 ? 0.10 : -0.035) * Math.min(1, Math.abs(dk)/12) - b.surge) * Math.min(1, dt*6);
+          b.x += drift.vx * b.vmul * (1 + b.surge) * dt;
+
+          var y = driftY(t, b.x) + b.oy + Math.sin(t*b.sw*6.283 + b.sp)*7*b.d - par*58*(0.6+0.4*b.d);
+          var half = CH*b.s*0.5;
+          y = Math.max(CEIL + half, Math.min(y, FLOOR - half));   /* never below the ceiling of the sky band */
+          b.vy = b.yPrev === null ? 0 : (y - b.yPrev)/Math.max(dt,0.001);
+          b.yPrev = y; b.y = y;
+          b.k = k;
+
+          /* banking: it leans into the turn, then levels off */
+          var want = Math.max(-0.5, Math.min(0.5, b.vy/90));
+          b.bank += (want - b.bank) * Math.min(1, dt*1.6);
+        }
+      }
+      function paintBirds(col, alpha){
+        var sh = tint[col]; if(!sh) return;
+        for(var i=0;i<birds.length;i++){
+          var b = birds[i];
+          if(b.x < -140 || b.x > FW+300) continue;
+          var i0 = Math.floor(b.k), fr = b.k - i0, i1 = Math.min(NF-1, i0+1);
+          var w = CW*b.s, h = CH*b.s;
+          /* the body pitches with the stroke, and with where it is going */
+          var ang = b.pitch*(0.5 - b.k/(NF-1)) + Math.atan(b.vy/Math.max(40,Math.abs(drift.vx*b.vmul)))*0.5;
+          f.save();
+          f.translate(b.x, b.y);
+          f.rotate(ang);
+          f.scale(1, 1 - 0.10*Math.abs(b.bank));      /* foreshortening as it rolls */
+          f.globalAlpha = alpha*b.alpha;
+          f.drawImage(sh, i0*CW, 0, CW, CH, -AX*b.s, -AY*b.s, w, h);
+          if(fr > 0.02 && !b.gliding){                 /* the wing between two frames */
+            f.globalAlpha = alpha*b.alpha*fr*0.8;
+            f.drawImage(sh, i1*CW, 0, CW, CH, -AX*b.s, -AY*b.s, w, h);
+          }
+          f.restore();
+        }
+        f.globalAlpha = 1;
+      }
+
+      /* ---------- the weather ---------- */
+      clouds.forEach(function(el){
+        var d = parseFloat(el.dataset.d) || 0.5;       /* 0 far, 1 near */
+        el._d = d;
+        el._v = -(0.10 + 0.95*d);                      /* px per second — a sky, not a slideshow */
+        el._x = Math.random();
+        el._y = r2(-1,1);
+        el._sf = r2(.004,.011); el._sp = Math.random()*6.283;
+        el._of = r2(.006,.015); el._op = Math.random()*6.283;
+        el._bf = r2(.003,.008); el._bp = Math.random()*6.283;
+        el._base = parseFloat(getComputedStyle(el).opacity) || 1;
+      });
+      function stepClouds(t){
+        for(var i=0;i<clouds.length;i++){
+          var el = clouds[i], w = el._w || 300;
+          var span = FW + w*2.4;
+          var x = ((el._x*span + el._v*t) % span + span) % span - w*1.2;
+          var y = el._y*10 + Math.sin(t*el._bf*6.283 + el._bp)*9*(0.4+el._d);
+          var sc = 1 + 0.07*Math.sin(t*el._sf*6.283 + el._sp);
+          el.style.transform = 'translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0) scale('+sc.toFixed(3)+','+(1+0.04*Math.sin(t*el._sf*4.1+el._sp)).toFixed(3)+')';
+          el.style.opacity = (el._base*(0.80 + 0.20*Math.sin(t*el._of*6.283 + el._op))).toFixed(3);
+        }
+      }
+
+      /* ---- parallax: the far sky lags, the near weather keeps up ---- */
+      var PAD = 170;
+      var skyN = sec.querySelector('.sky-night'), skyD = sec.querySelector('.sky-day'),
+          wN = sec.querySelectorAll('.weather')[0], wD = sec.querySelectorAll('.weather')[1],
+          orbs = sec.querySelectorAll('.orb'), starC = sec.querySelector('.stars');
+      var par = 0;
+      function depth(){
+        var r = sec.getBoundingClientRect();
+        /* -1 when the section sits above the viewport, +1 when below */
+        var t = (r.top + r.height/2 - innerHeight/2) / innerHeight;
+        par = Math.max(-1.4, Math.min(1.4, t));
+        var sky = (-par*118).toFixed(1), wea = (-par*34).toFixed(1), orb = (-par*112).toFixed(1);
+        if(skyN) skyN.style.transform = 'translate3d(0,'+sky+'px,0)';
+        if(skyD) skyD.style.transform = 'translate3d(0,'+sky+'px,0)';
+        if(starC) starC.style.transform = 'translate3d(0,'+sky+'px,0)';
+        if(wN) wN.style.transform = 'translate3d(0,'+wea+'px,0)';
+        if(wD) wD.style.transform = 'translate3d(0,'+wea+'px,0)';
+        for(var i=0;i<orbs.length;i++) orbs[i].style.transform = 'translate3d(0,'+orb+'px,0)';
+        /* the birds parallax inside the canvas, so the keep-out still holds */
+      }
+      var pq = false;
+      function onPar(){ if(!pq){ pq = true; requestAnimationFrame(function(){ pq = false; depth(); }); } }
+      addEventListener('scroll', onPar, {passive:true});
+      addEventListener('resize', onPar, {passive:true});
+      depth();
+
+      var on = false, last = 0;
+      function frame(now){
+        if(!on) return;
+        var t = now/1000, dt = last ? Math.min((now-last)/1000, 0.064) : 0.016; last = now;
+        stepClouds(t);
+        if(f && ready){
+          f.clearRect(0,0,FW,FH);
+          if(drift){
+            stepBirds(t, dt);
+            var gone = true;
+            for(var i=0;i<birds.length;i++) if(birds[i].x > -160) gone = false;
+            var cutX = FW * (window.__cut || 50)/100;
+            f.save(); f.beginPath(); f.rect(0,0,cutX,FH); f.clip();
+            paintBirds('#DEE8F8', .62); f.restore();
+            f.save(); f.beginPath(); f.rect(cutX,0,FW-cutX,FH); f.clip();
+            paintBirds('#141C28', .76); f.restore();
+            if(gone){ drift = null; wait = r2(28,68)*1000; }
+          } else {
+            wait -= dt*1000;
+            if(wait <= 0) launch();
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+      measure(); addEventListener('resize', measure, {passive:true});
+      new IntersectionObserver(function(es){
+        if(es[0].isIntersecting && !on){ on = true; last = 0; requestAnimationFrame(frame); }
+        if(!es[0].isIntersecting){ on = false; last = 0; }
+      }).observe(sec);
+    }
+  })();
+
+  /* ---- masthead over light fields ---- */
+  (function(){
+    var mast = document.getElementById('mast');
+    var lights = document.querySelectorAll('.states');
+    function test(){
+      var mr = mast.getBoundingClientRect(), y = mr.bottom - 6, on = false;
+      var lx = mast.querySelector('.lock').getBoundingClientRect();
+      var mid = (lx.left + lx.right)/2;
+      lights.forEach(function(el){
+        var r = el.getBoundingClientRect();
+        if(r.top <= y && r.bottom >= y){
+          var cutX = r.left + r.width * (parseFloat(getComputedStyle(el).getPropertyValue('--x')) || 50)/100;
+          if(mid > cutX) on = true;          /* only the daylight half needs the dark mark */
+        }
+      });
+      mast.classList.toggle('on-light', on);
+    }
+    mast._test = test;
+    addEventListener('scroll', test, {passive:true}); addEventListener('resize', test, {passive:true}); test();
+  })();
+
+  /* ---- arrivals ---- */
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.2, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.rise,.fade').forEach(function(el){ io.observe(el); });
+
+  /* ---- the address ---- */
+  var form = document.getElementById('join');
+  if(form){
+    var email = document.getElementById('email'), note = document.getElementById('note');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var v = email.value.trim(), ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+      note.textContent = ok ? 'Noted.' : 'Incomplete.';
+      if(ok) email.value = '';
+    });
+  }
+})();
+</script>
+</body>
+</html>
