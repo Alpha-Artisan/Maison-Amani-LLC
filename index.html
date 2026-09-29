@@ -407,7 +407,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
      frame's edge column, so the join cannot show, and the falloff keeps the spill
      from reading as a flat painted band once the halo comes up. */
   var hero = document.getElementById('hero'), hx = hero.getContext('2d', {alpha:false});
-  var HW = 0, HH = 0, HD = 1, ZOOM = 1.0, BLEED = 6, curFrame = -1, curDim = -1;
+  var HW = 0, HH = 0, HD = 1, ZOOM = 1.0, BLEED = 6, curFrame = -1;
 
   function fitHero(){
     HD = Math.min(devicePixelRatio || 1, 2);
@@ -417,7 +417,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     curFrame = -1;
   }
 
-  function paint(im, dim){
+  function paint(im){
     if(!im || !im.naturalWidth) return;
     var iw = im.naturalWidth, ih = im.naturalHeight;
     var s  = Math.min(HW/iw, HH/ih) * ZOOM;
@@ -438,8 +438,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       shade(dx, 0, dw, dy, 'v');
     }
 
-    /* it gives the page back to the dark before the first line is spoken */
-    if(dim > 0){ hx.fillStyle = 'rgba(0,0,0,'+dim.toFixed(3)+')'; hx.fillRect(0,0,HW,HH); }
   }
 
   /* light does not travel forever: ease the borrowed edge down as it leaves the frame */
@@ -463,13 +461,12 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   }
 
   function seq(){                        /* holds which frame is showing, repaints only on change */
-    return function(n, dim){
+    return function(n){
       n = Math.max(0, Math.min(N-1, n));
-      dim = dim || 0;
-      if(n === curFrame && Math.abs(dim-curDim) < 0.004) return;
+      if(n === curFrame) return;
       var im = warm(n);
-      if(im.complete && im.naturalWidth){ curFrame = n; curDim = dim; paint(im, dim); }
-      else im.onload = function(){ curFrame = n; curDim = dim; paint(im, dim); };
+      if(im.complete && im.naturalWidth){ curFrame = n; paint(im); }
+      else im.onload = function(){ curFrame = n; paint(im); };
     };
   }
   /* the opening act keeps its own numbering: frames 58-71 in o/ and om/ */
@@ -497,7 +494,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       halo2 = document.getElementById('halo2'),
       nova = document.getElementById('nova'), queued = false;
   var opening = document.getElementById('opening');
-  var sky = document.getElementById('sky');
   var live = true;
 
   function onScroll(){
@@ -505,18 +501,11 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var r = arrival.getBoundingClientRect(), span = r.height - innerHeight;
     live = r.bottom > 0 && r.top < innerHeight;
     var p = clamp(-r.top/(span||1), 0, 1);
-    /* the light holds, then the page is handed back to the dark */
-    var out = p < 0.93 ? 0 : (p-0.93)/0.07;
-    putHero(Math.round(p*(N-1)), out*out*(3-2*out));
+    /* it arrives at the last frame and stays there — the scroll runs both ways */
+    putHero(Math.round(p*(N-1)));
 
     /* the mark stands in the dark, then gives the frame over to the object */
     idc.classList.toggle('on', p > 0.20 && p < 0.70);
-
-    /* the stars are only stars until the light arrives */
-    if(sky){
-      var f = clamp((p-0.06)/0.34, 0, 1);
-      sky.style.setProperty('--so', (1 - f*f*(3-2*f)).toFixed(3));
-    }
 
     /* ---- the opening: what the page has been withholding ---- */
     if(opening && putOpen){
@@ -542,7 +531,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 
   function ignite(){
     var first = warm(reduce ? N-1 : 0);
-    function go(){ curFrame = -1; curDim = -1; paint(first, 0); hero.classList.add('lit'); if(!reduce) onScroll(); }
+    function go(){ curFrame = -1; paint(first); hero.classList.add('lit'); if(!reduce) onScroll(); }
     if(first.complete && first.naturalWidth) go();
     else first.addEventListener('load', go, {once:true});
   }
