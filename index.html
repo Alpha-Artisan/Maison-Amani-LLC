@@ -651,48 +651,73 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   (function(){
     var sec = document.getElementById('states'); if(!sec) return;
     var grip = document.getElementById('grip'), day = document.getElementById('objDay');
-    var x = 50, dragging = false;
-    function put(v){
-      x = clamp(v,4,96);
-      sec.style.setProperty('--x', x + '%');
+    /* The line never jumps. Input sets a target; the line glides to it on a
+       critically damped ease, so a drag, a key press and the idle drift all
+       move with the same soft weight. Geometry is measured once (and on
+       resize), not on every frame, so nothing forces layout while it moves. */
+    var x = 50, target = 50, dragging = false, geo = null, gliding = false, gPrev = 0;
+    var vis = false;
+    function measureCut(){
       var r = sec.getBoundingClientRect(), ob = document.querySelector('.states .obj').getBoundingClientRect();
-      var local = clamp(((r.left + r.width*x/100) - ob.left) / ob.width * 100, 0, 100);
-      day.style.setProperty('--ox', local + '%');
+      geo = { l: r.left, w: r.width || 1, ol: ob.left, ow: ob.width || 1 };
+    }
+    function apply(v){
+      x = v;
+      sec.style.setProperty('--x', x.toFixed(3) + '%');
+      var local = clamp(((geo.l + geo.w*x/100) - geo.ol) / geo.ow * 100, 0, 100);
+      day.style.setProperty('--ox', local.toFixed(3) + '%');
       grip.setAttribute('aria-valuenow', Math.round(x));
       window.__cut = x;
     }
-    function fromEvent(e){
-      var r = sec.getBoundingClientRect();
-      var cx = (e.touches ? e.touches[0].clientX : e.clientX);
-      put((cx - r.left)/r.width*100);
+    function glide(ts){
+      var dt = gPrev ? Math.min((ts - gPrev)/1000, 0.05) : 0.016; gPrev = ts;
+      var k = 1 - Math.exp(-dt * (dragging ? 9 : 5));      /* follows a hand closely, settles softly */
+      var nx = x + (target - x) * k;
+      if(Math.abs(target - nx) < 0.004){ apply(target); gliding = false; gPrev = 0; return; }
+      apply(nx);
+      requestAnimationFrame(glide);
     }
-    sec.addEventListener('pointerdown', function(e){ dragging = true; sec.setPointerCapture(e.pointerId); fromEvent(e); });
+    function put(v){
+      target = clamp(v,4,96);
+      if(reduce){ apply(target); return; }
+      if(!gliding){ gliding = true; requestAnimationFrame(glide); }
+    }
+    function fromEvent(e){
+      var cx = (e.touches ? e.touches[0].clientX : e.clientX);
+      put((cx - geo.l)/geo.w*100);
+    }
+    sec.addEventListener('pointerdown', function(e){ measureCut(); dragging = true; sec.setPointerCapture(e.pointerId); fromEvent(e); });
     sec.addEventListener('pointermove', function(e){ if(dragging) fromEvent(e); });
     sec.addEventListener('pointerup', function(){ dragging = false; });
     sec.addEventListener('pointercancel', function(){ dragging = false; });
     grip.addEventListener('keydown', function(e){
-      if(e.key === 'ArrowLeft'){ put(x-3); e.preventDefault(); }
-      if(e.key === 'ArrowRight'){ put(x+3); e.preventDefault(); }
+      if(e.key === 'ArrowLeft'){ put(target-3); e.preventDefault(); }
+      if(e.key === 'ArrowRight'){ put(target+3); e.preventDefault(); }
     });
-    addEventListener('resize', function(){ put(x); }, {passive:true});
-    put(50);
+    addEventListener('resize', function(){ measureCut(); apply(x); }, {passive:true});
+    addEventListener('load', function(){ measureCut(); apply(x); });
+    [].forEach.call(sec.querySelectorAll('.obj img'), function(im){ im.addEventListener('load', function(){ measureCut(); apply(x); }); });
+    measureCut(); apply(50);
 
     /* The control teaches itself. Before anyone touches it the line breathes,
-       and the object changes with it — so what the handle does is demonstrated
-       rather than captioned. It stops the moment the visitor takes over, and
-       does not come back: an invitation, not an idle animation. */
-    var taught = false, t0 = 0;
+       slowly — two long sines (about 26 s and 60 s) eased in over the first
+       few seconds — and the object changes with it, so what the handle does is
+       demonstrated rather than captioned. It stops the moment the visitor
+       takes over, and does not come back: an invitation, not an idle animation. */
+    var taught = false, s = 0, iPrev = 0;
     function learned(){ taught = true; }
     sec.addEventListener('pointerdown', learned, {once:true});
     grip.addEventListener('keydown', learned, {once:true});
+    new IntersectionObserver(function(es){ vis = es[0].isIntersecting; if(vis){ measureCut(); } iPrev = 0; }).observe(sec);
     function invite(ts){
       if(taught) return;
-      var r = sec.getBoundingClientRect();
-      if(r.bottom > 0 && r.top < innerHeight){
-        if(!t0) t0 = ts;
-        var s = (ts - t0)/1000;
-        put(50 + 4.5*Math.sin(s*0.62) + 1.5*Math.sin(s*0.29));
-      }
+      if(vis){
+        var dt = iPrev ? Math.min((ts - iPrev)/1000, 0.05) : 0; iPrev = ts;
+        s += dt;                                            /* time only runs while it is seen */
+        var amp = Math.min(1, s/5); amp = amp*amp*(3-2*amp);
+        target = 50 + amp*(3.4*Math.sin(s*0.24) + 1.2*Math.sin(s*0.105 + 1.3));
+        apply(target);
+      } else { iPrev = 0; }
       requestAnimationFrame(invite);
     }
     if(!reduce) requestAnimationFrame(invite);
@@ -777,20 +802,25 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     if(!reduce){
       var f = fk ? fk.getContext('2d') : null;
       var FW=0, FH=0, FD=1, CEIL=0, FLOOR=0;          /* the sky band birds may use */
-      /* One peacock, not a flock. A 48-frame wingbeat lives in a sprite that
-         carries shape only; it is tinted per sky at paint time, so it reads pale
-         against the night and ink-dark against the day, flipping at the cut. */
-      var NF = 73, COLS = 8;
-      var SM = Math.min(innerWidth, (screen && screen.width) || innerWidth) < 700;
-      var CW = SM ? 320 : 640, CH = SM ? 162 : 323;          /* one frame, sprite px */
-      var AX = SM ? 89.6 : 179.1, AY = SM ? 78.9 : 157.8;    /* the body, inside the frame */
-      var sheet = new Image(), ready = false;
-      var ink = document.createElement('canvas'), ig = ink.getContext('2d');
+      /* One peacock, not a flock. The approved 16-frame design, filled out to a
+         146-frame wingbeat (one frame per screen refresh at 60 Hz), shipped as
+         vector paths and drawn straight into the canvas: razor sharp at any
+         size or pixel density, and tinted per sky at paint time, so it reads
+         pale against the night and ink-dark against the day, flipping at the cut. */
+      var PD = null, paths = null, NF = 146, ready = false;
+      var CW = 3924, CH = 1951, AX = 1085, AY = 952;          /* frame box and body, in path units */
       var birds = [], drift = null, wait = 4000;
       function r2(a,b){ return a+Math.random()*(b-a); }
-
-      sheet.onload = function(){ ink.width = CW; ink.height = CH; ready = true; };
-      if(fk) sheet.src = 'img/peacock-seq-' + CW + '.webp';
+      function pathAt(i){ return paths[i] || (paths[i] = new Path2D(PD.frames[i])); }
+      if(fk) fetch('img/peacock-flight.json').then(function(r){ return r.json(); }).then(function(d){
+        PD = d; NF = d.n; paths = new Array(d.n);
+        CW = d.box[2]-d.box[0]; CH = d.box[3]-d.box[1];
+        AX = d.anchor[0]-d.box[0]; AY = d.anchor[1]-d.box[1];
+        ready = true;
+        /* parse the frames ahead of the first crossing, a few at a time */
+        var k = 0, idle = window.requestIdleCallback || function(cb){ return setTimeout(cb, 16); };
+        (function warm(){ for(var n=0; n<8 && k<NF; n++, k++) pathAt(k); if(k<NF) idle(warm); })();
+      }).catch(function(){});
 
       /* the object owns the middle of the frame; the bird gets the sky above it */
       function measure(){
@@ -851,16 +881,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         var b = birds[0]; if(!b || !ready) return;
         if(b.x - AX*b.s > FW + 40 || b.out) return;
         var i = Math.floor(b.ph*NF) % NF;
-        ig.globalCompositeOperation = 'source-over';
-        ig.clearRect(0,0,CW,CH);
-        ig.drawImage(sheet, (i%COLS)*CW, Math.floor(i/COLS)*CH, CW, CH, 0, 0, CW, CH);
-        ig.globalCompositeOperation = 'source-in';
-        ig.fillStyle = col; ig.fillRect(0,0,CW,CH);
         f.save();
         f.translate(b.x, b.y);
         f.rotate(b.pitch);
+        f.scale(b.s, b.s);
+        f.translate(-PD.anchor[0], PD.h - PD.anchor[1]);
+        f.scale(1, -1);                                    /* the paths are traced y-up */
         f.globalAlpha = alpha;
-        f.drawImage(ink, -AX*b.s, -AY*b.s, CW*b.s, CH*b.s);
+        f.fillStyle = col;
+        f.fill(pathAt(i));
         f.restore();
         f.globalAlpha = 1;
       }
