@@ -13,9 +13,9 @@
   var SX = 880, SY = 1040;          // shoulder, just under the back line
   var U = 650;                      // one rig unit in px (about the body's length)
   var YAW = 14 * D2R, PITCH = 12 * D2R;
-  var DOWN = 0.44;                  // share of the beat spent in the power stroke
+  var DOWN = 0.46;                  // share of the beat spent in the power stroke
   var RUMP = 1350, TIP = 3998;      // where the train starts to move, and ends
-  var LIFT = 5;                     // whole-body rise, px (about 2.5% of body height)
+  var LIFT = 8;                     // whole-body rise, px (about 4% of body height, peak to peak)
 
   function ease(u) { return (1 - Math.cos(Math.PI * u)) / 2; }       // zero velocity at each reversal
   function wrap(p) { return p - Math.floor(p); }
@@ -39,7 +39,7 @@
   function pose(p) {
     return {
       fa: flap(p, 76, -48, 0) * D2R,                  // arm elevation
-      fh: flap(p, 97, -72, 0.045) * D2R,              // hand: the primaries lag the arm
+      fh: flap(p, 97, -72, 0.07) * D2R,               // hand: the primaries lag the arm, pressed back by the air
       fold: 0.05 + 0.48 * upEnv(p, -0.01) + 0.06 * bump(p, DOWN, 0.03),   // tuck on recovery, brief compression at the bottom
       spread: 1 - 0.58 * upEnv(p, 0.02),
       sweep: 0.12 - 0.19 * downEnv(p) + 0.05 * upEnv(p, 0.03),                   // forward on the power stroke, back on recovery
@@ -145,12 +145,12 @@
   function Rig(data, opts) {
     opts = opts || {};
     this.data = data;
-    this.beatHz = opts.beatHz || 5.5;
+    this.beatHz = opts.beatHz || 0.6;
     this.box = [100, 120, 4020, 2200];      // everything the bird can reach, wings included
     this.anchor = [SX, SY + 120];           // a point on the body for placing it in a scene
   }
-  // phases: wingbeat, and the slower train wave (one per four beats, so it loops with the wings)
-  Rig.prototype.phases = function (t) { var b = t * this.beatHz; return { p: wrap(b), q: wrap(b / 4) }; };
+  // phases: wingbeat, and the train's wave (one per two beats, so it answers the wings and loops with them)
+  Rig.prototype.phases = function (t) { var b = t * this.beatHz; return { p: wrap(b), q: wrap(b / 2) }; };
 
   Rig.prototype.draw = function (ctx, t, color) {
     var ph = this.phases(t), p = ph.p, q = ph.q;
