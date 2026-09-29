@@ -810,7 +810,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
          continuous at any refresh rate and the loop has no seam. It is painted
          opaque into its own layer, then laid into each sky with that sky's
          tint: pale against the night, ink-dark against the day. */
-      var rig = null, ready = false, BEAT_HZ = 5.5;
+      var rig = null, ready = false, BEAT_HZ = 0.6;             /* a large bird: slow, deliberate strokes */
       var CW = 3920, CH = 2080, AX = 780, AY = 1040;          /* reach box and body point, rig px */
       var off = document.createElement('canvas'), og = off.getContext('2d');
       var birds = [], drift = null, wait = 4000;
@@ -850,7 +850,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         var s = w / CW;
         drift = {
           y: CEIL + band*r2(0.40,0.80),
-          vx: -(FW + w*1.3) / r2(15,19),                       /* slow and deliberate: 15-19 s across */
+          vx: -(FW + w*1.3) / r2(17,21),                       /* about a dozen unhurried strokes across */
           f1: r2(.045,.07), f2: r2(.09,.13),                  /* never commensurate */
           p1: Math.random()*6.283, p2: Math.random()*6.283,
           a1: r2(6,12), a2: r2(2,4)                             /* a slow drift of the path, never a bounce */
@@ -870,9 +870,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       function stepBirds(t, dt){
         var b = birds[0]; if(!b) return;
         b.t += dt;
-        /* the power stroke carries it forward a touch; momentum carries it between strokes */
+        /* each downstroke drives it forward; on the recovery it coasts on momentum.
+           Peak speed lands just after the power stroke, with the body's lift. */
         var bp = (b.t*BEAT_HZ) % 1;
-        b.x += drift.vx * (1 + 0.02*Math.sin(6.283*(bp - 0.2))) * dt;
+        b.x += drift.vx * (1 + 0.14*Math.sin(6.283*(bp - 0.12))) * dt;
 
         var y = driftY(t) - par*58;
         y = Math.max(CEIL + b.h*0.62, Math.min(y, FLOOR + b.h*0.12));   /* raised wingtips stay clear of the masthead */
