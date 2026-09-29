@@ -114,19 +114,19 @@ img{display:block;max-width:100%}
    nothing sits on the centre line. */
 .drift{position:relative;height:100svh;min-height:600px;overflow:hidden;background:var(--night)}
 .drift .sp{position:absolute;height:auto;will-change:transform;pointer-events:none}
-#sp1{left:8%;  top:21%; width:clamp(148px,20vw,284px); opacity:.90;
+#sp1{left:5%;  top:12%; width:clamp(192px,26vw,370px); opacity:.92;
      filter:drop-shadow(0 26px 50px rgba(0,0,0,.50))}
-#sp2{left:30%; top:57%; width:clamp(176px,24vw,346px); opacity:1;
+#sp2{left:27%; top:52%; width:clamp(229px,31vw,450px); opacity:1;
      filter:drop-shadow(0 38px 74px rgba(0,0,0,.62))}
-#sp3{left:62%; top:13%; width:clamp(112px,16vw,236px); opacity:.78;
+#sp3{left:62%; top:6%;  width:clamp(146px,21vw,307px); opacity:.80;
      filter:drop-shadow(0 14px 30px rgba(0,0,0,.38)) blur(.7px)}
-#sp4{left:73%; top:61%; width:clamp(158px,21vw,302px); opacity:.94;
+#sp4{left:70%; top:57%; width:clamp(205px,27vw,393px); opacity:.94;
      filter:drop-shadow(0 31px 60px rgba(0,0,0,.56))}
 @media(max-width:620px){
-  #sp1{left:3%; top:9%;  width:40vw}
-  #sp2{left:33%;top:29%; width:52vw}
-  #sp3{left:5%; top:52%; width:34vw}
-  #sp4{left:45%;top:67%; width:45vw}
+  #sp1{left:-2%; top:5%;  width:52vw}
+  #sp2{left:28%; top:26%; width:66vw}
+  #sp3{left:0%;  top:50%; width:44vw}
+  #sp4{left:40%; top:64%; width:58vw}
 }
 
 /* the opening */
@@ -277,10 +277,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 
 <!-- 04 -->
 <section class="drift" id="drift" aria-hidden="true">
-  <img class="sp" id="sp1" src="img/e-agarwood.webp"     width="600" height="431" loading="lazy" decoding="async" alt="">
-  <img class="sp" id="sp2" src="img/e-frankincense.webp" width="600" height="431" loading="lazy" decoding="async" alt="">
-  <img class="sp" id="sp3" src="img/e-labdanum.webp"     width="600" height="431" loading="lazy" decoding="async" alt="">
-  <img class="sp" id="sp4" src="img/e-vetiver.webp"      width="600" height="431" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp1" src="img/e-agarwood.webp"     width="900" height="900" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp2" src="img/e-frankincense.webp" width="900" height="900" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp3" src="img/e-labdanum.webp"     width="900" height="900" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp4" src="img/e-vetiver.webp"      width="900" height="900" loading="lazy" decoding="async" alt="">
 </section>
 
 <div class="hold hold--s"></div>
@@ -948,15 +948,27 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         sf: [0.0038,0.0029,0.0047,0.0034][i], sp: Math.random()*6.283
       };
     });
+    /* The roll. One scroll drives all four: the same turn, the same direction,
+       so they move as one piece. Each starts from a different face, so lockstep
+       never reads as four copies of one thing. The angle chases the scroll
+       rather than tracking it exactly, which is what gives them their weight —
+       flick the wheel and they carry on a moment before settling. */
+    var TURN = 412;                                /* degrees across the whole section */
+    var START = [0, 47, 113, 209];                 /* each begins on a different face */
+    var EASE = 0.085;                              /* how hard they chase the scroll */
+    for(var k=0;k<P.length;k++){ P[k].a = START[k]; P[k].want = START[k]; }
+
     var par = 0, on = false;
     function depth(){
       var r = sec.getBoundingClientRect();
       par = Math.max(-1.3, Math.min(1.3, (r.top + r.height/2 - innerHeight/2)/innerHeight));
+      /* 0 as the section arrives, 1 as it leaves */
+      var prog = (innerHeight - r.top) / (innerHeight + r.height);
+      return Math.max(0, Math.min(1, prog));
     }
     function frame(now){
       if(!on) return;
-      var t = now/1000;
-      depth();
+      var t = now/1000, prog = depth();
       for(var i=0;i<P.length;i++){
         var o = P[i];
         /* nothing here repeats: three incommensurate drifts on each axis */
@@ -967,7 +979,9 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
               + o.ay*0.52*Math.sin(t*o.f3*6.283 + o.p3)
               + o.ay*0.20*Math.cos(t*o.f1*6.283 + o.p1)
               - par*(150*o.d);                    /* the near ones travel most */
-        var rz = o.rot*Math.sin(t*o.rf*6.283 + o.rp);
+        o.want = START[i] + prog*TURN;
+        o.a += (o.want - o.a) * EASE;             /* inertia: they catch up, they don't snap */
+        var rz = o.a + o.rot*0.5*Math.sin(t*o.rf*6.283 + o.rp);   /* a little wobble on the axis */
         var sc = 1 + 0.035*Math.sin(t*o.sf*6.283 + o.sp);
         o.el.style.transform = 'translate3d('+x.toFixed(2)+'px,'+y.toFixed(2)+'px,0) rotate('
                              + rz.toFixed(3) +'deg) scale('+ sc.toFixed(4) +')';
