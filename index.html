@@ -782,8 +782,8 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
          against the night and ink-dark against the day, flipping at the cut. */
       var NF = 48, COLS = 8;
       var SM = Math.min(innerWidth, (screen && screen.width) || innerWidth) < 700;
-      var CW = SM ? 320 : 640, CH = SM ? 169 : 337;          /* one frame, sprite px */
-      var AX = SM ? 94.7 : 189.3, AY = SM ? 96.7 : 193.3;    /* the body, inside the frame */
+      var CW = SM ? 320 : 640, CH = SM ? 197 : 394;          /* one frame, sprite px */
+      var AX = SM ? 89.0 : 177.9, AY = SM ? 111.6 : 223.2;    /* the body, inside the frame */
       var sheet = new Image(), ready = false;
       var ink = document.createElement('canvas'), ig = ink.getContext('2d');
       var birds = [], drift = null, wait = 4000;
