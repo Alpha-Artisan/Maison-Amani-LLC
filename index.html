@@ -192,7 +192,7 @@ img{display:block;max-width:100%}
              radial-gradient(circle at 56% 30%, rgba(0,0,0,.09) 0 6%, transparent 7%),
              radial-gradient(circle at 44% 46%, rgba(0,0,0,.07) 0 5%, transparent 6%)}
 .stars,.flock{position:absolute;inset:0}
-.flock{z-index:1;pointer-events:none}
+.flock{z-index:3;pointer-events:none}   /* over the weather, under the object */
 
 /* weather: everything drifts, nothing is still */
 .cloud{position:absolute;left:0;top:0;border-radius:50%;will-change:transform,opacity;
@@ -770,37 +770,34 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       }).observe(sec);
     }
 
-    /* ---- the sky above the object: birds, then weather ---- */
+    /* ---- the sky above the object: a peacock, then weather ---- */
     var fk = document.getElementById('flock');
     var clouds = [].slice.call(sec.querySelectorAll('.cloud'));
 
     if(!reduce){
       var f = fk ? fk.getContext('2d') : null;
       var FW=0, FH=0, FD=1, CEIL=0, FLOOR=0;          /* the sky band birds may use */
-      var CW = 136, CH = 132, AX = 59, AY = 77, NF = 8;
-      var sheet = new Image(), ready = false, tint = {};
+      /* One peacock, not a flock. A 48-frame wingbeat lives in a sprite that
+         carries shape only; it is tinted per sky at paint time, so it reads pale
+         against the night and ink-dark against the day, flipping at the cut. */
+      var NF = 48, COLS = 8;
+      var SM = Math.min(innerWidth, (screen && screen.width) || innerWidth) < 700;
+      var CW = SM ? 320 : 640, CH = SM ? 169 : 337;          /* one frame, sprite px */
+      var AX = SM ? 94.7 : 189.3, AY = SM ? 96.7 : 193.3;    /* the body, inside the frame */
+      var sheet = new Image(), ready = false;
+      var ink = document.createElement('canvas'), ig = ink.getContext('2d');
       var birds = [], drift = null, wait = 4000;
       function r2(a,b){ return a+Math.random()*(b-a); }
 
-      sheet.onload = function(){
-        ready = true;
-        ['#DEE8F8','#141C28'].forEach(function(c){
-          var o = document.createElement('canvas');
-          o.width = sheet.width; o.height = sheet.height;
-          var g2 = o.getContext('2d');
-          g2.drawImage(sheet,0,0);
-          g2.globalCompositeOperation = 'source-in';
-          g2.fillStyle = c; g2.fillRect(0,0,o.width,o.height);
-          tint[c] = o;
-        });
-      };
-      if(fk) sheet.src = 'img/flock.png';
+      sheet.onload = function(){ ink.width = CW; ink.height = CH; ready = true; };
+      if(fk) sheet.src = 'img/peacock-flight-' + CW + '.webp';
 
-      /* the object owns the middle of the frame; the birds get the sky above it */
+      /* the object owns the middle of the frame; the bird gets the sky above it */
       function measure(){
         FD = Math.min(devicePixelRatio||1,2); FW = sec.clientWidth;
         var SH = sec.clientHeight; FH = SH + 340;             /* the canvas overhangs the section */
-        if(fk){ fk.width = Math.round(FW*FD); fk.height = Math.round(FH*FD); f.setTransform(FD,0,0,FD,0,0); }
+        if(fk){ fk.width = Math.round(FW*FD); fk.height = Math.round(FH*FD); f.setTransform(FD,0,0,FD,0,0);
+                fk.style.width = FW + 'px'; fk.style.height = FH + 'px'; }   /* pin CSS size, or retina shows it at 2x */
         var o = sec.querySelector('.states .obj'), sr = sec.getBoundingClientRect();
         var top = (o ? (o.getBoundingClientRect().top - sr.top) : SH*0.4) + 170;   /* into canvas space */
         CEIL  = Math.max(SH*0.075, 70) + 170;                 /* under the masthead, over the object */
@@ -808,108 +805,63 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         clouds.forEach(function(el){ el._w = el.offsetWidth; el._h = el.offsetHeight; });
       }
 
-      /* ---------- the flock ---------- */
+      /* ---------- the peacock ---------- */
       function launch(){
-        var n = 7 + Math.floor(Math.random()*5);
+        measure();                                            /* the object may have loaded since */
         var band = FLOOR - CEIL;
-        var base = -FW/r2(96,136);                     /* px per second, right to left */
+        var w = Math.max(190, Math.min(FW*0.26, 440));       /* css px, beak to the tip of the train */
+        var s = w / CW;
         drift = {
-          y: CEIL + band*r2(0.26,0.78), vx: base,
-          f1: r2(.055,.085), f2: r2(.101,.147), f3: r2(.173,.223),   /* never commensurate */
-          p1: Math.random()*6.283, p2: Math.random()*6.283, p3: Math.random()*6.283,
-          a1: band*r2(.06,.13), a2: band*r2(.02,.05), a3: band*r2(.008,.02)
+          y: CEIL + band*r2(0.40,0.80),
+          vx: -(FW + w*1.3) / r2(15,19),                       /* slow and deliberate: 15-19 s across */
+          f1: r2(.045,.07), f2: r2(.09,.13),                  /* never commensurate */
+          p1: Math.random()*6.283, p2: Math.random()*6.283,
+          a1: r2(10,22), a2: r2(4,9)
         };
-        birds = [];
-        for(var i=0;i<n;i++){
-          var d = r2(0.42, 1.0);                       /* depth: 0 far, 1 near */
-          var arm = i === 0 ? 0 : (i % 2 ? 1 : -1);
-          var k = Math.ceil(i/2);
-          var beat = r2(.94,1.48);
-          birds.push({
-            d: d, s: 0.175*(0.52 + 0.62*d),
-            x: FW + 60 + k*r2(46,96) + r2(-24,24),
-            ox: 0, oy: arm*k*r2(11,19) + r2(-13,13) - k*r2(0,6),
-            vmul: 0.80 + 0.36*d,                       /* far birds cross more slowly */
-            beat: beat, beatNow: beat*r2(.9,1.1), ph: Math.random(),
-            amp: r2(.62,1.0) * (0.86 + 0.16*d),        /* nearer birds articulate more */
-            pitch: r2(.03,.085), bank: 0,
-            sw: r2(.06,.15), sp: Math.random()*6.283,  /* its own slow rise and fall */
-            beats: 0, till: 2 + Math.floor(Math.random()*6),
-            gliding: Math.random() < .3, glide: r2(.6,2.4),
-            kPrev: 0, yPrev: null, surge: 0, alpha: 0.30 + 0.62*d
-          });
-        }
+        birds = [{
+          s: s, h: CH*s,
+          x: FW + AX*s + 24,
+          beat: r2(1.05,1.25), beatNow: 1.15, ph: 0.62,        /* it enters on the upstroke */
+          pitch: 0, yPrev: null, vy: 0, y: 0, out: false
+        }];
       }
-      function ease(t){ return t*t*(3-2*t); }
-      function stroke(u, amp){
-        /* down fast, recover slow — the asymmetry is what makes it read as a bird */
-        var D = 0.40, v;
-        if(u < D){ v = ease(u/D); }
-        else { var t = (u-D)/(1-D); v = 1 - ease(t*t*(3-2*t)); }
-        return (0.06 + 0.94*v) * amp * (NF-1);
-      }
-      function driftY(t, x){
+      function driftY(t){
         return drift.y
              + drift.a1*Math.sin(t*drift.f1*6.283 + drift.p1)
-             + drift.a2*Math.sin(t*drift.f2*6.283 + drift.p2)
-             + drift.a3*Math.sin(t*drift.f3*6.283 + drift.p3);
+             + drift.a2*Math.sin(t*drift.f2*6.283 + drift.p2);
       }
       function stepBirds(t, dt){
-        for(var i=0;i<birds.length;i++){
-          var b = birds[i];
+        var b = birds[0]; if(!b) return;
+        /* every beat a slightly different length, so nothing repeats */
+        b.ph += dt/b.beatNow;
+        if(b.ph >= 1){ b.ph -= 1; b.beatNow = b.beat*r2(0.93,1.08); }
+        /* the downstroke drives the body forward; the recovery coasts */
+        b.x += drift.vx * (1 + 0.07*Math.sin(6.283*(b.ph - 0.1))) * dt;
 
-          /* the wingbeat clock: every beat a slightly different length, so nothing repeats */
-          if(b.gliding){
-            b.glide -= dt;
-            if(b.glide <= 0){ b.gliding = false; b.beats = 0; b.till = 2 + Math.floor(Math.random()*6); }
-          } else {
-            b.ph += dt/b.beatNow;
-            if(b.ph >= 1){
-              b.ph -= 1; b.beats++;
-              b.beatNow = b.beat*r2(0.88,1.14);
-              if(b.beats >= b.till){ b.gliding = true; b.glide = r2(0.7,3.1); }
-            }
-          }
-          var k = b.gliding ? 3.4 + 0.5*Math.sin(t*0.6 + b.sp) : stroke(b.ph, b.amp);
-
-          /* the downstroke drives the body forward; the recovery coasts */
-          var dk = (k - b.kPrev)/Math.max(dt,0.001); b.kPrev = k;
-          b.surge += ((dk > 0 ? 0.10 : -0.035) * Math.min(1, Math.abs(dk)/12) - b.surge) * Math.min(1, dt*6);
-          b.x += drift.vx * b.vmul * (1 + b.surge) * dt;
-
-          var y = driftY(t, b.x) + b.oy + Math.sin(t*b.sw*6.283 + b.sp)*7*b.d - par*58*(0.6+0.4*b.d);
-          var half = CH*b.s*0.5;
-          y = Math.max(CEIL + half, Math.min(y, FLOOR - half));   /* never below the ceiling of the sky band */
-          b.vy = b.yPrev === null ? 0 : (y - b.yPrev)/Math.max(dt,0.001);
-          b.yPrev = y; b.y = y;
-          b.k = k;
-
-          /* banking: it leans into the turn, then levels off */
-          var want = Math.max(-0.5, Math.min(0.5, b.vy/90));
-          b.bank += (want - b.bank) * Math.min(1, dt*1.6);
-        }
+        var y = driftY(t) - par*58;
+        y = Math.max(CEIL + b.h*0.62, Math.min(y, FLOOR + b.h*0.12));   /* raised wingtips stay clear of the masthead */
+        b.vy = b.yPrev === null ? 0 : (y - b.yPrev)/Math.max(dt,0.001);
+        b.yPrev = y; b.y = y;
+        /* nose follows the path, gently */
+        var want = -Math.max(-0.07, Math.min(0.07, Math.atan(b.vy/Math.abs(drift.vx))));
+        b.pitch += (want - b.pitch) * Math.min(1, dt*2);
+        b.out = (b.x + (CW - AX)*b.s) < -24;
       }
       function paintBirds(col, alpha){
-        var sh = tint[col]; if(!sh) return;
-        for(var i=0;i<birds.length;i++){
-          var b = birds[i];
-          if(b.x < -140 || b.x > FW+300) continue;
-          var i0 = Math.floor(b.k), fr = b.k - i0, i1 = Math.min(NF-1, i0+1);
-          var w = CW*b.s, h = CH*b.s;
-          /* the body pitches with the stroke, and with where it is going */
-          var ang = b.pitch*(0.5 - b.k/(NF-1)) + Math.atan(b.vy/Math.max(40,Math.abs(drift.vx*b.vmul)))*0.5;
-          f.save();
-          f.translate(b.x, b.y);
-          f.rotate(ang);
-          f.scale(1, 1 - 0.10*Math.abs(b.bank));      /* foreshortening as it rolls */
-          f.globalAlpha = alpha*b.alpha;
-          f.drawImage(sh, i0*CW, 0, CW, CH, -AX*b.s, -AY*b.s, w, h);
-          if(fr > 0.02 && !b.gliding){                 /* the wing between two frames */
-            f.globalAlpha = alpha*b.alpha*fr*0.8;
-            f.drawImage(sh, i1*CW, 0, CW, CH, -AX*b.s, -AY*b.s, w, h);
-          }
-          f.restore();
-        }
+        var b = birds[0]; if(!b || !ready) return;
+        if(b.x - AX*b.s > FW + 40 || b.out) return;
+        var i = Math.floor(b.ph*NF) % NF;
+        ig.globalCompositeOperation = 'source-over';
+        ig.clearRect(0,0,CW,CH);
+        ig.drawImage(sheet, (i%COLS)*CW, Math.floor(i/COLS)*CH, CW, CH, 0, 0, CW, CH);
+        ig.globalCompositeOperation = 'source-in';
+        ig.fillStyle = col; ig.fillRect(0,0,CW,CH);
+        f.save();
+        f.translate(b.x, b.y);
+        f.rotate(b.pitch);
+        f.globalAlpha = alpha;
+        f.drawImage(ink, -AX*b.s, -AY*b.s, CW*b.s, CH*b.s);
+        f.restore();
         f.globalAlpha = 1;
       }
 
@@ -973,13 +925,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
           if(drift){
             stepBirds(t, dt);
             var gone = true;
-            for(var i=0;i<birds.length;i++) if(birds[i].x > -160) gone = false;
+            if(birds[0] && !birds[0].out) gone = false;
             var cutX = FW * (window.__cut || 50)/100;
             f.save(); f.beginPath(); f.rect(0,0,cutX,FH); f.clip();
-            paintBirds('#DEE8F8', .62); f.restore();
+            paintBirds('#DEE8F8', .84); f.restore();
             f.save(); f.beginPath(); f.rect(cutX,0,FW-cutX,FH); f.clip();
-            paintBirds('#141C28', .76); f.restore();
-            if(gone){ drift = null; wait = r2(28,68)*1000; }
+            paintBirds('#0C1119', .96); f.restore();
+            if(gone){ drift = null; birds = []; wait = r2(14,30)*1000; }
           } else {
             wait -= dt*1000;
             if(wait <= 0) launch();
