@@ -10,7 +10,7 @@
   var TAU = Math.PI * 2, D2R = Math.PI / 180;
 
   // ---- rig constants (master pixel space) ----
-  var SX = 880, SY = 1040;          // shoulder, just under the back line
+  var SX = 880, SY = 1062;          // shoulder joint, seated inside the body under the back line
   var U = 650;                      // one rig unit in px (about the body's length)
   var YAW = 14 * D2R, PITCH = 12 * D2R;
   var DOWN = 0.46;                  // share of the beat spent in the power stroke
@@ -87,7 +87,8 @@
     var hand = 0.24 * (1 - 0.35 * fold);
     function liftPt(c, s) {
       var ys, zs, phi, ta;
-      if (s <= sW) { ys = s * Math.sin(fa); zs = s * Math.cos(fa); phi = fa; ta = tw * 0.4 * (s / sW); }
+      if (s < 0) { ys = 0; zs = s; phi = fa; ta = 0; }                       // the root, buried in the body
+      else if (s <= sW) { ys = s * Math.sin(fa); zs = s * Math.cos(fa); phi = fa; ta = tw * 0.4 * (s / sW); }
       else {
         ys = sW * Math.sin(fa) + (s - sW) * Math.sin(fh);
         zs = sW * Math.cos(fa) + (s - sW) * Math.cos(fh);
@@ -98,7 +99,8 @@
       var cn = Math.min(Math.max((c + 0.12) / 0.85, 0), 1);
       var arch = 0.08 * Math.pow(Math.sin(Math.PI * cn), 0.8) + 0.05 * Math.sin(Math.PI * Math.min(s / 1.45, 1));
       ddy += arch * Math.cos(phi); ddz += -arch * Math.sin(phi);
-      return proj(dx, ys + ddy, side * (0.1 + zs + ddz), dy);
+      if (s < 0) { ddy = 0; ddz = 0; }
+      return proj(dx, ys + ddy, side * (0.02 + zs + ddz), dy);
     }
     var polys = [];
     function add(pts) { var o = []; for (var i = 0; i < pts.length; i++) o.push(liftPt(pts[i][0], pts[i][1])); polys.push(o); }
@@ -123,8 +125,9 @@
       add(feather([c3, s3], (10 + 30 * h + 10 * fold) * D2R, 0.21 - 0.04 * h, 0.105, 0, 0.3, 10));
     }
     // the arm and lesser coverts
-    var cov = [[-0.02, 0], [cW - 0.045, sW * 0.55], [cW - 0.04, sW], [cW - 0.035, sW + hand * 0.95],
-               [cW + 0.12, sW + hand * 0.6], [cW + 0.18, sW], [0.2, sW * 0.5], [0.28, 0.02]];
+    // it starts inside the body, so the wing always grows out of the shoulder with no gap
+    var cov = [[-0.06, -0.12], [-0.03, 0.02], [cW - 0.045, sW * 0.55], [cW - 0.04, sW], [cW - 0.035, sW + hand * 0.95],
+               [cW + 0.12, sW + hand * 0.6], [cW + 0.18, sW], [0.2, sW * 0.5], [0.3, 0.02], [0.28, -0.12]];
     add(smoothClosed(cov, 6));
     return polys;
   }
@@ -146,7 +149,7 @@
     opts = opts || {};
     this.data = data;
     this.beatHz = opts.beatHz || 0.6;
-    this.box = [100, 120, 4020, 2200];      // everything the bird can reach, wings included
+    this.box = [40, -60, 4080, 2170];       // everything the bird can reach, wings included (measured 120,24..4000,2092 across the stroke, plus margin)
     this.anchor = [SX, SY + 120];           // a point on the body for placing it in a scene
   }
   // phases: wingbeat, and the train's wave (one per two beats, so it answers the wings and loops with them)
