@@ -802,25 +802,32 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     if(!reduce){
       var f = fk ? fk.getContext('2d') : null;
       var FW=0, FH=0, FD=1, CEIL=0, FLOOR=0;          /* the sky band birds may use */
-      /* One peacock, not a flock. The approved 16-frame design, filled out to a
-         146-frame wingbeat (one frame per screen refresh at 60 Hz), shipped as
-         vector paths and drawn straight into the canvas: razor sharp at any
-         size or pixel density, and tinted per sky at paint time, so it reads
-         pale against the night and ink-dark against the day, flipping at the cut. */
-      var PD = null, paths = null, NF = 146, ready = false;
-      var CW = 3924, CH = 1951, AX = 1085, AY = 952;          /* frame box and body, in path units */
+      /* One peacock, not a flock. A rig, not a flipbook: one fixed master
+         silhouette (head, crest, neck, body, feet, train) that never changes
+         shape, jointed wings posed in 3D (shoulder, elbow, wrist, primaries),
+         and a train that trails the body's lift and carries a slow wave from
+         rump to tips. It is drawn live for the exact moment, so the motion is
+         continuous at any refresh rate and the loop has no seam. It is painted
+         opaque into its own layer, then laid into each sky with that sky's
+         tint: pale against the night, ink-dark against the day. */
+      var rig = null, ready = false, BEAT_HZ = 5.5;
+      var CW = 3920, CH = 2080, AX = 780, AY = 1040;          /* reach box and body point, rig px */
+      var off = document.createElement('canvas'), og = off.getContext('2d');
       var birds = [], drift = null, wait = 4000;
       function r2(a,b){ return a+Math.random()*(b-a); }
-      function pathAt(i){ return paths[i] || (paths[i] = new Path2D(PD.frames[i])); }
-      if(fk) fetch('img/peacock-flight.json').then(function(r){ return r.json(); }).then(function(d){
-        PD = d; NF = d.n; paths = new Array(d.n);
-        CW = d.box[2]-d.box[0]; CH = d.box[3]-d.box[1];
-        AX = d.anchor[0]-d.box[0]; AY = d.anchor[1]-d.box[1];
-        ready = true;
-        /* parse the frames ahead of the first crossing, a few at a time */
-        var k = 0, idle = window.requestIdleCallback || function(cb){ return setTimeout(cb, 16); };
-        (function warm(){ for(var n=0; n<8 && k<NF; n++, k++) pathAt(k); if(k<NF) idle(warm); })();
-      }).catch(function(){});
+      if(fk){
+        var rs = document.createElement('script');
+        rs.src = 'js/peacock-rig.js';
+        rs.onload = function(){
+          fetch('img/peacock-master.json').then(function(r){ return r.json(); }).then(function(d){
+            rig = new PeacockRig(d, { beatHz: BEAT_HZ });
+            CW = rig.box[2]-rig.box[0]; CH = rig.box[3]-rig.box[1];
+            AX = rig.anchor[0]-rig.box[0]; AY = rig.anchor[1]-rig.box[1];
+            ready = true;
+          }).catch(function(){});
+        };
+        document.head.appendChild(rs);
+      }
 
       /* the object owns the middle of the frame; the bird gets the sky above it */
       function measure(){
@@ -846,12 +853,12 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
           vx: -(FW + w*1.3) / r2(15,19),                       /* slow and deliberate: 15-19 s across */
           f1: r2(.045,.07), f2: r2(.09,.13),                  /* never commensurate */
           p1: Math.random()*6.283, p2: Math.random()*6.283,
-          a1: r2(10,22), a2: r2(4,9)
+          a1: r2(6,12), a2: r2(2,4)                             /* a slow drift of the path, never a bounce */
         };
         birds = [{
           s: s, h: CH*s,
           x: FW + AX*s + 24,
-          beat: r2(2.2,2.6), beatNow: 2.4, ph: 0.0,        /* it enters on the upstroke */
+          t: 0,                                              /* its own clock: the rig poses it for any moment */
           pitch: 0, yPrev: null, vy: 0, y: 0, out: false
         }];
       }
@@ -862,11 +869,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       }
       function stepBirds(t, dt){
         var b = birds[0]; if(!b) return;
-        /* every beat a slightly different length, so nothing repeats */
-        b.ph += dt/b.beatNow;
-        if(b.ph >= 1){ b.ph -= 1; b.beatNow = b.beat*r2(0.93,1.08); }
-        /* the downstroke drives the body forward; the recovery coasts */
-        b.x += drift.vx * (1 + 0.07*Math.sin(6.283*(b.ph - 0.1))) * dt;
+        b.t += dt;
+        /* the power stroke carries it forward a touch; momentum carries it between strokes */
+        var bp = (b.t*BEAT_HZ) % 1;
+        b.x += drift.vx * (1 + 0.02*Math.sin(6.283*(bp - 0.2))) * dt;
 
         var y = driftY(t) - par*58;
         y = Math.max(CEIL + b.h*0.62, Math.min(y, FLOOR + b.h*0.12));   /* raised wingtips stay clear of the masthead */
@@ -880,16 +886,18 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       function paintBirds(col, alpha){
         var b = birds[0]; if(!b || !ready) return;
         if(b.x - AX*b.s > FW + 40 || b.out) return;
-        var i = Math.floor(b.ph*NF) % NF;
+        /* the bird is drawn opaque into its own layer first, so overlapping
+           feathers never double up when the layer is laid in with alpha */
+        var sc = b.s*FD, bw = Math.ceil(CW*sc), bh = Math.ceil(CH*sc);
+        if(off.width !== bw || off.height !== bh){ off.width = bw; off.height = bh; }
+        og.setTransform(1,0,0,1,0,0); og.clearRect(0,0,bw,bh);
+        og.setTransform(sc,0,0,sc,-rig.box[0]*sc,-rig.box[1]*sc);
+        rig.draw(og, b.t, col);
         f.save();
         f.translate(b.x, b.y);
         f.rotate(b.pitch);
-        f.scale(b.s, b.s);
-        f.translate(-PD.anchor[0], PD.h - PD.anchor[1]);
-        f.scale(1, -1);                                    /* the paths are traced y-up */
         f.globalAlpha = alpha;
-        f.fillStyle = col;
-        f.fill(pathAt(i));
+        f.drawImage(off, -AX*b.s, -AY*b.s, CW*b.s, CH*b.s);
         f.restore();
         f.globalAlpha = 1;
       }
