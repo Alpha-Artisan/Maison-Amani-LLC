@@ -107,17 +107,26 @@ img{display:block;max-width:100%}
 .vessel .l1{display:block}
 .vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#6E6A62}
 
-/* adrift — three specimens, no gravity, no names */
+/* adrift — the core, weightless, unnamed.
+   Four distances, not four positions: size, opacity, shadow weight and focus
+   all read off the same depth, so the eye can order them front to back. They
+   sit on a slack diagonal rather than in opposing corners — nothing pairs off,
+   nothing sits on the centre line. */
 .drift{position:relative;height:100svh;min-height:600px;overflow:hidden;background:var(--night)}
-.drift .sp{position:absolute;height:auto;will-change:transform;pointer-events:none;
-  filter:drop-shadow(0 30px 60px rgba(0,0,0,.55))}
-#sp1{left:6%;  top:16%; width:clamp(150px,21vw,300px); opacity:.94}
-#sp2{left:41%; top:47%; width:clamp(175px,25vw,360px); opacity:1}
-#sp3{left:69%; top:20%; width:clamp(130px,18vw,264px); opacity:.86}
+.drift .sp{position:absolute;height:auto;will-change:transform;pointer-events:none}
+#sp1{left:8%;  top:21%; width:clamp(148px,20vw,284px); opacity:.90;
+     filter:drop-shadow(0 26px 50px rgba(0,0,0,.50))}
+#sp2{left:30%; top:57%; width:clamp(176px,24vw,346px); opacity:1;
+     filter:drop-shadow(0 38px 74px rgba(0,0,0,.62))}
+#sp3{left:62%; top:13%; width:clamp(112px,16vw,236px); opacity:.78;
+     filter:drop-shadow(0 14px 30px rgba(0,0,0,.38)) blur(.7px)}
+#sp4{left:73%; top:61%; width:clamp(158px,21vw,302px); opacity:.94;
+     filter:drop-shadow(0 31px 60px rgba(0,0,0,.56))}
 @media(max-width:620px){
-  #sp1{left:2%; top:12%; width:44vw}
-  #sp2{left:36%;top:44%; width:52vw}
-  #sp3{left:14%;top:74%; width:40vw}
+  #sp1{left:3%; top:9%;  width:40vw}
+  #sp2{left:33%;top:29%; width:52vw}
+  #sp3{left:5%; top:52%; width:34vw}
+  #sp4{left:45%;top:67%; width:45vw}
 }
 
 /* the opening */
@@ -268,9 +277,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 
 <!-- 04 -->
 <section class="drift" id="drift" aria-hidden="true">
-  <img class="sp" id="sp1" src="img/e-oud.webp"      width="600" height="431" loading="lazy" decoding="async" alt="">
-  <img class="sp" id="sp2" src="img/e-orris.webp"    width="600" height="431" loading="lazy" decoding="async" alt="">
-  <img class="sp" id="sp3" src="img/e-labdanum.webp" width="600" height="431" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp1" src="img/e-agarwood.webp"     width="600" height="431" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp2" src="img/e-frankincense.webp" width="600" height="431" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp3" src="img/e-labdanum.webp"     width="600" height="431" loading="lazy" decoding="async" alt="">
+  <img class="sp" id="sp4" src="img/e-vetiver.webp"      width="600" height="431" loading="lazy" decoding="async" alt="">
 </section>
 
 <div class="hold hold--s"></div>
@@ -921,21 +931,21 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     }
   })();
 
-  /* ---- adrift: three specimens, weightless ---- */
+  /* ---- adrift: the core, weightless ---- */
   (function(){
     var sec = document.getElementById('drift'); if(!sec || reduce) return;
     var els = [].slice.call(sec.querySelectorAll('.sp'));
     var P = els.map(function(el, i){
-      var d = [0.55, 1.0, 0.36][i];              /* depth: how near it drifts */
+      var d = [0.55, 1.0, 0.36, 0.72][i];        /* depth: how near it drifts */
       return {
         el: el, d: d,
         ax: 26 + 34*d, ay: 20 + 26*d,            /* how far it wanders */
-        f1: [0.0121,0.0093,0.0147][i],           /* three periods that never align */
-        f2: [0.0072,0.0134,0.0088][i],
-        f3: [0.0045,0.0051,0.0039][i],
+        f1: [0.0121,0.0093,0.0147,0.0106][i],    /* periods that never come back into step */
+        f2: [0.0072,0.0134,0.0088,0.0117][i],
+        f3: [0.0045,0.0051,0.0039,0.0058][i],
         p1: Math.random()*6.283, p2: Math.random()*6.283, p3: Math.random()*6.283,
-        rot: [5.2,3.4,7.1][i], rf: [0.0061,0.0043,0.0077][i], rp: Math.random()*6.283,
-        sf: [0.0038,0.0029,0.0047][i], sp: Math.random()*6.283
+        rot: [5.2,3.4,7.1,4.3][i], rf: [0.0061,0.0043,0.0077,0.0052][i], rp: Math.random()*6.283,
+        sf: [0.0038,0.0029,0.0047,0.0034][i], sp: Math.random()*6.283
       };
     });
     var par = 0, on = false;
