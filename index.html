@@ -437,15 +437,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   var arrival = document.getElementById('arrival');
 
   /* ---- the arrival: it comes up out of the dark ----
-     80 rendered frames, scrubbed by scroll. Frame 68 is withheld: it was rendered
-     from an older state of the scene and pops. The playlist simply steps over it. */
+     80 rendered frames, scrubbed by scroll. All 80 are in: frame 68 was once a
+     straggler from an older state of the scene and had to be stepped over, and
+     has since been re-rendered — it now steps with its neighbours. */
   var pad = function(i){ return String(i).padStart(2,'0'); };
   var SET = innerWidth > 760 ? 'v' : 'vm';
-  var SKIP = {68:1};
-  var ORDER = [];
-  for(var q=0;q<80;q++){ if(!SKIP[q]) ORDER.push(q); }
-  var N = ORDER.length;
-  var FRAMES = ORDER.map(function(n){ return SET + '/' + pad(n) + '.webp'; });
+  var N = 80;
+  var FRAMES = Array.from({length:N}, function(_,n){ return SET + '/' + pad(n) + '.webp'; });
 
   var cache = [], shot2 = document.getElementById('shot2');
   function warm(i){
