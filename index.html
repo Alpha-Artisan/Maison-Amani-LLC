@@ -437,13 +437,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   var arrival = document.getElementById('arrival');
 
   /* ---- the arrival: it comes up out of the dark ----
-     81 rendered frames, scrubbed by scroll. Frame 68 was once a straggler from
-     an older state of the scene and had to be stepped over, and has since been
-     re-rendered — it now steps with its neighbours. Frame 80 (render 0081) is
-     the settled object, and closes the sequence. */
+     102 rendered frames (renders/hero/f_2), scrubbed by scroll. The vessel
+     turns out of the dark under a single key light, slows as the light rises,
+     and comes to rest with the mark facing the viewer; the last three frames
+     are the settled object, so the end of the scroll holds on it. */
   var pad = function(i){ return String(i).padStart(2,'0'); };
   var SET = innerWidth > 760 ? 'v' : 'vm';
-  var N = 81;
+  var N = 102;
   var FRAMES = Array.from({length:N}, function(_,n){ return SET + '/' + pad(n) + '.webp'; });
 
   var cache = [], shot2 = document.getElementById('shot2');
