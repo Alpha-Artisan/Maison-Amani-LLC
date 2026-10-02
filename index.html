@@ -619,10 +619,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     fx.setTransform(HD,0,0,HD,0,0); fx.globalCompositeOperation = 'source-over'; fx.clearRect(0,0,HW,HH);
     if(!(k.complete && k.naturalWidth)){ k.onload = function(){ if((curFrame >= 0 ? curFrame : F0) === n) mirror(); }; return; }
     if(off.width !== front.width || off.height !== front.height){ off.width = front.width; off.height = front.height; }
-    /* 1. its shadow: the outline in the house's dark, reaching a little ahead of the light */
+    /* 1. its shadow: the outline in the house's dark, solid wherever the vessel shows, nowhere it doesn't */
     fx.drawImage(k, dx, dy, dw, dh);
     fx.globalCompositeOperation = 'source-in'; fx.fillStyle = '#000'; fx.fillRect(0,0,HW,HH);
-    fx.globalCompositeOperation = 'destination-in'; fx.fillStyle = riseGrad(fx, 0.18, 0.34); fx.fillRect(0,0,HW,HH);
+    fx.globalCompositeOperation = 'destination-in'; fx.fillStyle = riseGrad(fx, 0.15, 0.26); fx.fillRect(0,0,HW,HH);
     /* 2. the vessel itself, as rendered, with the same rise as the canvas beneath */
     ox.setTransform(HD,0,0,HD,0,0); ox.globalCompositeOperation = 'source-over'; ox.clearRect(0,0,HW,HH);
     ox.drawImage(k, dx, dy, dw, dh);
@@ -636,6 +636,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var s  = Math.min(HW/iw, HH/ih) * ZOOM;
     var dw = iw*s, dh = ih*s;
     var dx = (HW-dw)/2, dy = (HH-dh)/2;
+    if(HW <= 760) dy += HH*0.12;                       /* phones: the base starts under the words, not on them */
 
     hx.fillStyle = '#000'; hx.fillRect(0,0,HW,HH);
     hx.drawImage(im, 0,0,iw,ih, dx,dy,dw,dh);
