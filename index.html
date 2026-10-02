@@ -7,23 +7,25 @@
 <meta name="description" content="Extra-Terra 001. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
-/* ABC Diatype (Dinamo). Drop the licensed web files into /fonts with these
+/* Söhne (Klim Type Foundry). Put the licensed web files in /fonts with these
    names and the site uses them; until then it falls back to Geist. */
-@font-face{font-family:'ABC Diatype';font-weight:400;font-style:normal;font-display:swap;
-  src:local('ABC Diatype Regular'),local('ABCDiatype-Regular'),url(fonts/ABCDiatype-Regular.woff2) format('woff2')}
-@font-face{font-family:'ABC Diatype';font-weight:500;font-style:normal;font-display:swap;
-  src:local('ABC Diatype Medium'),local('ABCDiatype-Medium'),url(fonts/ABCDiatype-Medium.woff2) format('woff2')}
-@font-face{font-family:'ABC Diatype Mono';font-weight:400;font-style:normal;font-display:swap;
-  src:local('ABC Diatype Mono Regular'),local('ABCDiatypeMono-Regular'),url(fonts/ABCDiatypeMono-Regular.woff2) format('woff2')}
+@font-face{font-family:'Söhne';font-weight:300;font-style:normal;font-display:swap;
+  src:local('Söhne Leicht'),local('Sohne-Leicht'),url(fonts/soehne-leicht.woff2) format('woff2')}
+@font-face{font-family:'Söhne';font-weight:400;font-style:normal;font-display:swap;
+  src:local('Söhne Buch'),local('Sohne-Buch'),url(fonts/soehne-buch.woff2) format('woff2')}
+@font-face{font-family:'Söhne';font-weight:500;font-style:normal;font-display:swap;
+  src:local('Söhne Kräftig'),local('Sohne-Kraftig'),url(fonts/soehne-kraftig.woff2) format('woff2')}
+@font-face{font-family:'Söhne Mono';font-weight:400;font-style:normal;font-display:swap;
+  src:local('Söhne Mono Buch'),local('SohneMono-Buch'),url(fonts/soehne-mono-buch.woff2) format('woff2')}
 :root{
   --night:#0B0806; --deep:#080605;            /* espresso, near black */
   --paper:#ECE4D6;
   --mineral:#ECE3D2; --silver:#B5A893; --muted:#867A68;   /* warm ivory, bone, taupe */
   --champagne:#CDB894; --bronze:#8E6C47;
-  --sans:'ABC Diatype','Geist',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-  --mono:'ABC Diatype Mono','Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --sans:'Söhne','Geist',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --mono:'Söhne Mono','Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
   --display:var(--sans);                       /* one family; hierarchy comes from scale and place */
   /* scale */
   --t-micro:10.5px; --t-small:13px; --t-body:16px;
@@ -106,7 +108,7 @@ img{display:block;max-width:100%}
 /* the line: editorial, not a headline */
 .lede{position:absolute;z-index:6;left:clamp(22px,16vw,300px);top:38%;margin:0;
   opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
-.lede p{margin:0;font-family:var(--sans);font-weight:400;font-size:var(--t-ed);line-height:1.42;
+.lede p{margin:0;font-family:var(--sans);font-weight:300;font-size:var(--t-ed);line-height:1.42;
   letter-spacing:-.005em;color:#E8DFD0}
 .lede .l2{color:#9C9081}
 @media(max-width:760px){.lede{left:var(--gutter);right:var(--gutter);top:34%}.lede p{font-size:19px}}
@@ -301,7 +303,7 @@ img{display:block;max-width:100%}
   width:min(100%,24rem);text-align:left;border-bottom:1px solid var(--rule)}
 .record dt,.record dd{margin:0;padding:11px 0 10px;border-top:1px solid var(--rule)}
 .record dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#867A68;line-height:1.9}
-.record dd{font-family:var(--sans);font-size:15px;color:var(--mineral);line-height:1.5}
+.record dd{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mineral);line-height:1.9}
 .after .wm{margin:clamp(48px,9vh,110px) auto 0;width:clamp(132px,13vw,186px);aspect-ratio:440/251}
 .after .wm img{width:100%;height:100%;object-fit:contain;opacity:.86}
 footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule)}
@@ -321,7 +323,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
    One family. Hierarchy is scale, position, spacing and tone — never weight.
    Micro labels are small and only lightly tracked; sentences sit at normal
    tracking; the one large thing is the archive number. */
-.num{font-family:var(--sans);font-size:var(--t-num);font-weight:400;letter-spacing:-.03em;line-height:1;
+.num{font-family:var(--sans);font-size:var(--t-num);font-weight:300;letter-spacing:-.03em;line-height:1;
   font-variant-numeric:tabular-nums;color:var(--mineral)}
 .arrival .id .num{font-size:clamp(40px,4.2vw,64px)}
 
