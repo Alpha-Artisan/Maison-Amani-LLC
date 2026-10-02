@@ -7,7 +7,7 @@
 <meta name="description" content="Extra-Terra 001. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wght@300;400&family=Newsreader:opsz,wght@6..72,300&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:opsz,wght@6..72,300&display=swap">
 <style>
 /* Canela Light (Commercial Type), for the hero line only. Put the licensed web
    file in /fonts under this name and it is used; until then Newsreader Light. */
@@ -88,30 +88,33 @@ img{display:block;max-width:100%}
     radial-gradient(120% 90% at 50% 40%, transparent 52%, rgba(0,0,0,.55) 100%)}
 /* the object comes up from below the surface of the page: a horizon that rises
    through it, never a cut, never a fade-in of the whole picture */
-#hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%));
+#hero,#heroFront{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%));
           mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%))}
-/* The headline, Apple-style at the top and centred, but lit rather than printed:
-   on arrival a band of light crosses the words once and leaves them lit. As the
-   vessel rises beneath, they lift and fade so the object takes the frame. */
-.lede{position:absolute;z-index:6;left:var(--gutter);right:var(--gutter);top:clamp(96px,16vh,180px);margin:0;
-  text-align:center;font-family:'Canela','Newsreader',Georgia,serif;font-weight:300;font-variation-settings:'opsz' 72;
-  font-size:clamp(40px,6.2vw,108px);line-height:1.06;letter-spacing:-.015em;
+/* The headline as a wall of type the object moves through: compressed black
+   capitals sized to the width, line one in front of the vessel, line two behind
+   it. The vessel is drawn twice: once under the type, and once, keyed off its
+   black, over it, shown only from line two down. */
+.lede{position:absolute;z-index:5;left:0;right:0;top:clamp(110px,21vh,240px);margin:0;text-align:center;
+  font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
+  text-transform:uppercase;letter-spacing:-.012em;line-height:.84;font-size:var(--fs,12vw);
   opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
-.lede span{display:block;padding:0 .04em;
-  background:linear-gradient(100deg, #EFE7D9 0%, #EFE7D9 38%, #FFF8EA 46%, #EFE7D9 54%, rgba(239,231,217,.16) 66%, rgba(239,231,217,.16) 100%);
-  background-size:260% 100%;background-position:0% 0;
+.lede .l1,.lede .l2{display:table;margin:0 auto;white-space:nowrap;animation:ledeIn 1.6s cubic-bezier(.2,.7,.2,1) .25s both}
+.lede .w{background:linear-gradient(to bottom,#F5F0E7 0%,#EDE6DA 48%,#CFC6B7 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.lede .l2{background-image:linear-gradient(100deg, #9C8F7C 0%, #9C8F7C 38%, #D8CCB6 46%, #9C8F7C 54%, rgba(156,143,124,.12) 66%, rgba(156,143,124,.12) 100%)}
-@keyframes litText{from{background-position:100% 0}to{background-position:0% 0}}
-.lede .l1{animation:litText 2.6s cubic-bezier(.45,0,.2,1) .35s both}
-.lede .l2{animation:litText 2.6s cubic-bezier(.45,0,.2,1) .75s both}
-@media(max-width:760px){.lede{left:16px;right:16px;top:clamp(88px,15svh,130px);font-size:clamp(30px,8.6vw,42px);line-height:1.1}}
-@media(prefers-reduced-motion:reduce){.lede span{animation:none}}
+.lede .l2{animation-delay:.45s}
+@keyframes ledeIn{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
+#heroFront{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;display:block;
+  filter:url(#lumaKey);clip-path:inset(var(--fc,60%) 0 0 0);opacity:var(--lo2,1)}
+/* phones: a poster stack, four lines, each the width of the screen */
+@media(max-width:760px){.lede{top:clamp(92px,14svh,140px);line-height:.86}
+  .lede .l1,.lede .l2{display:block}
+  .lede .w{display:table;margin:0 auto;font-size:var(--wfs,1em)}}
+@media(prefers-reduced-motion:reduce){.lede .l1,.lede .l2{animation:none}}
 /* the ground: a dark reflective surface the vessel stands on, warmed where it sits */
 .floor{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;opacity:var(--fo,0);
   background:radial-gradient(46% 34% at 50% 34%, rgba(176,136,92,.20) 0%, rgba(120,90,60,.10) 42%, transparent 72%),
              linear-gradient(to bottom, transparent 0%, rgba(14,10,7,.55) 70%, rgba(8,6,4,.9) 100%)}
-@media(prefers-reduced-motion:reduce){#hero{-webkit-mask-image:none;mask-image:none}.floor{opacity:1}}
+@media(prefers-reduced-motion:reduce){#hero{-webkit-mask-image:none;mask-image:none}#heroFront{display:none}.floor{opacity:1}}
 .arrival .id.on{opacity:1}
 
 /* a held breath between chapters */
@@ -413,7 +416,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <canvas id="sky" aria-hidden="true"></canvas>
     <div class="field" id="field" aria-hidden="true"></div>
     <div class="floor" id="floor" aria-hidden="true"></div>
-    <h1 class="lede" id="lede"><span class="l1">Before the Light,</span><span class="l2">there is the object</span></h1>
+    <h1 class="lede" id="lede"><span class="l1"><span class="w">Before the </span><span class="w">light</span></span><span class="l2"><span class="w">there is the </span><span class="w">Object</span></span></h1>
+    <canvas id="heroFront" aria-hidden="true"></canvas>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <filter id="lumaKey" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  5.3 17.9 1.8 0 -0.4"/>
+      </filter>
+    </svg>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
       <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
@@ -626,9 +635,40 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     HW = hero.clientWidth; HH = hero.clientHeight;
     hero.width = Math.round(HW*HD); hero.height = Math.round(HH*HD);
     hx.setTransform(HD,0,0,HD,0,0);
+    if(front){ front.width = hero.width; front.height = hero.height; }
+    fitLede();
     curFrame = -1;
   }
 
+  /* the type is sized so line two spans the width; line one follows at the same size */
+  var front = document.getElementById('heroFront'), fx = front ? front.getContext('2d') : null;
+  var ledeEl = document.getElementById('lede'), fcBase = 0;
+  function fitLede(){
+    if(!ledeEl) return;
+    var l2 = ledeEl.querySelector('.l2'), W = ledeEl.parentNode.clientWidth, ws = ledeEl.querySelectorAll('.w');
+    ledeEl.style.setProperty('--fs','100px');
+    for(var k=0;k<ws.length;k++) ws[k].style.setProperty('--wfs','100px');
+    var r2;
+    if(W < 760){                                        /* each line its own size, all the same width */
+      for(var j=0;j<ws.length;j++){
+        var ww = ws[j].getBoundingClientRect().width || 1;
+        ws[j].style.setProperty('--wfs', (100*W*0.9/ww).toFixed(2)+'px');
+      }
+      r2 = ws[2].getBoundingClientRect();
+    } else {
+      var w = l2.getBoundingClientRect().width || 1;
+      ledeEl.style.setProperty('--fs', (100*W*0.94/w).toFixed(2)+'px');
+      r2 = l2.getBoundingClientRect();
+    }
+    var pin = ledeEl.parentNode.getBoundingClientRect();
+    fcBase = r2.top - pin.top + r2.height*0.08;          /* the vessel comes in front from line two's cap line */
+    ledeEl.parentNode.style.setProperty('--fc', fcBase.toFixed(1)+'px');
+  }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitLede(); });
+  function mirror(){
+    if(!fx) return;
+    fx.setTransform(1,0,0,1,0,0); fx.clearRect(0,0,front.width,front.height); fx.drawImage(hero,0,0);
+  }
   function paint(im){
     if(!im || !im.naturalWidth) return;
     var iw = im.naturalWidth, ih = im.naturalHeight;
@@ -649,7 +689,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       hx.drawImage(im, 0,ih-BLEED,iw,BLEED, dx, dy+dh-1, dw, dy+1);
       shade(dx, 0, dw, dy, 'v');
     }
-
+    mirror();
   }
 
   /* light does not travel forever: ease the borrowed edge down as it leaves the frame */
@@ -722,11 +762,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
        function of the scroll, so scrolling back plays it in reverse exactly. */
     var sm = function(a,b){ var t = clamp((p-a)/(b-a),0,1); return t*t*(3-2*t); };
     /* identity → text → curiosity → object → product */
-    var said = sm(0.26, 0.52);                      /* the words lift as the dome comes up under them */
+    var said = sm(0.52, 0.80);                      /* the words hold while the vessel rises through them, then go */
     lede.style.setProperty('--lo', (1-said).toFixed(3));
-    lede.style.setProperty('--ly', (-said*36).toFixed(1) + 'px');
+    lede.style.setProperty('--ly', (-said*40).toFixed(1) + 'px');
+    hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
+    if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
     var rise = sm(0.22, 0.84);                      /* the object surfaces, base first */
-    hero.style.setProperty('--rh', (-26 + rise*126).toFixed(1) + '%');
+    hero.parentNode.style.setProperty('--rh', (-26 + rise*126).toFixed(1) + '%');
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
     floor.style.setProperty('--fo', (sm(0.50, 0.90)).toFixed(3));           /* and the ground it stands on is there */
 
