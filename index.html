@@ -7,45 +7,30 @@
 <meta name="description" content="Extra-Terra 001. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wght@300;400&display=swap">
 <style>
-/* Söhne (Klim Type Foundry). Put the licensed web files in /fonts with these
-   names and the site uses them; until then it falls back to Geist. */
-@font-face{font-family:'Söhne';font-weight:300;font-style:normal;font-display:swap;
-  src:local('Söhne Leicht'),local('Sohne-Leicht'),url(fonts/soehne-leicht.woff2) format('woff2')}
-@font-face{font-family:'Söhne';font-weight:400;font-style:normal;font-display:swap;
-  src:local('Söhne Buch'),local('Sohne-Buch'),url(fonts/soehne-buch.woff2) format('woff2')}
-@font-face{font-family:'Söhne';font-weight:500;font-style:normal;font-display:swap;
-  src:local('Söhne Kräftig'),local('Sohne-Kraftig'),url(fonts/soehne-kraftig.woff2) format('woff2')}
-@font-face{font-family:'Söhne Mono';font-weight:400;font-style:normal;font-display:swap;
-  src:local('Söhne Mono Buch'),local('SohneMono-Buch'),url(fonts/soehne-mono-buch.woff2) format('woff2')}
 :root{
   --night:#0B0806; --deep:#080605;            /* espresso, near black */
   --paper:#ECE4D6;
   --mineral:#ECE3D2; --silver:#B5A893; --muted:#867A68;   /* warm ivory, bone, taupe */
   --champagne:#CDB894; --bronze:#8E6C47;
-  --sans:'Söhne','Geist',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-  --mono:'Söhne Mono','Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
-  --display:var(--sans);                       /* one family; hierarchy comes from scale and place */
-  /* scale */
-  --t-micro:10.5px; --t-small:13px; --t-body:16px;
-  --t-ed:clamp(19px,1.62vw,26px);              /* editorial: a sentence in a catalogue */
-  --t-num:clamp(48px,5.2vw,80px);              /* an archive number */
+  --display:'Prata',Georgia,serif;
+  --sans:'Archivo',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
   --gutter:clamp(22px,5vw,110px);
   --rule:rgba(205,184,148,.14);
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--night);color:var(--silver);
-  font-family:var(--sans);font-weight:400;font-size:var(--t-body);line-height:1.55;font-feature-settings:'ss01' 0;
+  font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.7;
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}
 ::selection{background:#3A2C1F;color:var(--mineral)}
 
-.meta{font-family:var(--sans);font-size:var(--t-micro);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400;line-height:1.4}
-.d{font-family:var(--sans);font-weight:400;letter-spacing:-.008em;line-height:1.3;margin:0;color:var(--mineral)}
-.d-xl{font-size:var(--t-ed)}
-.d-l{font-size:var(--t-ed)}
+.meta{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400}
+.d{font-family:var(--display);font-weight:400;letter-spacing:-.015em;line-height:1.03;margin:0;color:var(--mineral)}
+.d-xl{font-size:clamp(42px,8vw,132px)}
+.d-l{font-size:clamp(30px,5vw,76px)}
 
 /* masthead */
 .mast{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;justify-content:space-between;align-items:center;
@@ -55,8 +40,8 @@ img{display:block;max-width:100%}
 .mast .lock .ink{opacity:0}
 .mast.on-light .lock .bone{opacity:0}
 .mast.on-light .lock .ink{opacity:1}
-.mast .ref{font-family:var(--sans);font-size:var(--t-micro);font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:#B3A68F;transition:color .8s ease}
-.mast.on-light .ref{color:#6E5E48}
+.mast .ref{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:#8A847B;transition:color .8s ease}
+.mast.on-light .ref{color:#6C665C}
 @media(max-width:620px){.mast .ref{display:none}}
 
 /* 01 arrival */
@@ -105,13 +90,6 @@ img{display:block;max-width:100%}
 .floor{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;opacity:var(--fo,0);
   background:radial-gradient(46% 34% at 50% 34%, rgba(176,136,92,.20) 0%, rgba(120,90,60,.10) 42%, transparent 72%),
              linear-gradient(to bottom, transparent 0%, rgba(14,10,7,.55) 70%, rgba(8,6,4,.9) 100%)}
-/* the line: editorial, not a headline */
-.lede{position:absolute;z-index:6;left:clamp(22px,16vw,300px);top:38%;margin:0;
-  opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
-.lede p{margin:0;font-family:var(--sans);font-weight:300;font-size:var(--t-ed);line-height:1.42;
-  letter-spacing:-.005em;color:#E8DFD0}
-.lede .l2{color:#9C9081}
-@media(max-width:760px){.lede{left:var(--gutter);right:var(--gutter);top:34%}.lede p{font-size:19px}}
 @media(prefers-reduced-motion:reduce){#hero{-webkit-mask-image:none;mask-image:none}.floor{opacity:1}}
 .arrival .id.on{opacity:1}
 
@@ -125,10 +103,11 @@ img{display:block;max-width:100%}
   background:radial-gradient(52% 44% at 50% 36%, rgba(120,96,72,.06) 0%, transparent 70%)}   /* the faintest ground, not a glow */
 .object figure{margin:0;width:min(74vw,62svh,620px)}
 .object img{width:100%;height:auto}
-.object .line{text-align:left}
+.object .line{text-align:center}
 
 /* the one sentence that is not a riddle */
-.label{margin:0;color:var(--mineral);font-family:var(--sans);font-size:var(--t-ed);letter-spacing:-.008em;font-weight:400;line-height:1.3}
+.label{margin:0;text-align:center;color:#7B766D;font-size:clamp(13px,1.2vw,15px);
+  letter-spacing:.04em;font-weight:300}
 .object .label{margin-top:calc(clamp(12px,1.1vw,16px) - clamp(30px,6vh,72px))}   /* headline → caption: 16px (12px on phones) */
 
 /* 03 the surface — full bleed band */
@@ -149,7 +128,7 @@ img{display:block;max-width:100%}
 /* 05 the vessel */
 .vessel{padding:clamp(110px,22vh,280px) var(--gutter) clamp(90px,16vh,200px)}
 .vessel .l1{display:block}
-.vessel .l2{display:block;margin-left:clamp(0px,9vw,150px);color:#9C9081}
+.vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#6E6A62}
 
 /* adrift — the core, weightless, unnamed.
 
@@ -181,13 +160,13 @@ img{display:block;max-width:100%}
    plate's own alpha: the gap is the same fraction of every plate, which reads
    as a constant distance because the bigger object gets the bigger gap. */
 .drift figcaption{position:absolute;left:0;right:0;text-align:center;
-  font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;
-  color:rgba(214,202,182,.56);white-space:nowrap}
+  font-family:var(--sans);font-size:9px;letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(214,206,193,.34);white-space:nowrap}
 #sp1 figcaption{bottom:26.6%}
 #sp2 figcaption{bottom:24.4%}
 #sp3 figcaption{bottom:27.9%}
 #sp4 figcaption{bottom:25.7%}
-@media(max-width:620px){.drift figcaption{font-size:9px;letter-spacing:.05em;bottom:5%}}
+@media(max-width:620px){.drift figcaption{font-size:8px;letter-spacing:.28em;bottom:5%}}
 /* no drop-shadows: there is no floor here for a shadow to land on, and a black
    one over a near-black ground only prints a soft box around each specimen.
    Distance is carried by size, opacity and focus, which is enough. */
@@ -264,7 +243,7 @@ img{display:block;max-width:100%}
   background:rgba(236,227,210,.10);cursor:ew-resize;display:grid;place-items:center;
   box-shadow:0 0 0 1px rgba(0,0,0,.18), 0 6px 26px rgba(0,0,0,.22)}
 .states .grip::before{content:'';width:14px;height:1px;background:rgba(255,255,255,.85);box-shadow:0 -5px 0 rgba(255,255,255,.85),0 5px 0 rgba(255,255,255,.85)}
-.states .tag{position:absolute;bottom:clamp(22px,5vh,48px);z-index:6;font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.08em;text-transform:uppercase}
+.states .tag{position:absolute;bottom:clamp(22px,5vh,48px);z-index:6;font-size:10px;letter-spacing:.36em;text-transform:uppercase}
 .states .tag-n{left:var(--gutter);color:#B9A88C}
 .states .tag-d{right:var(--gutter);color:#6E5E48}
 @media(prefers-reduced-motion:reduce){.cloud,.bird,.bird .w{animation:none!important}}
@@ -283,7 +262,7 @@ img{display:block;max-width:100%}
 @media(max-width:760px){.first .inner{margin-left:0}}
 .join{margin-top:clamp(28px,2.2vw,32px)}
 .join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(205,184,148,.30);padding-bottom:10px;max-width:24rem}
-.join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:400;font-size:15px;padding:6px 0}
+.join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:15px;padding:6px 0}
 .join input::placeholder{color:#75685A}
 /* an arrow, not an instruction: the gesture belongs to the world, not the form */
 .join button{background:none;border:0;padding:2px 0 2px 6px;cursor:pointer;color:var(--silver);
@@ -299,11 +278,12 @@ img{display:block;max-width:100%}
   background:none}
 /* the record: a catalogue card, not a spec sheet. values line up because an
    archive lines up; nothing is emphasised, including the word candle. */
-.record{margin:clamp(36px,4vw,56px) 0 0;display:grid;grid-template-columns:minmax(6.5rem,9rem) 1fr;
-  width:min(100%,24rem);text-align:left;border-bottom:1px solid var(--rule)}
-.record dt,.record dd{margin:0;padding:11px 0 10px;border-top:1px solid var(--rule)}
-.record dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#867A68;line-height:1.9}
-.record dd{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mineral);line-height:1.9}
+.record{margin:clamp(32px,2.8vw,40px) auto 0;display:grid;grid-template-columns:auto auto;
+  gap:9px clamp(18px,3vw,34px);width:max-content;text-align:left;
+  font-family:var(--sans);font-size:9px;letter-spacing:.32em;text-transform:uppercase}
+.record dt{color:rgba(214,206,193,.30);margin:0}
+.record dd{color:rgba(214,206,193,.55);margin:0}
+@media(max-width:620px){.record{font-size:8px;letter-spacing:.26em;gap:8px 22px}}
 .after .wm{margin:clamp(48px,9vh,110px) auto 0;width:clamp(132px,13vw,186px);aspect-ratio:440/251}
 .after .wm img{width:100%;height:100%;object-fit:contain;opacity:.86}
 footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule)}
@@ -318,35 +298,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   .orb{right:14%;top:11%;width:clamp(54px,16vw,80px)}
   .sun{box-shadow:0 0 46px 14px rgba(255,248,226,.80), 0 0 120px 50px rgba(255,238,196,.30), 0 0 300px 150px rgba(255,240,204,.12)}
 }
-
-/* ---- type system ----------------------------------------------------------
-   One family. Hierarchy is scale, position, spacing and tone — never weight.
-   Micro labels are small and only lightly tracked; sentences sit at normal
-   tracking; the one large thing is the archive number. */
-.num{font-family:var(--sans);font-size:var(--t-num);font-weight:300;letter-spacing:-.03em;line-height:1;
-  font-variant-numeric:tabular-nums;color:var(--mineral)}
-.arrival .id .num{font-size:clamp(40px,4.2vw,64px)}
-
-/* the object: the plate, then a caption hung from its left edge — quieter line first */
-.object .line,.object .label{width:min(74vw,62svh,620px)}
-.object .line{font-size:var(--t-small);color:#9C9081;letter-spacing:0;line-height:1.5}
-.object .label{margin-top:calc(8px - clamp(30px,6vh,72px))}
-
-/* the sealed line: an annotation over the plate, not a title */
-.dome{justify-items:center}
-.dome .line{width:min(82vw,60svh,720px);text-align:left;font-size:var(--t-small);color:#9C9081;letter-spacing:0}
-
-/* the vessel stays: one sentence, set quietly at the margin */
-.vessel .d{font-size:var(--t-ed);max-width:32rem}
-
-/* first edition and the record share one vertical axis */
-.first .inner,.after > div{margin-left:clamp(0px,22vw,380px)}
-.after{display:block;place-items:normal;justify-items:normal;text-align:left;padding-left:var(--gutter);padding-right:var(--gutter)}
-.after .d{font-size:var(--t-ed)}
-.after .wm{margin:clamp(56px,10vh,120px) 0 0;width:clamp(120px,11vw,160px)}
-.join .meta{display:block}
-.join .row{margin-top:10px}
-@media(max-width:760px){.first .inner,.after > div{margin-left:0}}
 </style>
 </head>
 <body>
@@ -368,13 +319,9 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <canvas id="sky" aria-hidden="true"></canvas>
     <div class="field" id="field" aria-hidden="true"></div>
     <div class="floor" id="floor" aria-hidden="true"></div>
-    <div class="lede" id="lede">
-      <p class="l1">Before the light,</p>
-      <p class="l2">there is the object.</p>
-    </div>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
-      <p class="d num" style="margin-top:8px">001</p>
+      <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
     </div>
   </div>
 </section>
@@ -481,7 +428,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 <!-- 09 -->
 <section class="first" aria-label="First edition">
   <div class="inner rise">
-    <p class="d num" style="margin:0">001</p>
+    <p class="d d-l" style="margin:0">001</p>
     <form class="join" id="join" novalidate>
       <label class="meta" for="email">Leave an address</label>
       <div class="row" style="margin-top:12px">
@@ -634,7 +581,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   var putHero = seq();
   var putOpen = shot2 ? seqO(shot2) : null;
 
-  var field = document.getElementById('field'), lede = document.getElementById('lede'),
+  var field = document.getElementById('field'),
       floor = document.getElementById('floor');
   var idc = document.getElementById('id'),
       halo2 = document.getElementById('halo2'),
@@ -654,9 +601,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
        function of the scroll, so scrolling back plays it in reverse exactly. */
     var sm = function(a,b){ var t = clamp((p-a)/(b-a),0,1); return t*t*(3-2*t); };
     /* identity → text → curiosity → object → product */
-    var said = sm(0.12, 0.32);                      /* the sentence goes, slowly */
-    lede.style.setProperty('--lo', (1-said).toFixed(3));
-    lede.style.setProperty('--ly', (-said*10).toFixed(1) + 'px');
     var rise = sm(0.22, 0.84);                      /* the object surfaces, base first */
     hero.style.setProperty('--rh', (-26 + rise*126).toFixed(1) + '%');
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
