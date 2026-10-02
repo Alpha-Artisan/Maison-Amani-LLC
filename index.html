@@ -86,6 +86,23 @@ img{display:block;max-width:100%}
    through it, never a cut, never a fade-in of the whole picture */
 #hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%));
           mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%))}
+/* The headline, Apple-style at the top and centred, but lit rather than printed:
+   on arrival a band of light crosses the words once and leaves them lit. As the
+   vessel rises beneath, they lift and fade so the object takes the frame. */
+.lede{position:absolute;z-index:6;left:var(--gutter);right:var(--gutter);top:clamp(96px,16vh,180px);margin:0;
+  text-align:center;font-family:var(--display);font-weight:400;
+  font-size:clamp(40px,6.2vw,108px);line-height:1.04;letter-spacing:-.018em;
+  opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
+.lede span{display:block;padding:0 .04em;
+  background:linear-gradient(100deg, #EFE7D9 0%, #EFE7D9 38%, #FFF8EA 46%, #EFE7D9 54%, rgba(239,231,217,.16) 66%, rgba(239,231,217,.16) 100%);
+  background-size:260% 100%;background-position:0% 0;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.lede .l2{background-image:linear-gradient(100deg, #9C8F7C 0%, #9C8F7C 38%, #D8CCB6 46%, #9C8F7C 54%, rgba(156,143,124,.12) 66%, rgba(156,143,124,.12) 100%)}
+@keyframes litText{from{background-position:100% 0}to{background-position:0% 0}}
+.lede .l1{animation:litText 2.6s cubic-bezier(.45,0,.2,1) .35s both}
+.lede .l2{animation:litText 2.6s cubic-bezier(.45,0,.2,1) .75s both}
+@media(max-width:760px){.lede{left:16px;right:16px;top:clamp(88px,15svh,130px);font-size:clamp(30px,8.6vw,42px);line-height:1.1}}
+@media(prefers-reduced-motion:reduce){.lede span{animation:none}}
 /* the ground: a dark reflective surface the vessel stands on, warmed where it sits */
 .floor{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;opacity:var(--fo,0);
   background:radial-gradient(46% 34% at 50% 34%, rgba(176,136,92,.20) 0%, rgba(120,90,60,.10) 42%, transparent 72%),
@@ -319,6 +336,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <canvas id="sky" aria-hidden="true"></canvas>
     <div class="field" id="field" aria-hidden="true"></div>
     <div class="floor" id="floor" aria-hidden="true"></div>
+    <h1 class="lede" id="lede"><span class="l1">Before the Light,</span><span class="l2">there is the object</span></h1>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
       <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
@@ -581,7 +599,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   var putHero = seq();
   var putOpen = shot2 ? seqO(shot2) : null;
 
-  var field = document.getElementById('field'),
+  var field = document.getElementById('field'), lede = document.getElementById('lede'),
       floor = document.getElementById('floor');
   var idc = document.getElementById('id'),
       halo2 = document.getElementById('halo2'),
@@ -601,6 +619,9 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
        function of the scroll, so scrolling back plays it in reverse exactly. */
     var sm = function(a,b){ var t = clamp((p-a)/(b-a),0,1); return t*t*(3-2*t); };
     /* identity → text → curiosity → object → product */
+    var said = sm(0.26, 0.52);                      /* the words lift as the dome comes up under them */
+    lede.style.setProperty('--lo', (1-said).toFixed(3));
+    lede.style.setProperty('--ly', (-said*36).toFixed(1) + 'px');
     var rise = sm(0.22, 0.84);                      /* the object surfaces, base first */
     hero.style.setProperty('--rh', (-26 + rise*126).toFixed(1) + '%');
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
