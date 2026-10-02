@@ -634,7 +634,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   /* the page opens with the base already lit under the words: the sequence starts at frame F0 */
   var F0 = 48;
   for(var i=F0;i<F0+8;i++) warm(i);
-  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); });
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); for(var j=F0;j<N;j++) warmK(j); });
   if(shot2) shot2.src = (innerWidth > 760 ? 'op' : 'opm') + '/00.webp';
 
   /* ---- the frame, painted full bleed, carrying its own ground ----
@@ -657,32 +657,12 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   }
 
   /* the type is sized so line two spans the width; line one follows at the same size */
-  /* The copy in front of the type is keyed off its black on the GPU (WebGL), the
-     same in every browser. Without WebGL the copy is simply not shown and the
-     vessel passes behind both lines. */
-  var front = document.getElementById('heroFront'), gl = null, glTex = null;
-  (function(){
-    if(!front) return;
-    try{ gl = front.getContext('webgl', {premultipliedAlpha:true, alpha:true, antialias:false}); }catch(e){ gl = null; }
-    if(!gl){ front.style.display = 'none'; front = null; return; }
-    function sh(t, src){ var o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; }
-    var pr = gl.createProgram();
-    gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;gl_Position=vec4(p,0.,1.);}'));
-    gl.attachShader(pr, sh(gl.FRAGMENT_SHADER,
-      'precision mediump float;varying vec2 u;uniform sampler2D t;' +
-      'void main(){vec3 c=texture2D(t,u).rgb;float l=dot(c,vec3(.2126,.7152,.0722));' +
-      'float a=clamp(l*25.-.4,0.,1.);gl_FragColor=vec4(c*a/max(a,.001)*a,a);}'));
-    gl.linkProgram(pr);
-    if(!gl.getProgramParameter(pr, gl.LINK_STATUS)){ front.style.display = 'none'; front = null; gl = null; return; }
-    gl.useProgram(pr);
-    var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-    var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    glTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, glTex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-  })();
+  /* The copy in front of the second line is the frame itself, unaltered, cut to
+     the vessel's exact outline (vk/ and vmk/: one outline per frame, shadows
+     included). Line one stays in front of the vessel; line two sits behind it. */
+  var front = document.getElementById('heroFront'), fx = front ? front.getContext('2d') : null;
+  var KSET = SET === 'v' ? 'vk' : 'vmk', kcache = [];
+  function warmK(i){ if(kcache[i]) return kcache[i]; var k = new Image(); k.decoding = 'async'; k.src = KSET + '/' + pad(i) + '.png'; kcache[i] = k; return k; }
   var ledeEl = document.getElementById('lede'), fcBase = 0;
   function fitLede(){
     if(!ledeEl) return;
@@ -706,16 +686,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     ledeEl.parentNode.style.setProperty('--fc', fcBase.toFixed(1)+'px');
   }
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitLede(); });
-  function mirror(){
-    if(!gl || !front) return;
-    if(!mirror.max) mirror.max = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096;
-    if(hero.width > mirror.max || hero.height > mirror.max){ front.style.visibility = 'hidden'; return; }
-    front.style.visibility = '';
-    gl.viewport(0, 0, front.width, front.height);
-    gl.bindTexture(gl.TEXTURE_2D, glTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, hero);
-    gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  function mirror(im, dx, dy, dw, dh){
+    if(!fx) return;
+    var n = curFrame >= 0 ? curFrame : F0, k = warmK(n);
+    fx.setTransform(HD,0,0,HD,0,0); fx.globalCompositeOperation = 'source-over'; fx.clearRect(0,0,HW,HH);
+    if(!(k.complete && k.naturalWidth)){ k.onload = function(){ if((curFrame >= 0 ? curFrame : F0) === n) mirror(im, dx, dy, dw, dh); }; return; }
+    fx.drawImage(k, dx, dy, dw, dh);                    /* the outline */
+    fx.globalCompositeOperation = 'source-in';
+    fx.drawImage(im, 0, 0, im.naturalWidth, im.naturalHeight, dx, dy, dw, dh);   /* the vessel, as rendered */
+    fx.globalCompositeOperation = 'source-over';
   }
   function paint(im){
     if(!im || !im.naturalWidth) return;
@@ -737,7 +716,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       hx.drawImage(im, 0,ih-BLEED,iw,BLEED, dx, dy+dh-1, dw, dy+1);
       shade(dx, 0, dw, dy, 'v');
     }
-    mirror();
+    mirror(im, dx, dy, dw, dh);
   }
 
   /* light does not travel forever: ease the borrowed edge down as it leaves the frame */
