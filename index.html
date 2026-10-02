@@ -90,30 +90,55 @@ img{display:block;max-width:100%}
    through it, never a cut, never a fade-in of the whole picture */
 #hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
           mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%))}
-/* The headline as a wall of type the object moves through: compressed black
-   capitals sized to the width, line one in front of the vessel, line two behind
-   it. The vessel is drawn twice: once under the type, and once, keyed off its
-   black, over it, shown only from line two down. */
-.lede{position:absolute;z-index:5;left:0;right:0;top:clamp(110px,21vh,240px);margin:0;text-align:center;
-  font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
-  text-transform:uppercase;letter-spacing:-.012em;line-height:.84;font-size:var(--fs,12vw);
+/* Hero, as an exhibition: darkness above, the statement on the left, a sparse
+   constellation, a single light from the upper left, black stone, and the
+   vessel, as rendered, standing on a dark wet floor that holds its reflection. */
+.lede{position:absolute;z-index:5;left:clamp(22px,11.6vw,240px);top:clamp(120px,20.5vh,240px);margin:0;max-width:34em;
   opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
-.lede .l1,.lede .l2{display:table;margin:0 auto;white-space:nowrap;animation:ledeIn 1.6s cubic-bezier(.2,.7,.2,1) .25s both}
-.lede .w{background:linear-gradient(to bottom,#F5F0E7 0%,#EDE6DA 48%,#CFC6B7 100%);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.lede .l2{animation-delay:.45s}
-@keyframes ledeIn{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
-#heroFront{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;display:block;
-  clip-path:inset(var(--fc,60%) 0 0 0);opacity:var(--lo2,1)}
-/* phones: a poster stack, four lines, each the width of the screen */
-@media(max-width:760px){.lede{top:clamp(92px,14svh,140px);line-height:.86}
-  .lede .l1,.lede .l2{display:block}
-  .lede .w{display:table;margin:0 auto;font-size:var(--wfs,1em)}}
-@media(prefers-reduced-motion:reduce){.lede .l1,.lede .l2{animation:none}}
+.lede .eyebrow{margin:0;font-family:var(--sans);font-weight:400;font-size:clamp(9.5px,.72vw,12px);letter-spacing:.32em;text-transform:uppercase;color:#958873}
+.lede .st{margin:clamp(18px,2vw,34px) 0 0;font-family:'Canela','Newsreader',Georgia,serif;font-weight:300;font-variation-settings:'opsz' 72;
+  font-size:clamp(34px,3.6vw,66px);line-height:1.16;letter-spacing:-.005em;color:#CFC2AC}
+.lede .st span{display:block}
+.lede .st em{font-style:normal;color:#F1EADD}
+.lede .rl{display:block;width:clamp(64px,7.4vw,118px);height:1px;margin:clamp(26px,3.1vw,48px) 0 0;background:rgba(205,184,148,.38)}
+.lede .sub{margin:clamp(26px,2.9vw,44px) 0 0;font-family:var(--sans);font-weight:300;font-size:clamp(11.5px,.86vw,14px);line-height:1.78;letter-spacing:.06em;color:#A2957F}
+.lede > *{animation:ledeIn 1.8s cubic-bezier(.2,.7,.2,1) both}
+.lede .st{animation-delay:.2s}.lede .rl{animation-delay:.45s}.lede .sub{animation-delay:.6s}
+@keyframes ledeIn{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
+/* one light, from the upper left, entering a dark room */
+.beam{position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;opacity:var(--bo,1);
+  background:linear-gradient(112deg, transparent 6%, rgba(150,124,92,.10) 15%, rgba(120,98,72,.05) 22%, transparent 31%)}
+/* black stone at the lower left, in front of the floor, never over the vessel */
+.arrival .pin .rock{position:absolute;z-index:4;inset:auto auto 0 0;height:min(50vh,520px);width:auto;max-width:28vw;object-fit:cover;object-position:left bottom;pointer-events:none;opacity:var(--ko,.7)}
+/* the constellation: a diagram, not a sky */
+.const{position:absolute;z-index:3;right:clamp(16px,4vw,90px);top:clamp(70px,9vh,120px);width:min(38vw,620px);height:auto;pointer-events:none;opacity:var(--co,1)}
+.const .ln line{stroke:rgba(236,227,210,.17);stroke-width:.7;vector-effect:non-scaling-stroke}
+.const .pt circle{fill:rgba(236,227,210,.55)}
+.const .node circle{fill:#F2ECE1;filter:drop-shadow(0 0 3px rgba(242,236,225,.55))}
+/* scroll: an invitation, not an instruction */
+.cue{position:absolute;z-index:6;right:clamp(22px,7.6vw,150px);bottom:clamp(26px,6vh,64px);margin:0;display:grid;justify-items:center;gap:12px;
+  font-family:var(--sans);font-size:clamp(8.5px,.62vw,10.5px);letter-spacing:.32em;text-transform:uppercase;color:#958873;opacity:var(--lo,1)}
+.cue span{position:relative;width:1px;height:clamp(26px,3.2vh,40px);background:rgba(205,184,148,.45)}
+.cue span::after{content:'';position:absolute;left:-3px;bottom:0;width:6px;height:6px;border-right:1px solid rgba(205,184,148,.6);border-bottom:1px solid rgba(205,184,148,.6);transform:rotate(45deg)}
+.mast .ref{display:inline-flex;align-items:center}
+.mast .plus{position:relative;display:inline-block;width:11px;height:11px;margin-left:clamp(14px,1.6vw,26px)}
+.mast .plus::before,.mast .plus::after{content:'';position:absolute;background:currentColor;opacity:.8}
+.mast .plus::before{left:0;right:0;top:5px;height:1px}.mast .plus::after{top:0;bottom:0;left:5px;width:1px}
+.arrival .id{display:grid;grid-template-columns:auto auto;column-gap:16px;align-items:center}
+.arrival .id .meta{grid-column:1/3}
+.arrival .id::after{content:'';grid-row:2;grid-column:2;width:clamp(30px,3vw,46px);height:1px;background:rgba(205,184,148,.4);margin-top:8px}
+@media(max-width:760px){
+  .lede{left:var(--gutter);right:var(--gutter);top:clamp(96px,14svh,140px)}
+  .lede .st{font-size:clamp(28px,8vw,38px)}
+  .arrival .pin .rock{display:none}
+  .const{width:34vw;top:7svh;right:4vw;opacity:calc(var(--co,1)*.7)}
+  .cue{display:none}
+}
+@media(prefers-reduced-motion:reduce){.lede > *{animation:none}}
 /* the ground: a dark reflective surface the vessel stands on, warmed where it sits */
 .floor{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;opacity:var(--fo,0);
-  background:radial-gradient(46% 34% at 50% 34%, rgba(176,136,92,.20) 0%, rgba(120,90,60,.10) 42%, transparent 72%),
-             linear-gradient(to bottom, transparent 0%, rgba(14,10,7,.55) 70%, rgba(8,6,4,.9) 100%)}
+  background:radial-gradient(46% 30% at 57% 20%, rgba(120,98,74,.10) 0%, transparent 70%),
+             linear-gradient(to bottom, transparent 0%, rgba(10,8,6,.35) 60%, rgba(6,5,4,.72) 100%)}
 @media(prefers-reduced-motion:reduce){#hero{-webkit-mask-image:none;mask-image:none}#heroFront{display:none}.floor{opacity:1}}
 .arrival .id.on{opacity:1}
 
@@ -360,7 +385,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <img class="bone" src="img/lockup-bone.png" width="440" height="251" alt="Maison Amani">
     <img class="ink"  src="img/lockup-ink.png"  width="440" height="251" alt="" aria-hidden="true">
   </a>
-  <span class="ref">Art&nbsp;objects</span>
+  <span class="ref">Art&nbsp;objects<i class="plus" aria-hidden="true"></i></span>
 </header>
 
 <main>
@@ -372,8 +397,20 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <canvas id="sky" aria-hidden="true"></canvas>
     <div class="field" id="field" aria-hidden="true"></div>
     <div class="floor" id="floor" aria-hidden="true"></div>
-    <h1 class="lede" id="lede"><span class="l1"><span class="w">Before the </span><span class="w">light</span></span><span class="l2"><span class="w">there is the </span><span class="w">Object</span></span></h1>
-    <canvas id="heroFront" aria-hidden="true"></canvas>
+    <div class="beam" aria-hidden="true"></div>
+    <img class="rock" id="rock" src="img/rock.webp" width="360" height="626" alt="" aria-hidden="true" decoding="async">
+    <svg class="const" viewBox="-6 -6 480 352" aria-hidden="true" focusable="false">
+      <g class="ln"><line x1="360" y1="8" x2="226" y2="79"/><line x1="226" y1="79" x2="84" y2="195"/><line x1="84" y1="195" x2="200" y2="212"/><line x1="200" y1="212" x2="374" y2="269"/><line x1="226" y1="79" x2="374" y2="269"/></g>
+      <g class="pt"><circle cx="360" cy="8" r="1.4"/><circle cx="84" cy="195" r="1.6"/><circle cx="200" cy="212" r="1.4"/><circle cx="0" cy="222" r="1"/><circle cx="113" cy="307" r="1"/><circle cx="413" cy="165" r="1"/><circle cx="461" cy="338" r="1"/></g>
+      <g class="node"><circle cx="226" cy="79" r="2.4"/><circle cx="374" cy="269" r="2.4"/></g>
+    </svg>
+    <div class="lede" id="lede">
+      <p class="eyebrow">An extraordinary object</p>
+      <h1 class="st"><span>Before the <em>light,</em></span><span>there is the object.</span></h1>
+      <span class="rl" aria-hidden="true"></span>
+      <p class="sub">A vessel for light, scent and memory.<br>Born from earth. Shaped by time.<br>Made for what cannot be seen.</p>
+    </div>
+    <p class="cue" id="cue" aria-hidden="true">Scroll<span></span></p>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
       <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
@@ -538,7 +575,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   /* the page opens with the base already lit under the words: the sequence starts at frame F0 */
   var F0 = 48;
   for(var i=F0;i<F0+8;i++) warm(i);
-  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); for(var j=F0;j<N;j++) warmK(j); });
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); if(fx) for(var j=F0;j<N;j++) warmK(j); });
   if(shot2) shot2.src = (innerWidth > 760 ? 'op' : 'opm') + '/00.webp';
 
   /* ---- the frame, painted full bleed, carrying its own ground ----
@@ -575,7 +612,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     return pr.getBoundingClientRect().top;
   }
   function fitLede(){
-    if(!ledeEl) return;
+    if(!ledeEl || !ledeEl.querySelector('.w')) return;
     var l2 = ledeEl.querySelector('.l2'), W = ledeEl.parentNode.clientWidth, ws = ledeEl.querySelectorAll('.w');
     ledeEl.style.setProperty('--fs','100px');
     for(var k=0;k<ws.length;k++) ws[k].style.setProperty('--wfs','100px');
@@ -636,6 +673,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var s  = Math.min(HW/iw, HH/ih) * ZOOM;
     var dw = iw*s, dh = ih*s;
     var dx = (HW-dw)/2, dy = (HH-dh)/2;
+    if(HW > 760){ dx += HW*0.07; dy += HH*0.05; }   /* lower-middle, slightly right: discovered, not presented */
 
     hx.fillStyle = '#000'; hx.fillRect(0,0,HW,HH);
     hx.drawImage(im, 0,0,iw,ih, dx,dy,dw,dh);
@@ -650,7 +688,25 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       hx.drawImage(im, 0,ih-BLEED,iw,BLEED, dx, dy+dh-1, dw, dy+1);
       shade(dx, 0, dw, dy, 'v');
     }
+    reflect(im, dx, dy, dw, dh);
     mirror(im, dx, dy, dw, dh);
+  }
+  /* the floor is wet stone: below the base, the vessel itself, mirrored, faint, broken
+     into thin bands that drift a little sideways, fading as it goes. */
+  var BASE = 0.858;                                  /* the vessel's base sits at 85.8% of every frame */
+  function reflect(im, dx, dy, dw, dh){
+    var iw = im.naturalWidth, ih = im.naturalHeight, by = dy + dh*BASE;
+    var depth = Math.min(HH - by, dh*0.30); if(depth < 4) return;
+    var band = 3, n = Math.ceil(depth/band), sh = band*ih/dh;
+    hx.save();
+    for(var k=0;k<n;k++){
+      var t = k/n, sy = BASE*ih - (k+1)*sh;
+      if(sy < 0) break;
+      hx.globalAlpha = 0.17*Math.pow(1-t, 1.6);
+      var jx = Math.sin(k*0.83)*2.2 + Math.sin(k*0.27)*1.4;   /* the water is not quite still */
+      hx.drawImage(im, 0, sy, iw, sh, dx + jx, by + k*band, dw, band);
+    }
+    hx.restore();
   }
 
   /* light does not travel forever: ease the borrowed edge down as it leaves the frame */
@@ -703,6 +759,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   var putHero = seq();
   var putOpen = shot2 ? seqO(shot2) : null;
 
+  var rockEl = document.getElementById('rock'), cueEl = document.getElementById('cue');
   var field = document.getElementById('field'), lede = document.getElementById('lede'),
       floor = document.getElementById('floor');
   var idc = document.getElementById('id'),
@@ -734,9 +791,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
        function of the scroll, so scrolling back plays it in reverse exactly. */
     var sm = function(a,b){ var t = clamp((p-a)/(b-a),0,1); return t*t*(3-2*t); };
     /* identity → text → curiosity → object → product */
-    var said = sm(0.52, 0.80);                      /* the words hold while the vessel rises through them, then go */
+    var said = sm(0.10, 0.38);                      /* the words recede as the object comes */
     lede.style.setProperty('--lo', (1-said).toFixed(3));
-    lede.style.setProperty('--ly', (-said*40).toFixed(1) + 'px');
+    lede.style.setProperty('--ly', (-said*24).toFixed(1) + 'px');
+    if(cueEl) cueEl.style.setProperty('--lo', (1 - sm(0.02, 0.12)).toFixed(3));
     hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
     if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
     var rise = sm(0.0, 0.62);                       /* the base is there from the start; the rest rises through the words */
@@ -745,7 +803,9 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     hero.parentNode.style.setProperty('--rh', rhNow.toFixed(1) + '%');
     mirror();
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
-    floor.style.setProperty('--fo', (sm(0.50, 0.90)).toFixed(3));           /* and the ground it stands on is there */
+    floor.style.setProperty('--fo', '1');                                   /* the ground is always there */
+    var envIn = sm(0.0, 0.42);                       /* the room becomes perceptible as the eye adjusts */
+    if(rockEl) rockEl.style.setProperty('--ko', (0.55 + envIn*0.45).toFixed(3));
 
     /* the mark stands in the dark, then gives the frame over to the object */
     idc.classList.toggle('on', p < 0.90);
@@ -799,7 +859,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     function build(){
       D = Math.min(devicePixelRatio||1,2); W = cv.clientWidth; H = cv.clientHeight;
       cv.width = Math.round(W*D); cv.height = Math.round(H*D); g.setTransform(D,0,0,D,0,0);
-      stars = Array.from({length: W<700?60:112}, function(){
+      stars = Array.from({length: W<700?22:38}, function(){
         var dep = Math.random();
         return {x:Math.random()*W, y:Math.random()*H, r:.3+dep*1.1, a:.08+dep*.4, tw:rnd(.1,.32), ph:rnd(0,6.28), dep:.15+dep*.85};
       });
