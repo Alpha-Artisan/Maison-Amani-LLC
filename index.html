@@ -7,7 +7,7 @@
 <meta name="description" content="Extra-Terra 001. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:opsz,wght@6..72,300&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:opsz,wght@6..72,300&display=swap">
 <style>
 /* Canela Light (Commercial Type), for the hero line only. Put the licensed web
    file in /fonts under this name and it is used; until then Newsreader Light. */
@@ -18,7 +18,7 @@
   --paper:#ECE4D6;
   --mineral:#ECE3D2; --silver:#B5A893; --muted:#867A68;   /* warm ivory, bone, taupe */
   --champagne:#CDB894; --bronze:#8E6C47;
-  --display:'Prata',Georgia,serif;
+  --display:'Newsreader',Georgia,serif;   /* low-contrast, contemporary; Canela Light replaces it once licensed */
   --sans:'Archivo',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
   --gutter:clamp(22px,5vw,110px);
   --rule:rgba(205,184,148,.14);
@@ -32,7 +32,7 @@ img{display:block;max-width:100%}
 ::selection{background:#3A2C1F;color:var(--mineral)}
 
 .meta{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400}
-.d{font-family:var(--display);font-weight:400;letter-spacing:-.015em;line-height:1.03;margin:0;color:var(--mineral)}
+.d{font-family:var(--display);font-weight:300;font-variation-settings:'opsz' 72;letter-spacing:-.022em;line-height:1.02;margin:0;color:var(--mineral)}
 .d-xl{font-size:clamp(42px,8vw,132px)}
 .d-l{font-size:clamp(30px,5vw,76px)}
 
@@ -121,95 +121,45 @@ img{display:block;max-width:100%}
 .arrival .id.on{opacity:1}
 
 /* a held breath between chapters */
-.hold{height:52vh}
+.hold{height:34vh}
 .arrival + .hold{background:linear-gradient(to bottom,#000 0%,var(--night) 100%)}
 .hold--s{height:22vh}
 
 /* 02 the object — a single plate, centred, nothing else */
-.object{padding:clamp(80px,14vh,190px) var(--gutter) clamp(60px,10vh,140px);display:grid;justify-items:center;gap:clamp(30px,6vh,72px);
+.object{min-height:100svh;padding:clamp(70px,10vh,120px) var(--gutter);display:grid;justify-items:center;align-content:center;gap:clamp(26px,4.5vh,56px);
   background:radial-gradient(52% 44% at 50% 36%, rgba(120,96,72,.06) 0%, transparent 70%)}   /* the faintest ground, not a glow */
-.object figure{margin:0;width:min(74vw,62svh,620px)}
+.object figure{margin:0;width:min(74vw,50svh,560px)}
 .object img{width:100%;height:auto}
 .object .line{text-align:center}
 
 /* the one sentence that is not a riddle */
 .label{margin:0;text-align:center;color:#7B766D;font-size:clamp(13px,1.2vw,15px);
   letter-spacing:.04em;font-weight:300}
-.object .label{margin-top:calc(clamp(12px,1.1vw,16px) - clamp(30px,6vh,72px))}   /* headline → caption: 16px (12px on phones) */
+.object .label{margin-top:calc(clamp(12px,1.1vw,16px) - clamp(26px,4.5vh,56px))}   /* headline → caption: 16px (12px on phones) */
 
-/* 03 the surface — full bleed band */
-.surface{margin:0;position:relative}
+/* 03 the surface — a room of material. Full bleed and a screen tall, the relief
+   read at the scale of ground; the edges fall into the house's dark on all four
+   sides, so it has no frame, and the plate settles slowly toward the viewer as
+   it is scrolled through, the way the eye closes in on something it is reading. */
+.surface{margin:0;position:relative;height:100svh;overflow:hidden;background:var(--night)}
 /* a low raking light on the material: the plate keeps its colour, the room around it goes dark */
 .surface::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:radial-gradient(70% 82% at 42% 46%, transparent 0%, rgba(11,8,6,.28) 58%, rgba(11,8,6,.78) 100%)}
-.surface img{width:100%;height:min(74svh,760px);object-fit:cover;object-position:center 42%;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 82%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 82%,transparent 100%)}
-.surface .meta{position:absolute;left:var(--gutter);bottom:clamp(20px,4vh,40px);z-index:2}
+  background:radial-gradient(64% 70% at 46% 48%, transparent 0%, rgba(11,8,6,.34) 52%, rgba(11,8,6,.94) 100%)}
+.surface img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 44%;
+  transform:scale(var(--ss,1.16));transform-origin:46% 48%;will-change:transform;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 78%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 78%,transparent 100%)}
+@media(max-width:760px){.surface img{object-position:38% 44%}}
+@media(prefers-reduced-motion:reduce){.surface img{transform:none}}
 
-/* 04 the dome */
-.dome{padding:clamp(90px,16vh,220px) var(--gutter);display:grid;justify-items:center;gap:clamp(26px,5vh,56px);
-  background:radial-gradient(48% 40% at 50% 62%, rgba(120,96,72,.05) 0%, transparent 70%)}
-.dome figure{margin:0;width:min(82vw,60svh,720px)}
-.dome img{width:100%;height:auto}
+/* 04 sealed: the line alone in a held screen */
+.sealed{min-height:100svh;display:grid;place-items:center;padding:0 var(--gutter);text-align:center}
 
 /* 05 the vessel */
 .vessel{padding:clamp(110px,22vh,280px) var(--gutter) clamp(90px,16vh,200px)}
 .vessel .l1{display:block}
 .vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#6E6A62}
 @media(max-width:620px){.vessel .d{font-size:clamp(30px,8.6vw,40px)}.vessel .l2{margin-left:9vw;white-space:nowrap}}   /* phones: two lines, as written */
-
-/* adrift — the core, weightless, unnamed.
-
-   left/top are the object's CENTRE, not its corner: the plates are square and
-   the specimen is centred in them, so placing by corner would put each one
-   somewhere slightly different from where it looks placed. The JS carries the
-   -50%,-50% that makes that true.
-
-   The arrangement:
-   · Frankincense is the heaviest thing here — biggest, brightest, nearest — so
-     it takes the lower-left third intersection and everything else answers it.
-   · Labdanum is the lightest and sits farthest away, up and right, holding the
-     opposite corner without matching its weight. The balance is asymmetric on
-     purpose: even weight either side of centre reads as a layout, not a field.
-   · No two share an x or a y, and no gap repeats — so nothing pairs off and
-     nothing lines up.
-   · The four make a triangle with one outside it, which the eye reads as
-     arranged. Four points evenly scattered read as spilled.
-   · Size, opacity, shadow weight and focus all come off one depth value, so
-     front-to-back is never ambiguous. */
-.drift{position:relative;height:100svh;min-height:600px;overflow:hidden;
-  background:radial-gradient(70% 60% at 42% 58%, rgba(120,96,72,.05) 0%, transparent 70%)}
-.drift .sp{position:absolute;margin:0;will-change:transform;pointer-events:none;
-  transform:translate(-50%,-50%)}
-.drift .sp img{display:block;width:100%;height:auto}
-/* The name travels with the material, so the two never come apart. Each plate
-   is square but each specimen fills it differently, so a single bottom offset
-   left some names hanging far below their object. These are measured from each
-   plate's own alpha: the gap is the same fraction of every plate, which reads
-   as a constant distance because the bigger object gets the bigger gap. */
-.drift figcaption{position:absolute;left:0;right:0;text-align:center;
-  font-family:var(--sans);font-size:9px;letter-spacing:.34em;text-transform:uppercase;
-  color:rgba(214,206,193,.34);white-space:nowrap}
-#sp1 figcaption{bottom:26.6%}
-#sp2 figcaption{bottom:24.4%}
-#sp3 figcaption{bottom:27.9%}
-#sp4 figcaption{bottom:25.7%}
-@media(max-width:620px){.drift figcaption{font-size:8px;letter-spacing:.28em;bottom:5%}}
-/* no drop-shadows: there is no floor here for a shadow to land on, and a black
-   one over a near-black ground only prints a soft box around each specimen.
-   Distance is carried by size, opacity and focus, which is enough. */
-#sp1{left:19%; top:29%; width:clamp(186px,25vw,356px); opacity:.92}
-#sp2{left:40%; top:66%; width:clamp(244px,33vw,478px); opacity:1}
-#sp3{left:71%; top:21%; width:clamp(132px,18vw,262px); opacity:.76; filter:blur(.9px)}
-#sp4{left:84%; top:57%; width:clamp(198px,27vw,384px); opacity:.94}
-/* narrow: the same logic, stacked — the heavy one still off-centre, the far
-   one still small and high, alternating sides so the eye zigzags down */
-@media(max-width:620px){
-  #sp1{left:29%; top:15%; width:52vw}
-  #sp2{left:52%; top:38%; width:70vw}
-  #sp3{left:24%; top:62%; width:38vw}
-  #sp4{left:62%; top:83%; width:56vw}
-}
 
 /* the opening */
 .opening{position:relative;height:450vh;background:var(--night)}
@@ -256,7 +206,7 @@ img{display:block;max-width:100%}
 .states::after{bottom:0;background:linear-gradient(to top,var(--night),rgba(11,8,6,0))}
 .states .layer{position:absolute;inset:0}
 .states .sky-night,.states .sky-day{top:-190px;bottom:-190px;will-change:transform}
-.states .flock,.states .stars{top:-170px;bottom:-170px;height:auto}
+.states .stars{top:-170px;bottom:-170px;height:auto}
 .states .weather{will-change:transform}
 .states .day,.states .clip-day{clip-path:inset(0 0 0 var(--x,50%))}
 .states .sky{z-index:0}
@@ -277,8 +227,7 @@ img{display:block;max-width:100%}
              radial-gradient(circle at 34% 64%, rgba(0,0,0,.11) 0 8%, transparent 9%),
              radial-gradient(circle at 56% 30%, rgba(0,0,0,.09) 0 6%, transparent 7%),
              radial-gradient(circle at 44% 46%, rgba(0,0,0,.07) 0 5%, transparent 6%)}
-.stars,.flock{position:absolute;inset:0}
-.flock{z-index:3;pointer-events:none}   /* over the weather, under the object */
+.stars{position:absolute;inset:0}
 
 /* weather: everything drifts, nothing is still */
 .cloud{position:absolute;left:0;top:0;border-radius:50%;will-change:transform,opacity;
@@ -310,14 +259,10 @@ img{display:block;max-width:100%}
 
 /* 07 first edition */
 .first{position:relative;display:grid;padding:clamp(40px,3vw,48px) 0 clamp(54px,4.7vw,68px)}   /* sized to the pause around it, not the screen */
-/* the peacock, again, only in part: a feather comes out of the dark at the edge of the page */
-.first::before{content:'';position:absolute;left:0;top:50%;transform:translate(-38%,-50%);z-index:0;pointer-events:none;
-  width:min(58vw,720px);aspect-ratio:900/840;background:url(img/feather.webp) left center/contain no-repeat;opacity:.34}
-@media(max-width:760px){.first::before{width:86vw;opacity:.22;top:42%;transform:translate(-46%,-50%)}}
-.first .inner{position:relative;z-index:2;padding:0 var(--gutter);max-width:32rem;margin-left:clamp(0px,22vw,380px)}
-@media(max-width:760px){.first .inner{margin-left:0}}
+.first .inner{position:relative;z-index:2;padding:0 var(--gutter);width:100%;max-width:30rem;margin:0 auto;text-align:center}
 .join{margin-top:clamp(28px,2.2vw,32px)}
-.join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(205,184,148,.30);padding-bottom:10px;max-width:24rem}
+.join{margin-top:0}
+.join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(205,184,148,.30);padding-bottom:10px;max-width:24rem;margin-left:auto;margin-right:auto;text-align:left}
 .join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:16px;padding:12px 0;min-height:44px}   /* 16px: iOS does not zoom the page on focus */
 .join input::placeholder{color:#75685A}
 /* an arrow, not an instruction: the gesture belongs to the world, not the form */
@@ -334,12 +279,13 @@ img{display:block;max-width:100%}
   background:none}
 /* the record: a catalogue card, not a spec sheet. values line up because an
    archive lines up; nothing is emphasised, including the word candle. */
-.record{margin:clamp(32px,2.8vw,40px) auto 0;display:grid;grid-template-columns:auto auto;
-  gap:9px clamp(18px,3vw,34px);width:max-content;text-align:left;
-  font-family:var(--sans);font-size:9px;letter-spacing:.32em;text-transform:uppercase}
-.record dt{color:rgba(214,206,193,.30);margin:0}
-.record dd{color:rgba(214,206,193,.55);margin:0}
-@media(max-width:620px){.record{font-size:8px;letter-spacing:.26em;gap:8px 22px}}
+.record{margin:clamp(40px,4vw,60px) auto 0;display:grid;grid-template-columns:1fr auto;
+  width:min(100%,300px);text-align:left;border-bottom:1px solid var(--rule);
+  font-family:var(--sans);font-size:11px;line-height:1.4;letter-spacing:.24em;text-transform:uppercase}
+.record dt,.record dd{margin:0;padding:11px 0 10px;border-top:1px solid var(--rule)}
+.record dt{color:rgba(214,206,193,.56)}
+.record dd{color:rgba(236,227,210,.88);text-align:right}
+@media(max-width:620px){.record{font-size:10px;letter-spacing:.2em}}
 .after .wm{margin:clamp(48px,9vh,110px) auto 0;width:clamp(132px,13vw,186px);aspect-ratio:440/251}
 .after .wm img{width:100%;height:100%;object-fit:contain;opacity:.86}
 footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule)}
@@ -401,17 +347,11 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 <!-- 03 -->
 <figure class="surface" aria-label="Surface">
   <img src="img/a-surface-b.webp" width="2600" height="1417" loading="lazy" decoding="async" alt="Surface, close">
-  <figcaption class="meta">The surface</figcaption>
 </figure>
 
-<div class="hold hold--s"></div>
-
-<!-- 05 -->
-<section class="dome" aria-label="From above">
-  <p class="d d-l line rise" style="margin-bottom:clamp(26px,5vh,54px)">The rest is still sealed.</p>
-  <figure class="fade">
-    <img src="img/a-dome-top-b.webp" width="1907" height="1484" loading="lazy" decoding="async" alt="The dome, from above">
-  </figure>
+<!-- 05 — said, then nothing: what is sealed is not shown -->
+<section class="sealed" aria-label="Sealed">
+  <p class="d d-l line rise">The rest is still sealed.</p>
 </section>
 
 <!-- 06 -->
@@ -426,8 +366,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <div class="sky-day"></div>
     <div class="orb sun"></div>
   </div>
-
-  <canvas class="flock" id="flock" aria-hidden="true"></canvas>
 
   <div class="layer weather" aria-hidden="true">
     <div class="cloud n" data-d=".22" style="width:58vw;height:13vh;top:57%"></div>
@@ -479,7 +417,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 <!-- 09 -->
 <section class="first" aria-label="First edition">
   <div class="inner rise">
-    <p class="d d-l" style="margin:0">001</p>
     <form class="join" id="join" novalidate>
       <label class="meta" for="email">Leave an address</label>
       <div class="row" style="margin-top:12px">
@@ -812,6 +749,38 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var cv = document.getElementById('sky'); if(!cv || reduce) return;
     var g = cv.getContext('2d'), W=0,H=0,D=1,stars=[],run=false,last=0,t=0,meteor=null,next=6000;
     function rnd(a,b){ return a+Math.random()*(b-a); }
+    /* Orion, as it stands: J2000 positions and visual magnitudes, no lines. It is
+       the house's constellation, so it is the one shape in this sky that is not
+       chance. Betelgeuse burns orange, Rigel blue-white; the belt is three nearly
+       equal stars in a row; the sword hangs faint below it. */
+    var ORI = [
+      ['Betelgeuse', 88.793,  7.407, 0.50, '255,206,160'],
+      ['Rigel',      78.634, -8.202, 0.13, '214,228,255'],
+      ['Bellatrix',  81.283,  6.350, 1.64, '226,234,255'],
+      ['Alnilam',    84.053, -1.202, 1.69, '230,236,255'],
+      ['Alnitak',    85.190, -1.943, 1.77, '230,236,255'],
+      ['Saiph',      86.939, -9.670, 2.09, '226,234,255'],
+      ['Mintaka',    83.002, -0.299, 2.23, '230,236,255'],
+      ['Meissa',     83.785,  9.934, 3.39, '236,240,255'],
+      ['Hatysa',     83.858, -5.910, 2.77, '236,240,255'],
+      ['Trapezium',  83.818, -5.390, 4.00, '246,240,255'],
+      ['42 Ori',     83.846, -4.838, 4.60, '246,244,255']
+    ], orion = [], born = 0;
+    function placeOrion(){
+      /* clear of the type and of the vessel's path: lower right on a wide screen,
+         low on the right on a phone */
+      var phone = W < 700, h = phone ? H*0.20 : H*0.36;
+      var cx = phone ? W*0.80 : W*0.835, cy = phone ? H*0.855 : H*0.745;
+      var k = h / 19.6, c0 = Math.cos(-0.5*Math.PI/180);
+      orion = ORI.map(function(o){
+        var x = cx - (o[1] - 83.71)*c0*k, y = cy - (o[2] - (-0.13))*k;
+        var mag = o[3], big = mag < 2.4, sc = phone ? 0.72 : 1;
+        return {x:x, y:y, sp: big ? spike[o[4]] || sprite(o[4], true) : soft[o[4]] || sprite(o[4], false),
+          size: (big ? 24 + (2.4 - mag)*15 : 3 + (5 - mag)*3.4) * sc,
+          a: big ? 1 : .42 + (5 - mag)*.16, f1: rnd(.4,1.4), f2: rnd(1.1,2.3), ph: rnd(0,6.28), ph2: rnd(0,6.28)};
+      });
+      return {x0: cx - h*0.32, x1: cx + h*0.32, y0: cy - h*0.56, y1: cy + h*0.56};
+    }
     function build(){
       D = Math.min(devicePixelRatio||1,2); W = cv.clientWidth; H = cv.clientHeight;
       cv.width = Math.round(W*D); cv.height = Math.round(H*D); g.setTransform(D,0,0,D,0,0);
@@ -826,6 +795,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
           size: bright ? 24 + (m-.94)*260 : 1.4 + m*10,
           a: bright ? .9 : .10 + m*.8,
           f1: rnd(.5, 2.2), f2: rnd(1.3, 3.1), ph: rnd(0,6.28), ph2: rnd(0,6.28), sc: bright ? .26 : .14};
+      });
+      /* nothing bright near Orion, so the eye finds it and only it */
+      var box = placeOrion();
+      stars.forEach(function(s){
+        if(s.x > box.x0 - 60 && s.x < box.x1 + 60 && s.y > box.y0 - 60 && s.y < box.y1 + 60){
+          s.sp = soft[TINTS[0]]; s.size = Math.min(s.size, 3); s.a = Math.min(s.a, .22); s.m = 0;
+        }
       });
     }
     /* star sprites, drawn once: a white core, a coloured bloom, and for the bright
@@ -870,6 +846,14 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         var tw = 1 - s.sc*(.5 + .5*Math.sin(t*s.f1 + s.ph)*Math.sin(t*s.f2 + s.ph2));
         g.globalAlpha = s.a*tw;
         g.drawImage(s.sp, x - s.size/2, y - s.size/2, s.size, s.size);
+      }
+      /* Orion does not drift with the field: it holds, and arrives a beat after the words */
+      if(!born) born = t;
+      var oa = Math.max(0, Math.min(1, (t - born - 1.2)/2.6)); oa = oa*oa*(3-2*oa);
+      for(var j=0;j<orion.length;j++){
+        var o = orion[j], tw2 = 1 - .16*(.5 + .5*Math.sin(t*o.f1 + o.ph)*Math.sin(t*o.f2 + o.ph2));
+        g.globalAlpha = Math.min(1, o.a)*tw2*oa;
+        g.drawImage(o.sp, o.x - o.size/2, o.y - o.size/2, o.size, o.size);
       }
       next -= dt*1000;
       if(!meteor && next<=0){ fall(); next = rnd(16000,30000); }
@@ -1045,142 +1029,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       }).observe(sec);
     }
 
-    /* ---- the sky above the object: a peacock, then weather ---- */
-    var fk = document.getElementById('flock');
+    /* ---- the sky above the object: weather, nothing else ---- */
     var clouds = [].slice.call(sec.querySelectorAll('.cloud'));
 
     if(!reduce){
-      var f = fk ? fk.getContext('2d') : null;
-      var FW=0, FH=0, FD=1, CEIL=0, FLOOR=0;          /* the sky band birds may use */
-      /* One peacock, not a flock. A rig, not a flipbook: one fixed master
-         silhouette (head, crest, neck, body, feet, train) that never changes
-         shape, jointed wings posed in 3D (shoulder, elbow, wrist, primaries),
-         and a train that trails the body's lift and carries a slow wave from
-         rump to tips. It is drawn live for the exact moment, so the motion is
-         continuous at any refresh rate and the loop has no seam. It is painted
-         opaque into its own layer, then laid into each sky with that sky's
-         tint: pale against the night, ink-dark against the day. */
-      var rig = null, dress = null, ready = false, BEAT_HZ = 0.36;   /* slow, intentional strokes (~2.8 s each) */
-      var CW = 4040, CH = 2230, AX = 840, AY = 1242;          /* reach box and body point, rig px (replaced once the rig loads) */
-      var motes = [], moteClock = 0;                          /* a little luminous dust in its wake */
-      var birds = [], drift = null, wait = 4000;
+      var FW = 0;
       function r2(a,b){ return a+Math.random()*(b-a); }
-      if(fk){
-        var rs = document.createElement('script');
-        rs.src = 'js/peacock-rig.js';
-        rs.onload = function(){
-          var ds = document.createElement('script'); ds.src = 'js/peacock-dress.js';
-          ds.onload = function(){
-          fetch('img/peacock-master.json').then(function(r){ return r.json(); }).then(function(d){
-            rig = new PeacockRig(d, { beatHz: BEAT_HZ }); dress = new PeacockDress();
-            CW = rig.box[2]-rig.box[0]; CH = rig.box[3]-rig.box[1];
-            AX = rig.anchor[0]-rig.box[0]; AY = rig.anchor[1]-rig.box[1];
-            ready = true;
-          }).catch(function(){});
-          };
-          document.head.appendChild(ds);
-        };
-        document.head.appendChild(rs);
-      }
-
-      /* the object owns the middle of the frame; the bird gets the sky above it */
       function measure(){
-        FD = Math.min(devicePixelRatio||1,2); FW = sec.clientWidth;
-        var SH = sec.clientHeight; FH = SH + 340;             /* the canvas overhangs the section */
-        if(fk){ fk.width = Math.round(FW*FD); fk.height = Math.round(FH*FD); f.setTransform(FD,0,0,FD,0,0);
-                fk.style.width = FW + 'px'; fk.style.height = FH + 'px'; }   /* pin CSS size, or retina shows it at 2x */
-        var o = sec.querySelector('.states .obj'), sr = sec.getBoundingClientRect();
-        var top = (o ? (o.getBoundingClientRect().top - sr.top) : SH*0.4) + 170;   /* into canvas space */
-        CEIL  = Math.max(SH*0.075, 70) + 170;                 /* under the masthead, over the object */
-        FLOOR = Math.max(CEIL + SH*0.10, top - Math.max(46, SH*0.07));
+        FW = sec.clientWidth;
         clouds.forEach(function(el){ el._w = el.offsetWidth; el._h = el.offsetHeight; });
-      }
-
-      /* ---------- the peacock ---------- */
-      function launch(){
-        measure();                                            /* the object may have loaded since */
-        var band = FLOOR - CEIL;
-        var w = Math.max(190, Math.min(FW*0.26, 440));       /* css px, beak to the tip of the train */
-        var s = w / CW;
-        drift = {
-          y: CEIL + band*r2(0.40,0.80),
-          vx: -(FW + w*1.3) / r2(26,32),                       /* about ten unhurried strokes across */
-          f1: r2(.045,.07), f2: r2(.09,.13),                  /* never commensurate */
-          p1: Math.random()*6.283, p2: Math.random()*6.283,
-          a1: r2(6,12), a2: r2(2,4)                             /* a slow drift of the path, never a bounce */
-        };
-        birds = [{
-          s: s, h: CH*s,
-          x: FW + AX*s + 24,
-          t: 0,                                              /* its own clock: the rig poses it for any moment */
-          pitch: 0, yPrev: null, vy: 0, y: 0, out: false
-        }];
-      }
-      function driftY(t){
-        return drift.y
-             + drift.a1*Math.sin(t*drift.f1*6.283 + drift.p1)
-             + drift.a2*Math.sin(t*drift.f2*6.283 + drift.p2);
-      }
-      function stepBirds(t, dt){
-        var b = birds[0]; if(!b) return;
-        b.t += dt;
-        /* each downstroke drives it forward; on the recovery it coasts on momentum.
-           Peak speed lands just after the power stroke, with the body's lift. */
-        var bp = (b.t*BEAT_HZ) % 1;
-        b.x += drift.vx * (1 + 0.14*Math.sin(6.283*(bp - 0.12))) * dt;
-
-        var y = driftY(t) - par*58;
-        y = Math.max(CEIL + b.h*0.62, Math.min(y, FLOOR + b.h*0.12));   /* raised wingtips stay clear of the masthead */
-        b.vy = b.yPrev === null ? 0 : (y - b.yPrev)/Math.max(dt,0.001);
-        b.yPrev = y; b.y = y;
-        /* nose follows the path, gently */
-        var want = -Math.max(-0.07, Math.min(0.07, Math.atan(b.vy/Math.abs(drift.vx))));
-        b.pitch += (want - b.pitch) * Math.min(1, dt*2);
-        b.out = (b.x + (CW - AX)*b.s) < -24;
-      }
-      /* The bird is dressed once per frame (see js/peacock-dress.js): smoked black
-         to espresso, a soft key light, a slow lacquer sheen, a champagne rim where
-         edges face the light. Each sky then lays it in its own way: against the
-         night it carries a faint warm halo and a clearer rim, as if emerging from
-         light; against the day it is a dark sculpted form with a quieter rim. */
-      function buildBird(){
-        var b = birds[0]; if(!b || !ready) return false;
-        if(b.x - AX*b.s > FW + 40 || b.out) return false;
-        dress.build(rig, b.t, b.s*FD);
-        return true;
-      }
-      function paintBird(night){
-        var b = birds[0];
-        f.save();
-        f.translate(b.x, b.y);
-        f.rotate(b.pitch);
-        dress.paint(f, -AX*b.s, -AY*b.s, CW*b.s, CH*b.s, night ? { halo: 0.20, rim: 0.6 } : { rim: 0.3 });
-        f.restore();
-      }
-      /* dust: a few motes loosen from the wing and train and drift up and back,
-         barely there — at most a dozen and a half, each under 1.5px, fading in and out */
-      function stepMotes(dt){
-        var b = birds[0];
-        if(b && !b.out && ready){
-          moteClock -= dt;
-          if(moteClock <= 0 && motes.length < 18){
-            moteClock = r2(0.35, 0.8);
-            var u = Math.random(), w = CW*b.s, h = CH*b.s;
-            motes.push({ x: b.x - AX*b.s + w*(0.2 + 0.75*u), y: b.y - AY*b.s + h*(0.35 + 0.35*Math.random()),
-                         vx: r2(4, 14), vy: -r2(2, 7), r: r2(0.5, 1.4), age: 0, life: r2(4, 8) });
-          }
-        }
-        for(var i = motes.length - 1; i >= 0; i--){
-          var m = motes[i]; m.age += dt; m.x += m.vx*dt; m.y += m.vy*dt;
-          if(m.age > m.life) motes.splice(i, 1);
-        }
-      }
-      function paintMotes(peak){
-        for(var i = 0; i < motes.length; i++){
-          var m = motes[i], k = m.age/m.life, a = peak * Math.sin(Math.PI*k);
-          f.fillStyle = 'rgba(226,210,176,' + a.toFixed(3) + ')';
-          f.beginPath(); f.arc(m.x, m.y, m.r, 0, 6.283); f.fill();
-        }
       }
 
       /* ---------- the weather ---------- */
@@ -1225,7 +1082,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         if(wN) wN.style.transform = 'translate3d(0,'+wea+'px,0)';
         if(wD) wD.style.transform = 'translate3d(0,'+wea+'px,0)';
         for(var i=0;i<orbs.length;i++) orbs[i].style.transform = 'translate3d(0,'+orb+'px,0)';
-        /* the birds parallax inside the canvas, so the keep-out still holds */
       }
       var pq = false;
       function onPar(){ if(!pq){ pq = true; requestAnimationFrame(function(){ pq = false; depth(); }); } }
@@ -1238,24 +1094,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         if(!on) return;
         var t = now/1000, dt = last ? Math.min((now-last)/1000, 0.064) : 0.016; last = now;
         stepClouds(t);
-        if(f && ready){
-          f.clearRect(0,0,FW,FH);
-          if(drift){
-            stepBirds(t, dt);
-            stepMotes(dt);
-            var gone = true;
-            if(birds[0] && !birds[0].out) gone = false;
-            var cutX = FW * (window.__cut || 50)/100, has = buildBird();
-            f.save(); f.beginPath(); f.rect(0,0,cutX,FH); f.clip();
-            paintMotes(0.42); if(has) paintBird(true); f.restore();
-            f.save(); f.beginPath(); f.rect(cutX,0,FW-cutX,FH); f.clip();
-            paintMotes(0.22); if(has) paintBird(false); f.restore();
-            if(gone && !motes.length){ drift = null; birds = []; wait = r2(14,30)*1000; }
-          } else {
-            wait -= dt*1000;
-            if(wait <= 0) launch();
-          }
-        }
         requestAnimationFrame(frame);
       }
       measure(); addEventListener('resize', measure, {passive:true});
@@ -1266,63 +1104,19 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     }
   })();
 
-  /* ---- adrift: the core, weightless ---- */
+  /* ---- the surface: the eye closes in as it reads ----
+     The plate grows by a few per cent across the whole time it is on screen,
+     slowly enough that it reads as attention, not as an effect. */
   (function(){
-    var sec = document.getElementById('drift'); if(!sec || reduce) return;
-    var els = [].slice.call(sec.querySelectorAll('.sp'));
-    /* No turning. Each one wanders on three slow sines per axis whose periods
-       share no common multiple, so the path never closes and never repeats —
-       it is not a loop hidden behind a long duration, there is no loop. The
-       periods run 70 to 250 seconds: below the speed at which the eye starts
-       tracking a thing, which is what makes it read as drifting rather than
-       animating. Phases are seeded at random, so no two visits are alike.
-       Scale breathes a couple of per cent — with nothing rotating, that slight
-       swell is what says the object is moving through space and not across a
-       surface. */
-    /* a narrow window has no room to wander in: the same swing that reads as
-       drift at 1920 walks the nearest specimen off the right edge at 390 */
-    var AMP = innerWidth < 620 ? 0.55 : 1;
-    var P = els.map(function(el, i){
-      var d = [0.55, 1.0, 0.36, 0.72][i];        /* depth: how near it drifts */
-      return {
-        el: el, d: d,
-        ax: (30 + 40*d)*AMP, ay: (24 + 32*d)*AMP, /* the near ones wander furthest */
-        f1: [0.0121,0.0093,0.0147,0.0106][i],    /* periods that never come back into step */
-        f2: [0.0072,0.0134,0.0088,0.0117][i],
-        f3: [0.0045,0.0051,0.0039,0.0058][i],
-        p1: Math.random()*6.283, p2: Math.random()*6.283, p3: Math.random()*6.283,
-        sf: [0.0038,0.0029,0.0047,0.0034][i], sp: Math.random()*6.283
-      };
-    });
-
-    var par = 0, on = false;
-    function depth(){
-      var r = sec.getBoundingClientRect();
-      par = Math.max(-1.3, Math.min(1.3, (r.top + r.height/2 - innerHeight/2)/innerHeight));
+    var fig = document.querySelector('.surface'); if(!fig || reduce) return;
+    var q = false;
+    function upd(){
+      q = false;
+      var r = fig.getBoundingClientRect(), k = clamp((innerHeight - r.top)/(innerHeight + r.height), 0, 1);
+      fig.style.setProperty('--ss', (1.03 + k*0.13).toFixed(4));
     }
-    function frame(now){
-      if(!on) return;
-      var t = now/1000;
-      depth();
-      for(var i=0;i<P.length;i++){
-        var o = P[i];
-        var x = o.ax*Math.sin(t*o.f1*6.283 + o.p1)
-              + o.ax*0.44*Math.sin(t*o.f2*6.283 + o.p2)
-              + o.ax*0.18*Math.sin(t*o.f3*6.283 + o.p3);
-        var y = o.ay*Math.cos(t*o.f2*6.283 + o.p2)
-              + o.ay*0.52*Math.sin(t*o.f3*6.283 + o.p3)
-              + o.ay*0.20*Math.cos(t*o.f1*6.283 + o.p1)
-              - par*(150*o.d);                    /* the near ones travel most */
-        var sc = 1 + 0.025*Math.sin(t*o.sf*6.283 + o.sp);
-        o.el.style.transform = 'translate(-50%,-50%) translate3d('
-                             + x.toFixed(2)+'px,'+y.toFixed(2)+'px,0) scale('+ sc.toFixed(4) +')';
-      }
-      requestAnimationFrame(frame);
-    }
-    new IntersectionObserver(function(es){
-      if(es[0].isIntersecting && !on){ on = true; requestAnimationFrame(frame); }
-      if(!es[0].isIntersecting) on = false;
-    }, {rootMargin:'40% 0px'}).observe(sec);
+    addEventListener('scroll', function(){ if(!q){ q = true; requestAnimationFrame(upd); } }, {passive:true});
+    upd();
   })();
 
   /* ---- masthead over light fields ---- */
