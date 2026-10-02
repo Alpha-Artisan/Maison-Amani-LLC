@@ -153,6 +153,7 @@ img{display:block;max-width:100%}
 .vessel{padding:clamp(110px,22vh,280px) var(--gutter) clamp(90px,16vh,200px)}
 .vessel .l1{display:block}
 .vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#6E6A62}
+@media(max-width:620px){.vessel .d{font-size:clamp(30px,8.6vw,40px)}.vessel .l2{margin-left:9vw;white-space:nowrap}}   /* phones: two lines, as written */
 
 /* adrift — the core, weightless, unnamed.
 
@@ -234,6 +235,8 @@ img{display:block;max-width:100%}
 .opening .gc2 .s{margin:clamp(14px,1.6vw,26px) 0 0;font-family:var(--sans);font-weight:300;font-size:clamp(15px,1.15vw,19px);
   letter-spacing:.03em;color:#6A5847}
 @media(prefers-reduced-motion:reduce){.opening .gc{display:none}}
+/* phones: the invitation's line breaks evenly, never leaving one word alone */
+@media(max-width:620px){.opening .gc2 .s{max-width:17em;margin-left:auto;text-wrap:balance;line-height:1.5}}
 /* the light, once reached, goes down to the house's dark before the next room */
 .opening .dusk{position:absolute;inset:0;z-index:3;pointer-events:none;
   background:radial-gradient(circle at 50% 50%, rgba(11,8,6,0) var(--r,150%), var(--night) calc(var(--r,150%) + 36%))}
@@ -314,7 +317,7 @@ img{display:block;max-width:100%}
 @media(max-width:760px){.first .inner{margin-left:0}}
 .join{margin-top:clamp(28px,2.2vw,32px)}
 .join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(205,184,148,.30);padding-bottom:10px;max-width:24rem}
-.join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:15px;padding:6px 0}
+.join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:16px;padding:12px 0;min-height:44px}   /* 16px: iOS does not zoom the page on focus */
 .join input::placeholder{color:#75685A}
 /* an arrow, not an instruction: the gesture belongs to the world, not the form */
 .join button{background:none;border:0;padding:2px 0 2px 6px;cursor:pointer;color:var(--silver);
