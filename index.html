@@ -799,11 +799,46 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     function build(){
       D = Math.min(devicePixelRatio||1,2); W = cv.clientWidth; H = cv.clientHeight;
       cv.width = Math.round(W*D); cv.height = Math.round(H*D); g.setTransform(D,0,0,D,0,0);
-      stars = Array.from({length: W<700?60:112}, function(){
-        var dep = Math.random();
-        return {x:Math.random()*W, y:Math.random()*H, r:.3+dep*1.1, a:.08+dep*.4, tw:rnd(.1,.32), ph:rnd(0,6.28), dep:.15+dep*.85};
+      /* a real sky: brightness follows a steep power law, so almost every star is
+         barely there and only a handful carry a bloom and diffraction spikes */
+      var n = W < 700 ? 150 : 300;
+      stars = Array.from({length: n}, function(){
+        var m = Math.pow(Math.random(), 3.4), dep = .15 + Math.random()*.85;
+        var bright = m > .94, tint = TINTS[(Math.random()*TINTS.length)|0];
+        return {x:Math.random()*W, y:Math.random()*H, m:m, dep:dep,
+          sp: bright ? spike[tint] : soft[tint],
+          size: bright ? 24 + (m-.94)*260 : 1.4 + m*10,
+          a: bright ? .9 : .10 + m*.8,
+          f1: rnd(.5, 2.2), f2: rnd(1.3, 3.1), ph: rnd(0,6.28), ph2: rnd(0,6.28), sc: bright ? .26 : .14};
       });
     }
+    /* star sprites, drawn once: a white core, a coloured bloom, and for the bright
+       few, thin four-point diffraction spikes */
+    var TINTS = ['255,246,236','236,242,255','255,236,216','246,248,255','255,250,242'];
+    function sprite(rgb, spikes){
+      var S = spikes ? 160 : 48, c = document.createElement('canvas'); c.width = c.height = S;
+      var x = c.getContext('2d'), h = S/2, gr = x.createRadialGradient(h,h,0,h,h,h);
+      gr.addColorStop(0,   'rgba(255,255,255,1)');
+      gr.addColorStop(spikes ? .03 : .10, 'rgba('+rgb+',.95)');
+      gr.addColorStop(spikes ? .07 : .26,  'rgba('+rgb+',.30)');
+      gr.addColorStop(spikes ? .16 : .45,  'rgba('+rgb+',.07)');
+      gr.addColorStop(spikes ? .38 : .70,  'rgba('+rgb+',.015)');
+      gr.addColorStop(1,   'rgba('+rgb+',0)');
+      x.fillStyle = gr; x.fillRect(0,0,S,S);
+      if(spikes){
+        x.globalCompositeOperation = 'lighter';
+        [[0,h,S,h],[h,0,h,S]].forEach(function(l, k){
+          var lg = x.createLinearGradient(l[0],l[1],l[2],l[3]);
+          lg.addColorStop(0,'rgba('+rgb+',0)'); lg.addColorStop(.38,'rgba('+rgb+',.10)');
+          lg.addColorStop(.5,'rgba(255,255,255,.75)'); lg.addColorStop(.62,'rgba('+rgb+',.10)'); lg.addColorStop(1,'rgba('+rgb+',0)');
+          x.fillStyle = lg;
+          if(k === 0) x.fillRect(0, h-1, S, 2); else x.fillRect(h-1, 0, 2, S);
+        });
+      }
+      return c;
+    }
+    var soft = {}, spike = {};
+    TINTS.forEach(function(t){ soft[t] = sprite(t, false); spike[t] = sprite(t, true); });
     function fall(){
       var L = Math.random()<.55, y0 = rnd(H*.06,H*.4);
       meteor = {x:L?-W*.12:W*1.12, y:y0, vx:(L?1:-1)*rnd(W*.16,W*.26), vy:rnd(H*.05,H*.1), life:0, span:rnd(1.5,2.1)};
@@ -814,9 +849,11 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       g.clearRect(0,0,W,H);
       for(var i=0;i<stars.length;i++){
         var s = stars[i], x = s.x + Math.sin(t*.08+s.ph)*2.2*s.dep, y = s.y - t*.7*s.dep;
-        if(y < -6){ s.y += H+12; y += H+12; }
-        g.globalAlpha = s.a*(.66+.34*Math.sin(t*s.tw*2+s.ph));
-        g.fillStyle = '#EFE9DE'; g.beginPath(); g.arc(x,y,s.r,0,6.283); g.fill();
+        if(y < -40){ s.y += H+80; y += H+80; }
+        /* scintillation: two slow beats against each other, never a blink */
+        var tw = 1 - s.sc*(.5 + .5*Math.sin(t*s.f1 + s.ph)*Math.sin(t*s.f2 + s.ph2));
+        g.globalAlpha = s.a*tw;
+        g.drawImage(s.sp, x - s.size/2, y - s.size/2, s.size, s.size);
       }
       next -= dt*1000;
       if(!meteor && next<=0){ fall(); next = rnd(16000,30000); }
