@@ -7,16 +7,17 @@
 <meta name="description" content="Extra-Terra 001. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wght@300;400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Archivo:wght@300;400&display=swap">
 <style>
 :root{
-  --night:#08080A; --deep:#050506;
-  --paper:#E8E5DF;
-  --mineral:#E9E4DA; --silver:#B4AFA6; --muted:#6B675F;
-  --display:'Prata',Georgia,serif;
+  --night:#0B0806; --deep:#080605;            /* espresso, near black */
+  --paper:#ECE4D6;
+  --mineral:#ECE3D2; --silver:#B5A893; --muted:#867A68;   /* warm ivory, bone, taupe */
+  --champagne:#CDB894; --bronze:#8E6C47;
+  --display:'Cormorant Garamond','Cormorant',Georgia,serif;
   --sans:'Archivo',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
   --gutter:clamp(22px,5vw,110px);
-  --rule:rgba(233,228,218,.12);
+  --rule:rgba(205,184,148,.14);
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -24,12 +25,12 @@ body{margin:0;background:var(--night);color:var(--silver);
   font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.7;
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}
-::selection{background:#26231E;color:var(--mineral)}
+::selection{background:#3A2C1F;color:var(--mineral)}
 
-.meta{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400}
-.d{font-family:var(--display);font-weight:400;letter-spacing:-.015em;line-height:1.03;margin:0;color:var(--mineral)}
-.d-xl{font-size:clamp(42px,8vw,132px)}
-.d-l{font-size:clamp(30px,5vw,76px)}
+.meta{font-family:var(--display);font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:500}
+.d{font-family:var(--display);font-weight:300;letter-spacing:.012em;line-height:1.1;margin:0;color:var(--mineral)}
+.d-xl{font-size:clamp(36px,5.4vw,88px)}   /* poetry, not a billboard */
+.d-l{font-size:clamp(28px,3.7vw,58px)}
 
 /* masthead */
 .mast{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;justify-content:space-between;align-items:center;
@@ -39,8 +40,8 @@ img{display:block;max-width:100%}
 .mast .lock .ink{opacity:0}
 .mast.on-light .lock .bone{opacity:0}
 .mast.on-light .lock .ink{opacity:1}
-.mast .ref{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:#8A847B;transition:color .8s ease}
-.mast.on-light .ref{color:#6C665C}
+.mast .ref{font-family:var(--display);font-size:12px;font-weight:500;letter-spacing:.38em;text-transform:uppercase;color:#BBA98A;transition:color .8s ease}
+.mast.on-light .ref{color:#6E5E48}
 @media(max-width:620px){.mast .ref{display:none}}
 
 /* 01 arrival */
@@ -74,38 +75,66 @@ img{display:block;max-width:100%}
   filter:blur(26px)}
 .pin figure{margin:0;z-index:1;width:min(86vw,74svh,860px);aspect-ratio:1/1;position:relative}
 .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.arrival .id{position:absolute;z-index:3;left:var(--gutter);bottom:clamp(26px,6vh,56px);opacity:0;transition:opacity 1.4s ease}
+.arrival .id{position:absolute;z-index:7;left:var(--gutter);bottom:clamp(26px,6vh,56px);opacity:0;transition:opacity 1.4s ease}
+/* The curtain. Before the object there is atmosphere: a feather emerging from the
+   dark side, a shaft of light, haze on a reflective ground. It is the first frame,
+   and it is lifted by the scroll, never by a timer — scroll back and it returns. */
+.veil{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:var(--vo,1);
+  transform:translate3d(var(--vx,0px),0,0) scale(var(--vs,1));transform-origin:22% 42%;will-change:opacity,transform}
+.veil img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:26% 42%}
+/* the lower atmosphere: haze lying over the ground, which thins last */
+.mist{position:absolute;left:0;right:0;bottom:0;height:52%;z-index:5;pointer-events:none;opacity:var(--mo,.7);
+  background:linear-gradient(to top, rgba(126,98,68,.42) 0%, rgba(98,74,50,.20) 34%, rgba(60,44,30,.06) 68%, transparent 100%)}
+/* the ground: a dark reflective surface the vessel stands on, warmed where it sits */
+.floor{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;opacity:var(--fo,0);
+  background:radial-gradient(46% 34% at 50% 34%, rgba(176,136,92,.20) 0%, rgba(120,90,60,.10) 42%, transparent 72%),
+             linear-gradient(to bottom, transparent 0%, rgba(14,10,7,.55) 70%, rgba(8,6,4,.9) 100%)}
+/* the line: editorial, not a headline */
+.lede{position:absolute;z-index:6;left:clamp(22px,27.4vw,460px);top:29%;margin:0;
+  opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
+.lede p{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(20px,1.95vw,32px);line-height:1.55;
+  letter-spacing:.15em;color:#EFE6D5}
+.lede .l2{font-style:italic;font-weight:300;letter-spacing:.13em;color:#D8CAB2}
+@media(max-width:760px){.lede{left:var(--gutter);right:var(--gutter);top:19%}.lede p{font-size:19px;letter-spacing:.12em}}
+@media(prefers-reduced-motion:reduce){.veil,.mist{display:none}.floor{opacity:1}}
 .arrival .id.on{opacity:1}
 
 /* a held breath between chapters */
 .hold{height:52vh}
+.arrival + .hold{background:linear-gradient(to bottom,#000 0%,var(--night) 100%)}
 .hold--s{height:22vh}
 
 /* 02 the object — a single plate, centred, nothing else */
-.object{padding:clamp(80px,14vh,190px) var(--gutter) clamp(60px,10vh,140px);display:grid;justify-items:center;gap:clamp(30px,6vh,72px)}
+.object{padding:clamp(80px,14vh,190px) var(--gutter) clamp(60px,10vh,140px);display:grid;justify-items:center;gap:clamp(30px,6vh,72px);
+  background:radial-gradient(52% 44% at 50% 36%, rgba(142,108,71,.16) 0%, rgba(90,66,44,.07) 46%, transparent 76%)}   /* a pool of warm light where it stands */
 .object figure{margin:0;width:min(74vw,62svh,620px)}
 .object img{width:100%;height:auto}
-.object .line{text-align:center}
+.object .line{text-align:center;font-style:italic}
 
 /* the one sentence that is not a riddle */
-.label{margin:0;text-align:center;color:#7B766D;font-size:clamp(13px,1.2vw,15px);
-  letter-spacing:.04em;font-weight:300}
+.label{margin:0;text-align:center;color:#A39579;font-family:var(--display);font-size:clamp(15px,1.3vw,18px);
+  letter-spacing:.08em;font-weight:400}
 .object .label{margin-top:calc(clamp(12px,1.1vw,16px) - clamp(30px,6vh,72px))}   /* headline → caption: 16px (12px on phones) */
 
 /* 03 the surface — full bleed band */
 .surface{margin:0;position:relative}
-.surface img{width:100%;height:min(74svh,760px);object-fit:cover;object-position:center 42%}
-.surface .meta{position:absolute;left:var(--gutter);bottom:clamp(20px,4vh,40px)}
+/* a low raking light on the material: the plate keeps its colour, the room around it goes dark */
+.surface::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(70% 82% at 42% 46%, transparent 0%, rgba(11,8,6,.28) 58%, rgba(11,8,6,.78) 100%)}
+.surface img{width:100%;height:min(74svh,760px);object-fit:cover;object-position:center 42%;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 82%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 82%,transparent 100%)}
+.surface .meta{position:absolute;left:var(--gutter);bottom:clamp(20px,4vh,40px);z-index:2}
 
 /* 04 the dome */
-.dome{padding:clamp(90px,16vh,220px) var(--gutter);display:grid;justify-items:center;gap:clamp(26px,5vh,56px);background:var(--night)}
+.dome{padding:clamp(90px,16vh,220px) var(--gutter);display:grid;justify-items:center;gap:clamp(26px,5vh,56px);
+  background:radial-gradient(48% 40% at 50% 62%, rgba(142,108,71,.14) 0%, transparent 72%)}
 .dome figure{margin:0;width:min(82vw,60svh,720px)}
 .dome img{width:100%;height:auto}
 
 /* 05 the vessel */
 .vessel{padding:clamp(110px,22vh,280px) var(--gutter) clamp(90px,16vh,200px)}
 .vessel .l1{display:block}
-.vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#6E6A62}
+.vessel .l2{display:block;margin-left:clamp(0px,20vw,340px);color:#8F8066;font-style:italic}
 
 /* adrift — the core, weightless, unnamed.
 
@@ -126,7 +155,8 @@ img{display:block;max-width:100%}
      arranged. Four points evenly scattered read as spilled.
    · Size, opacity, shadow weight and focus all come off one depth value, so
      front-to-back is never ambiguous. */
-.drift{position:relative;height:100svh;min-height:600px;overflow:hidden;background:var(--night)}
+.drift{position:relative;height:100svh;min-height:600px;overflow:hidden;
+  background:radial-gradient(70% 60% at 42% 58%, rgba(120,90,60,.12) 0%, transparent 70%)}
 .drift .sp{position:absolute;margin:0;will-change:transform;pointer-events:none;
   transform:translate(-50%,-50%)}
 .drift .sp img{display:block;width:100%;height:auto}
@@ -136,8 +166,8 @@ img{display:block;max-width:100%}
    plate's own alpha: the gap is the same fraction of every plate, which reads
    as a constant distance because the bigger object gets the bigger gap. */
 .drift figcaption{position:absolute;left:0;right:0;text-align:center;
-  font-family:var(--sans);font-size:9px;letter-spacing:.34em;text-transform:uppercase;
-  color:rgba(214,206,193,.34);white-space:nowrap}
+  font-family:var(--display);font-size:11px;font-weight:500;letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(205,184,148,.48);white-space:nowrap}
 #sp1 figcaption{bottom:26.6%}
 #sp2 figcaption{bottom:24.4%}
 #sp3 figcaption{bottom:27.9%}
@@ -167,7 +197,11 @@ img{display:block;max-width:100%}
 @media(prefers-reduced-motion:reduce){.opening{height:auto}.opening .pin{position:relative;height:auto;padding:14vh 0}}
 
 /* 06 two states — one object, one line, two skies */
-.states{position:relative;height:100svh;min-height:620px;overflow:hidden;user-select:none;touch-action:pan-y;background:#05070C}
+.states{position:relative;height:100svh;min-height:620px;overflow:hidden;user-select:none;touch-action:pan-y;background:#070504}
+/* the skies are a room, not a card: their top and bottom dissolve into the house's dark */
+.states::before,.states::after{content:'';position:absolute;left:0;right:0;height:14vh;z-index:4;pointer-events:none}
+.states::before{top:0;background:linear-gradient(to bottom,var(--night),rgba(11,8,6,0))}
+.states::after{bottom:0;background:linear-gradient(to top,var(--night),rgba(11,8,6,0))}
 .states .layer{position:absolute;inset:0}
 .states .sky-night,.states .sky-day{top:-190px;bottom:-190px;will-change:transform}
 .states .flock,.states .stars{top:-170px;bottom:-170px;height:auto}
@@ -176,16 +210,16 @@ img{display:block;max-width:100%}
 .states .sky{z-index:0}
 .states .weather{z-index:2}
 .sky-night{position:absolute;left:0;right:0;background:
-  radial-gradient(120% 96% at 81% 14%, #24304A 0%, #151F35 30%, #0A1020 62%, #05070E 100%)}
+  radial-gradient(120% 96% at 81% 14%, #2E2319 0%, #1B140E 30%, #0F0B08 62%, #070504 100%)}
 .sky-day{position:absolute;left:0;right:0;background:
-  radial-gradient(120% 96% at 81% 14%, #E6F0F9 0%, #CEE1F2 32%, #B2CFE9 66%, #9FC2E0 100%)}
+  radial-gradient(120% 96% at 81% 14%, #F5EFE4 0%, #EAE0CF 32%, #DCCCB2 66%, #CBB696 100%)}
 
 /* the seat: sun and moon occupy the same sky */
 .orb{position:absolute;right:19%;top:14%;width:clamp(58px,6.6vw,96px);aspect-ratio:1;border-radius:50%}
-.sun{background:radial-gradient(circle at 50% 50%, #FFFFFF 0%, #FFFCF2 24%, #FFF2D4 42%, rgba(255,235,186,.42) 62%, rgba(255,232,176,0) 78%);
-  box-shadow:0 0 70px 22px rgba(255,248,226,.85), 0 0 200px 90px rgba(255,238,196,.40), 0 0 520px 260px rgba(255,240,204,.16)}
+.sun{background:radial-gradient(circle at 50% 50%, #FFFBF2 0%, #FBF2E2 24%, #F2E2C4 42%, rgba(232,210,170,.40) 62%, rgba(226,204,160,0) 78%);
+  box-shadow:0 0 70px 22px rgba(250,240,220,.75), 0 0 200px 90px rgba(236,218,184,.34), 0 0 520px 260px rgba(232,214,180,.14)}
 .moon{background:radial-gradient(circle at 38% 34%, #F7F3E9 0%, #E7E1D3 44%, #CBC5B6 74%, #ADA79A 100%);
-  box-shadow:0 0 60px 14px rgba(232,228,214,.20), 0 0 200px 80px rgba(150,176,214,.14), inset -6px -8px 18px rgba(0,0,0,.28)}
+  box-shadow:0 0 60px 14px rgba(232,220,196,.18), 0 0 200px 80px rgba(176,140,96,.12), inset -6px -8px 18px rgba(0,0,0,.28)}
 .moon::after{content:'';position:absolute;inset:0;border-radius:50%;opacity:.42;
   background:radial-gradient(circle at 62% 58%, rgba(0,0,0,.16) 0 11%, transparent 12%),
              radial-gradient(circle at 34% 64%, rgba(0,0,0,.11) 0 8%, transparent 9%),
@@ -200,8 +234,8 @@ img{display:block;max-width:100%}
 .cloud::before,.cloud::after{content:'';position:absolute;border-radius:50%;background:inherit}
 .cloud::before{width:64%;height:164%;left:6%;top:-56%}
 .cloud::after{width:46%;height:132%;right:5%;top:-30%}
-.cloud.n{background:rgba(126,146,184,.13);filter:blur(30px)}
-.cloud.d{background:rgba(255,255,255,.86);filter:blur(22px)}
+.cloud.n{background:rgba(150,118,84,.10);filter:blur(30px)}
+.cloud.d{background:rgba(255,250,240,.72);filter:blur(22px)}
 @keyframes drift{from{transform:translate3d(-46vw,0,0)}to{transform:translate3d(146vw,0,0)}}
 .states .obj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:min(52vw,58svh,580px);z-index:3;pointer-events:none}
@@ -211,13 +245,13 @@ img{display:block;max-width:100%}
 .states .cut{position:absolute;top:0;bottom:0;left:var(--x,50%);width:1px;background:#fff;z-index:5;
   mix-blend-mode:difference}
 .states .grip{position:absolute;top:50%;left:var(--x,50%);transform:translate(-50%,-50%);z-index:6;
-  width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.62);
-  background:rgba(255,255,255,.12);cursor:ew-resize;display:grid;place-items:center;
+  width:46px;height:46px;border-radius:50%;border:1px solid rgba(236,227,210,.62);
+  background:rgba(236,227,210,.10);cursor:ew-resize;display:grid;place-items:center;
   box-shadow:0 0 0 1px rgba(0,0,0,.18), 0 6px 26px rgba(0,0,0,.22)}
 .states .grip::before{content:'';width:14px;height:1px;background:rgba(255,255,255,.85);box-shadow:0 -5px 0 rgba(255,255,255,.85),0 5px 0 rgba(255,255,255,.85)}
-.states .tag{position:absolute;bottom:clamp(22px,5vh,48px);z-index:6;font-size:10px;letter-spacing:.36em;text-transform:uppercase}
-.states .tag-n{left:var(--gutter);color:#9FA8BC}
-.states .tag-d{right:var(--gutter);color:#4A5666}
+.states .tag{position:absolute;bottom:clamp(22px,5vh,48px);z-index:6;font-family:var(--display);font-size:12px;font-weight:500;letter-spacing:.36em;text-transform:uppercase}
+.states .tag-n{left:var(--gutter);color:#B9A88C}
+.states .tag-d{right:var(--gutter);color:#6E5E48}
 @media(prefers-reduced-motion:reduce){.cloud,.bird,.bird .w{animation:none!important}}
 
 .sub{color:var(--dim);margin-top:14px;letter-spacing:.24em}
@@ -225,12 +259,17 @@ img{display:block;max-width:100%}
 .say{max-width:46ch;margin:0;color:var(--dim);font-size:clamp(13px,1.15vw,15px);line-height:1.85;letter-spacing:.012em}
 
 /* 07 first edition */
-.first{position:relative;display:grid;background:var(--deep);padding:clamp(40px,3vw,48px) 0 clamp(54px,4.7vw,68px)}   /* sized to the pause around it, not the screen */
-.first .inner{position:relative;z-index:2;padding:0 var(--gutter);max-width:32rem}
+.first{position:relative;display:grid;padding:clamp(40px,3vw,48px) 0 clamp(54px,4.7vw,68px)}   /* sized to the pause around it, not the screen */
+/* the peacock, again, only in part: a feather comes out of the dark at the edge of the page */
+.first::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:0;pointer-events:none;
+  width:min(58vw,720px);aspect-ratio:900/840;background:url(img/feather.webp) left center/contain no-repeat;opacity:.62}
+@media(max-width:760px){.first::before{width:86vw;opacity:.34;top:42%}}
+.first .inner{position:relative;z-index:2;padding:0 var(--gutter);max-width:32rem;margin-left:clamp(0px,30vw,520px)}
+@media(max-width:760px){.first .inner{margin-left:0}}
 .join{margin-top:clamp(28px,2.2vw,32px)}
-.join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(233,228,218,.2);padding-bottom:10px;max-width:24rem}
+.join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(205,184,148,.30);padding-bottom:10px;max-width:24rem}
 .join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:15px;padding:6px 0}
-.join input::placeholder{color:#57534C}
+.join input::placeholder{color:#75685A}
 /* an arrow, not an instruction: the gesture belongs to the world, not the form */
 .join button{background:none;border:0;padding:2px 0 2px 6px;cursor:pointer;color:var(--silver);
   font-family:var(--sans);font-size:19px;line-height:1;letter-spacing:0;
@@ -241,15 +280,16 @@ img{display:block;max-width:100%}
 .join .note{margin-top:14px;min-height:1.2em}
 
 /* 08 afterimage */
-.after{display:grid;place-items:center;text-align:center;background:var(--night);padding:clamp(56px,6vw,90px) var(--gutter) clamp(120px,12vw,173px)}
+.after{display:grid;place-items:center;text-align:center;padding:clamp(56px,6vw,90px) var(--gutter) clamp(120px,12vw,173px);
+  background:radial-gradient(50% 46% at 50% 40%, rgba(142,108,71,.12) 0%, transparent 72%)}
 /* the record: a catalogue card, not a spec sheet. values line up because an
    archive lines up; nothing is emphasised, including the word candle. */
 .record{margin:clamp(32px,2.8vw,40px) auto 0;display:grid;grid-template-columns:auto auto;
   gap:9px clamp(18px,3vw,34px);width:max-content;text-align:left;
-  font-family:var(--sans);font-size:9px;letter-spacing:.32em;text-transform:uppercase}
-.record dt{color:rgba(214,206,193,.30);margin:0}
-.record dd{color:rgba(214,206,193,.55);margin:0}
-@media(max-width:620px){.record{font-size:8px;letter-spacing:.26em;gap:8px 22px}}
+  font-family:var(--display);font-size:12px;font-weight:500;letter-spacing:.3em;text-transform:uppercase}
+.record dt{color:rgba(205,184,148,.42);margin:0}
+.record dd{color:rgba(236,227,210,.70);margin:0}
+@media(max-width:620px){.record{font-size:11px;letter-spacing:.24em;gap:8px 22px}}
 .after .wm{margin:clamp(48px,9vh,110px) auto 0;width:clamp(132px,13vw,186px);aspect-ratio:440/251}
 .after .wm img{width:100%;height:100%;object-fit:contain;opacity:.86}
 footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule)}
@@ -283,6 +323,18 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   <div class="pin">
     <canvas id="hero" aria-label="Extra-Terra 001" role="img"></canvas>
     <canvas id="sky" aria-hidden="true"></canvas>
+    <div class="floor" id="floor" aria-hidden="true"></div>
+    <div class="veil" id="veil" aria-hidden="true">
+      <picture>
+        <source media="(max-width:760px)" srcset="img/veil-m.webp">
+        <img src="img/veil.webp" width="1536" height="1024" alt="" decoding="async" fetchpriority="high">
+      </picture>
+    </div>
+    <div class="mist" id="mist" aria-hidden="true"></div>
+    <div class="lede" id="lede">
+      <p class="l1">Before the light,</p>
+      <p class="l2">there is the object.</p>
+    </div>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
       <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
@@ -545,6 +597,8 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   var putHero = seq();
   var putOpen = shot2 ? seqO(shot2) : null;
 
+  var veil = document.getElementById('veil'), lede = document.getElementById('lede'),
+      mist = document.getElementById('mist'), floor = document.getElementById('floor');
   var idc = document.getElementById('id'),
       halo2 = document.getElementById('halo2'),
       nova = document.getElementById('nova'), queued = false;
@@ -558,6 +612,19 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var p = clamp(-r.top/(span||1), 0, 1);
     /* it arrives at the last frame and stays there — the scroll runs both ways */
     putHero(Math.round(p*(N-1)));
+
+    /* curtain → atmosphere → revelation → object. Every value below is a pure
+       function of the scroll, so scrolling back plays it in reverse exactly. */
+    var sm = function(a,b){ var t = clamp((p-a)/(b-a),0,1); return t*t*(3-2*t); };
+    var lift = sm(0.03, 0.30);                      /* the curtain lifts */
+    veil.style.setProperty('--vo', (1-lift).toFixed(3));
+    veil.style.setProperty('--vx', (-lift*2.2).toFixed(2) + 'vw');   /* the feathers drift aside, a little */
+    veil.style.setProperty('--vs', (1 + lift*0.035).toFixed(4));
+    var said = sm(0.01, 0.14);                      /* the line goes first */
+    lede.style.setProperty('--lo', (1-said).toFixed(3));
+    lede.style.setProperty('--ly', (-said*14).toFixed(1) + 'px');
+    mist.style.setProperty('--mo', (0.7*(1 - sm(0.16, 0.56))).toFixed(3));   /* the haze over the ground thins last */
+    floor.style.setProperty('--fo', (sm(0.30, 0.72)).toFixed(3));            /* and the ground it stood on is there */
 
     /* the mark stands in the dark, then gives the frame over to the object */
     idc.classList.toggle('on', p > 0.20 && p < 0.70);
