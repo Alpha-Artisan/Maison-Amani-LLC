@@ -207,9 +207,20 @@ img{display:block;max-width:100%}
 /* the opening */
 .opening{position:relative;height:330vh;background:var(--night)}
 @media(max-width:820px){.opening{height:280vh}}
-.opening .pin figure{margin:0;z-index:1;width:min(86vw,74svh,860px);aspect-ratio:1/1;position:relative}
-.opening .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-@media(prefers-reduced-motion:reduce){.opening{height:auto}.opening .pin{position:relative;height:auto;padding:14vh 0}}
+.opening{background:#000}
+/* the f_3 render: the lid lifts, the eye goes down into the vessel, and the
+   frame ends in its light. Full bleed; the render brings its own glow, so the
+   drawn halo and flare stay off. */
+.opening .pin figure{margin:0;z-index:1;position:absolute;inset:0;width:100%;height:100%}
+.opening .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+.opening .halo,.opening .nova{display:none}
+/* the light, once reached, goes down to the house's dark before the next room */
+.opening .dusk{position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%, rgba(11,8,6,0) var(--r,150%), var(--night) calc(var(--r,150%) + 36%))}
+/* phones get their own portrait frames (opm/): the vessel framed for a tall screen, the render's own edge colour above and below */
+.opening::before{content:'';position:absolute;left:0;right:0;top:0;height:30vh;z-index:5;pointer-events:none;
+  background:linear-gradient(to bottom,var(--night),rgba(11,8,6,0))}
+@media(prefers-reduced-motion:reduce){.opening{height:auto}.opening .pin{position:relative;height:auto;padding:14vh 0}.opening .pin figure{position:relative;inset:auto;height:auto;aspect-ratio:1920/938}}
 
 /* 06 two states — one object, one line, two skies */
 .states{position:relative;height:100svh;min-height:620px;overflow:hidden;user-select:none;touch-action:pan-y;background:#070504}
@@ -527,10 +538,11 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   <div class="pin">
     <div class="halo" id="halo2" aria-hidden="true"></div>
     <figure>
-      <img id="shot2" src="om/58.webp" width="1800" height="1800" loading="lazy" decoding="async"
+      <img id="shot2" src="opm/00.webp" width="1920" height="938" loading="lazy" decoding="async"
            alt="Extra-Terra 001, opening">
     </figure>
     <div class="nova" id="nova" aria-hidden="true"></div>
+    <div class="dusk" id="dusk" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -598,7 +610,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   }
   for(var i=0;i<8;i++) warm(i);
   (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=8;i<N;i++) warm(i); });
-  if(shot2) shot2.src = (innerWidth > 760 ? 'o' : 'om') + '/58.webp';
+  if(shot2) shot2.src = (innerWidth > 760 ? 'op' : 'opm') + '/00.webp';
 
   /* ---- the frame, painted full bleed, carrying its own ground ----
      The render is square and the window is not, so the strip left over on each side
@@ -670,8 +682,8 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     };
   }
   /* the opening act keeps its own numbering: frames 58-71 in o/ and om/ */
-  var ON = 72, OSEALED = 57;
-  var OSET = innerWidth > 760 ? 'o' : 'om';
+  var ON = 100, OSEALED = -1;                    /* f_3: frames 00-99 in op/ and opm/ */
+  var OSET = innerWidth > 760 ? 'op' : 'opm';
   var OPEN = Array.from({length:ON}, function(_,i){ return OSET + '/' + pad(i) + '.webp'; });
   var ocache = [];
   function warmO(i){ if(ocache[i]) return; var im = new Image(); im.decoding='async'; im.src = OPEN[i]; ocache[i]=im; }
@@ -694,7 +706,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       floor = document.getElementById('floor');
   var idc = document.getElementById('id'),
       halo2 = document.getElementById('halo2'),
-      nova = document.getElementById('nova'), queued = false;
+      nova = document.getElementById('nova'), dusk = document.getElementById('dusk'), queued = false;
   var opening = document.getElementById('opening');
   var live = true;
 
@@ -725,7 +737,12 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     if(opening && putOpen){
       var o = opening.getBoundingClientRect(), ospan = o.height - innerHeight;
       var q = clamp(-o.top/(ospan||1), 0, 1);
-      putOpen(OSEALED + 1 + Math.round(q*(ON-1-OSEALED-1)));
+      /* the opening runs over the first 84% of the scroll; the rest is the light held, then let down */
+      var qo = clamp(q/0.84, 0, 1);
+      putOpen(Math.round(qo*(ON-1)));
+      var dk = clamp((q-0.86)/0.14, 0, 1);
+      dk = dk*dk*(3-2*dk);
+      dusk.style.setProperty('--r', (150 - dk*190).toFixed(1) + '%');   /* the dark closes in on the light, to a point, then over it */
       /* the chamber lights before the dome moves */
       var pre = q < 0.42 ? q/0.42 : 1;
       halo2.style.setProperty('--ho', (pre*0.72).toFixed(3));
@@ -752,7 +769,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   ignite();
 
   if(!reduce){ addEventListener('scroll', tick, {passive:true}); }
-  else { if(shot2) shot2.src = (innerWidth>760?'o':'om') + '/71.webp'; idc.classList.add('on'); }
+  else { if(shot2) shot2.src = (innerWidth>760?'op':'opm') + '/72.webp'; idc.classList.add('on'); }
 
   /* ---- hero sky: a field, and one star that falls ---- */
   (function(){
