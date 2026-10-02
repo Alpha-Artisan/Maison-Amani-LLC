@@ -104,7 +104,7 @@ img{display:block;max-width:100%}
 .lede .l2{animation-delay:.45s}
 @keyframes ledeIn{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
 #heroFront{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;display:block;
-  filter:url(#lumaKey);clip-path:inset(var(--fc,60%) 0 0 0);opacity:var(--lo2,1)}
+  clip-path:inset(var(--fc,60%) 0 0 0);opacity:var(--lo2,1)}
 /* phones: a poster stack, four lines, each the width of the screen */
 @media(max-width:760px){.lede{top:clamp(92px,14svh,140px);line-height:.86}
   .lede .l1,.lede .l2{display:block}
@@ -418,11 +418,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <div class="floor" id="floor" aria-hidden="true"></div>
     <h1 class="lede" id="lede"><span class="l1"><span class="w">Before the </span><span class="w">light</span></span><span class="l2"><span class="w">there is the </span><span class="w">Object</span></span></h1>
     <canvas id="heroFront" aria-hidden="true"></canvas>
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-      <filter id="lumaKey" color-interpolation-filters="sRGB">
-        <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  5.3 17.9 1.8 0 -0.4"/>
-      </filter>
-    </svg>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
       <p class="d" style="font-size:clamp(26px,3vw,42px);margin-top:10px">001</p>
@@ -641,7 +636,32 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   }
 
   /* the type is sized so line two spans the width; line one follows at the same size */
-  var front = document.getElementById('heroFront'), fx = front ? front.getContext('2d') : null;
+  /* The copy in front of the type is keyed off its black on the GPU (WebGL), the
+     same in every browser. Without WebGL the copy is simply not shown and the
+     vessel passes behind both lines. */
+  var front = document.getElementById('heroFront'), gl = null, glTex = null;
+  (function(){
+    if(!front) return;
+    try{ gl = front.getContext('webgl', {premultipliedAlpha:true, alpha:true, antialias:false}); }catch(e){ gl = null; }
+    if(!gl){ front.style.display = 'none'; front = null; return; }
+    function sh(t, src){ var o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return o; }
+    var pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;gl_Position=vec4(p,0.,1.);}'));
+    gl.attachShader(pr, sh(gl.FRAGMENT_SHADER,
+      'precision mediump float;varying vec2 u;uniform sampler2D t;' +
+      'void main(){vec3 c=texture2D(t,u).rgb;float l=dot(c,vec3(.2126,.7152,.0722));' +
+      'float a=clamp(l*25.-.4,0.,1.);gl_FragColor=vec4(c*a/max(a,.001)*a,a);}'));
+    gl.linkProgram(pr);
+    if(!gl.getProgramParameter(pr, gl.LINK_STATUS)){ front.style.display = 'none'; front = null; gl = null; return; }
+    gl.useProgram(pr);
+    var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    glTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, glTex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  })();
   var ledeEl = document.getElementById('lede'), fcBase = 0;
   function fitLede(){
     if(!ledeEl) return;
@@ -666,8 +686,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   }
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitLede(); });
   function mirror(){
-    if(!fx) return;
-    fx.setTransform(1,0,0,1,0,0); fx.clearRect(0,0,front.width,front.height); fx.drawImage(hero,0,0);
+    if(!gl || !front) return;
+    if(!mirror.max) mirror.max = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096;
+    if(hero.width > mirror.max || hero.height > mirror.max){ front.style.visibility = 'hidden'; return; }
+    front.style.visibility = '';
+    gl.viewport(0, 0, front.width, front.height);
+    gl.bindTexture(gl.TEXTURE_2D, glTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, hero);
+    gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   function paint(im){
     if(!im || !im.naturalWidth) return;
