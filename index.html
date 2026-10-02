@@ -811,21 +811,25 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
          continuous at any refresh rate and the loop has no seam. It is painted
          opaque into its own layer, then laid into each sky with that sky's
          tint: pale against the night, ink-dark against the day. */
-      var rig = null, ready = false, BEAT_HZ = 0.42;            /* a large bird: slow, deliberate strokes (~2.4 s each) */
+      var rig = null, dress = null, ready = false, BEAT_HZ = 0.36;   /* slow, intentional strokes (~2.8 s each) */
       var CW = 4040, CH = 2230, AX = 840, AY = 1242;          /* reach box and body point, rig px (replaced once the rig loads) */
-      var off = document.createElement('canvas'), og = off.getContext('2d');
+      var motes = [], moteClock = 0;                          /* a little luminous dust in its wake */
       var birds = [], drift = null, wait = 4000;
       function r2(a,b){ return a+Math.random()*(b-a); }
       if(fk){
         var rs = document.createElement('script');
         rs.src = 'js/peacock-rig.js';
         rs.onload = function(){
+          var ds = document.createElement('script'); ds.src = 'js/peacock-dress.js';
+          ds.onload = function(){
           fetch('img/peacock-master.json').then(function(r){ return r.json(); }).then(function(d){
-            rig = new PeacockRig(d, { beatHz: BEAT_HZ });
+            rig = new PeacockRig(d, { beatHz: BEAT_HZ }); dress = new PeacockDress();
             CW = rig.box[2]-rig.box[0]; CH = rig.box[3]-rig.box[1];
             AX = rig.anchor[0]-rig.box[0]; AY = rig.anchor[1]-rig.box[1];
             ready = true;
           }).catch(function(){});
+          };
+          document.head.appendChild(ds);
         };
         document.head.appendChild(rs);
       }
@@ -851,7 +855,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         var s = w / CW;
         drift = {
           y: CEIL + band*r2(0.40,0.80),
-          vx: -(FW + w*1.3) / r2(22,27),                       /* about ten unhurried strokes across */
+          vx: -(FW + w*1.3) / r2(26,32),                       /* about ten unhurried strokes across */
           f1: r2(.045,.07), f2: r2(.09,.13),                  /* never commensurate */
           p1: Math.random()*6.283, p2: Math.random()*6.283,
           a1: r2(6,12), a2: r2(2,4)                             /* a slow drift of the path, never a bounce */
@@ -885,23 +889,49 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         b.pitch += (want - b.pitch) * Math.min(1, dt*2);
         b.out = (b.x + (CW - AX)*b.s) < -24;
       }
-      function paintBirds(col, alpha){
-        var b = birds[0]; if(!b || !ready) return;
-        if(b.x - AX*b.s > FW + 40 || b.out) return;
-        /* the bird is drawn opaque into its own layer first, so overlapping
-           feathers never double up when the layer is laid in with alpha */
-        var sc = b.s*FD, bw = Math.ceil(CW*sc), bh = Math.ceil(CH*sc);
-        if(off.width !== bw || off.height !== bh){ off.width = bw; off.height = bh; }
-        og.setTransform(1,0,0,1,0,0); og.clearRect(0,0,bw,bh);
-        og.setTransform(sc,0,0,sc,-rig.box[0]*sc,-rig.box[1]*sc);
-        rig.draw(og, b.t, col);
+      /* The bird is dressed once per frame (see js/peacock-dress.js): smoked black
+         to espresso, a soft key light, a slow lacquer sheen, a champagne rim where
+         edges face the light. Each sky then lays it in its own way: against the
+         night it carries a faint warm halo and a clearer rim, as if emerging from
+         light; against the day it is a dark sculpted form with a quieter rim. */
+      function buildBird(){
+        var b = birds[0]; if(!b || !ready) return false;
+        if(b.x - AX*b.s > FW + 40 || b.out) return false;
+        dress.build(rig, b.t, b.s*FD);
+        return true;
+      }
+      function paintBird(night){
+        var b = birds[0];
         f.save();
         f.translate(b.x, b.y);
         f.rotate(b.pitch);
-        f.globalAlpha = alpha;
-        f.drawImage(off, -AX*b.s, -AY*b.s, CW*b.s, CH*b.s);
+        dress.paint(f, -AX*b.s, -AY*b.s, CW*b.s, CH*b.s, night ? { halo: 0.20, rim: 0.6 } : { rim: 0.3 });
         f.restore();
-        f.globalAlpha = 1;
+      }
+      /* dust: a few motes loosen from the wing and train and drift up and back,
+         barely there — at most a dozen and a half, each under 1.5px, fading in and out */
+      function stepMotes(dt){
+        var b = birds[0];
+        if(b && !b.out && ready){
+          moteClock -= dt;
+          if(moteClock <= 0 && motes.length < 18){
+            moteClock = r2(0.35, 0.8);
+            var u = Math.random(), w = CW*b.s, h = CH*b.s;
+            motes.push({ x: b.x - AX*b.s + w*(0.2 + 0.75*u), y: b.y - AY*b.s + h*(0.35 + 0.35*Math.random()),
+                         vx: r2(4, 14), vy: -r2(2, 7), r: r2(0.5, 1.4), age: 0, life: r2(4, 8) });
+          }
+        }
+        for(var i = motes.length - 1; i >= 0; i--){
+          var m = motes[i]; m.age += dt; m.x += m.vx*dt; m.y += m.vy*dt;
+          if(m.age > m.life) motes.splice(i, 1);
+        }
+      }
+      function paintMotes(peak){
+        for(var i = 0; i < motes.length; i++){
+          var m = motes[i], k = m.age/m.life, a = peak * Math.sin(Math.PI*k);
+          f.fillStyle = 'rgba(226,210,176,' + a.toFixed(3) + ')';
+          f.beginPath(); f.arc(m.x, m.y, m.r, 0, 6.283); f.fill();
+        }
       }
 
       /* ---------- the weather ---------- */
@@ -963,14 +993,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
           f.clearRect(0,0,FW,FH);
           if(drift){
             stepBirds(t, dt);
+            stepMotes(dt);
             var gone = true;
             if(birds[0] && !birds[0].out) gone = false;
-            var cutX = FW * (window.__cut || 50)/100;
+            var cutX = FW * (window.__cut || 50)/100, has = buildBird();
             f.save(); f.beginPath(); f.rect(0,0,cutX,FH); f.clip();
-            paintBirds('#DEE8F8', .84); f.restore();
+            paintMotes(0.42); if(has) paintBird(true); f.restore();
             f.save(); f.beginPath(); f.rect(cutX,0,FW-cutX,FH); f.clip();
-            paintBirds('#0C1119', .96); f.restore();
-            if(gone){ drift = null; birds = []; wait = r2(14,30)*1000; }
+            paintMotes(0.22); if(has) paintBird(false); f.restore();
+            if(gone && !motes.length){ drift = null; birds = []; wait = r2(14,30)*1000; }
           } else {
             wait -= dt*1000;
             if(wait <= 0) launch();
