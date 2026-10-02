@@ -319,6 +319,68 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   .orb{right:14%;top:11%;width:clamp(54px,16vw,80px)}
   .sun{box-shadow:0 0 46px 14px rgba(255,248,226,.80), 0 0 120px 50px rgba(255,238,196,.30), 0 0 300px 150px rgba(255,240,204,.12)}
 }
+
+/* 04 the scent — a still life, annotated. The photograph is the room; the
+   words sit in its dark left side; four hairlines point to the materials.
+   Everything is placed in the plate's own coordinates, so it holds at any width. */
+.scent{position:relative;width:100%;aspect-ratio:1536/1024;min-height:560px;overflow:hidden;background:#050403;color:#B9AE9C}
+.scent .plate{position:absolute;inset:0}
+.scent .plate img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center}
+.scent::before,.scent::after{content:'';position:absolute;left:0;right:0;height:12%;z-index:3;pointer-events:none}
+.scent::before{top:0;background:linear-gradient(to bottom,var(--night),rgba(11,8,6,0))}
+.scent::after{bottom:0;background:linear-gradient(to top,var(--night),rgba(11,8,6,0))}
+.scent .leads{position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:visible}
+.scent .leads polyline{fill:none;stroke:rgba(236,227,210,.55);stroke-width:1;vector-effect:non-scaling-stroke;
+  stroke-dasharray:200;stroke-dashoffset:200;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1),stroke .6s ease}
+.scent .leads circle{fill:#F1E9DA;opacity:0;transition:opacity .9s ease}
+.scent .call{position:absolute;z-index:4;margin:0;transform:translateY(-50%);white-space:nowrap;
+  font-family:var(--sans);font-weight:400;font-size:clamp(9px,.66vw,12px);letter-spacing:.3em;text-transform:uppercase;color:#E6DCCB;
+  opacity:0;transition:opacity 1.2s ease,color .6s ease}
+.scent .copy{position:absolute;z-index:4;left:4.2%;top:21%;width:min(30%,520px)}
+.scent .eyebrow{margin:0;display:flex;align-items:center;gap:1.2em;font-family:var(--sans);font-weight:400;
+  font-size:clamp(9px,.62vw,11px);letter-spacing:.3em;text-transform:uppercase;color:#8A7E6E}
+.scent .eyebrow::before{content:'';width:clamp(20px,1.7vw,30px);height:1px;background:rgba(236,227,210,.35)}
+.scent .title{margin:.55em 0 0;font-family:'Canela','Newsreader',Georgia,serif;font-weight:300;font-variation-settings:'opsz' 72;
+  font-size:clamp(40px,4.1vw,78px);line-height:1;letter-spacing:-.01em;color:#E9E0D0;padding-left:.12em}
+.scent .title .t2{color:#BFB2A0}
+.scent .lead{margin:clamp(26px,2.9vw,52px) 0 0 18%;max-width:21em;font-family:var(--sans);font-weight:300;
+  font-size:clamp(13px,.98vw,17px);line-height:1.6;letter-spacing:.05em;color:#B3A896}
+.scent .notes{list-style:none;margin:clamp(40px,4.4vw,80px) 0 0 18%;padding:0;width:min(17.4vw,300px);min-width:220px}
+.scent .notes li{display:grid;grid-template-columns:2.3em 1fr auto;grid-template-rows:auto auto;align-items:baseline;
+  padding:0;margin:0 0 clamp(20px,2.1vw,38px);cursor:default;outline:0;transition:opacity .6s ease}
+.scent .notes li::after{content:'';grid-column:3;grid-row:1;width:12px;height:1px;background:rgba(236,227,210,.4);align-self:center;transition:width .6s ease,background .6s ease}
+.scent .notes .n{grid-column:1;grid-row:1;font-family:var(--sans);font-size:clamp(9px,.6vw,11px);letter-spacing:.14em;color:#8C8273}
+.scent .notes .name{grid-column:2;grid-row:1;font-family:var(--sans);font-weight:400;font-size:clamp(14px,.98vw,17px);letter-spacing:.05em;color:#EDE5D6}
+.scent .notes .desc{grid-column:2/4;grid-row:2;margin-top:.45em;font-family:var(--sans);font-weight:300;font-size:clamp(10.5px,.74vw,13px);letter-spacing:.12em;color:#8C8273}
+.scent .sid{position:absolute;z-index:4;left:4.2%;bottom:7%;display:grid;grid-template-columns:auto auto;align-items:end;column-gap:1.6em}
+.scent .sid .meta{grid-column:1/3;font-size:clamp(9px,.6vw,11px);letter-spacing:.3em;color:#8A7E6E;margin-bottom:.7em}
+.scent .sid .num{margin:0;font-family:var(--display);font-size:clamp(26px,1.9vw,36px);line-height:1;color:#E9E0D0}
+.scent .sid::after{content:'';grid-row:2;grid-column:2;width:clamp(36px,3.4vw,56px);height:1px;background:rgba(236,227,210,.35);align-self:center}
+/* arrival: the lines draw to their materials, then the names appear */
+.scent.in .leads polyline{stroke-dashoffset:0}
+.scent.in .leads circle,.scent.in .call{opacity:1}
+.scent .leads g:nth-child(2) polyline,.scent .leads g:nth-child(2) circle,.scent .call[data-i="2"]{transition-delay:.25s}
+.scent .leads g:nth-child(3) polyline,.scent .leads g:nth-child(3) circle,.scent .call[data-i="3"]{transition-delay:.5s}
+.scent .leads g:nth-child(4) polyline,.scent .leads g:nth-child(4) circle,.scent .call[data-i="4"]{transition-delay:.75s}
+.scent .call{transition-delay:.9s}
+/* pointing: a name in the list finds its material; the others step back */
+.scent.focus .notes li{opacity:.4}
+.scent.focus .notes li.on{opacity:1}
+.scent.focus .notes li.on::after{width:24px;background:rgba(236,227,210,.8)}
+.scent.focus .call{color:rgba(230,220,203,.35)}
+.scent.focus .call.on{color:#FFF8EA}
+.scent.focus .leads polyline{stroke:rgba(236,227,210,.2)}
+.scent.focus .leads g.on polyline{stroke:rgba(255,248,234,.95)}
+@media(max-width:760px){
+  .scent{aspect-ratio:auto;min-height:0;display:flex;flex-direction:column}
+  .scent .copy{position:relative;left:auto;top:auto;width:auto;padding:clamp(64px,12vh,110px) var(--gutter) 34px}
+  .scent .title{font-size:44px}
+  .scent .lead,.scent .notes{margin-left:0}
+  .scent .notes{width:100%;min-width:0;margin-top:34px}
+  .scent .plate{position:relative;inset:auto;aspect-ratio:640/800;order:2}
+  .scent .leads,.scent .call,.scent .sid{display:none}
+}
+@media(prefers-reduced-motion:reduce){.scent .leads polyline{stroke-dashoffset:0;transition:none}.scent .leads circle,.scent .call{opacity:1;transition:none}}
 </style>
 </head>
 <body>
@@ -371,11 +433,36 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 <div class="hold hold--s"></div>
 
 <!-- 04 -->
-<section class="drift" id="drift" aria-label="The core">
-  <figure class="sp" id="sp1"><img src="img/e-agarwood.webp"     width="900" height="900" loading="lazy" decoding="async" alt="Agarwood"><figcaption>Agarwood</figcaption></figure>
-  <figure class="sp" id="sp2"><img src="img/e-frankincense.webp" width="900" height="900" loading="lazy" decoding="async" alt="Frankincense"><figcaption>Frankincense</figcaption></figure>
-  <figure class="sp" id="sp3"><img src="img/e-labdanum.webp"     width="900" height="900" loading="lazy" decoding="async" alt="Labdanum"><figcaption>Labdanum</figcaption></figure>
-  <figure class="sp" id="sp4"><img src="img/e-vetiver.webp"      width="900" height="900" loading="lazy" decoding="async" alt="Vetiver"><figcaption>Vetiver</figcaption></figure>
+<section class="scent" id="scent" aria-label="The scent">
+  <div class="plate">
+    <picture>
+      <source media="(max-width:760px)" srcset="img/scent-m.webp">
+      <img src="img/scent.webp" width="1536" height="1024" loading="lazy" decoding="async"
+           alt="Agarwood, frankincense, labdanum and vetiver">
+    </picture>
+    <svg class="leads" viewBox="0 0 1536 1024" preserveAspectRatio="none" aria-hidden="true">
+      <g data-i="1"><polyline points="1089,247 1147,198 1214,198"/><circle cx="1089" cy="247" r="2.6"/></g>
+      <g data-i="2"><polyline points="1262,521 1317,480 1340,480"/><circle cx="1262" cy="521" r="2.6"/></g>
+      <g data-i="3"><polyline points="1290,727 1345,683 1367,683"/><circle cx="1290" cy="727" r="2.6"/></g>
+      <g data-i="4"><polyline points="1300,898 1355,912 1374,912"/><circle cx="1300" cy="898" r="2.6"/></g>
+    </svg>
+    <p class="call" data-i="1" style="left:79.8%;top:19.3%" aria-hidden="true">01. Agarwood</p>
+    <p class="call" data-i="2" style="left:88%;top:46.9%" aria-hidden="true">02. Frankincense</p>
+    <p class="call" data-i="3" style="left:89.8%;top:66.7%" aria-hidden="true">03. Labdanum</p>
+    <p class="call" data-i="4" style="left:90.3%;top:89.1%" aria-hidden="true">04. Vetiver</p>
+  </div>
+  <div class="copy">
+    <p class="eyebrow">The surface</p>
+    <h2 class="title"><span>The</span> <span class="t2">scent</span></h2>
+    <p class="lead">An ancient composition, awakened by time. Rare woods, sacred resins and earth-born botanicals, layered for depth, balance and memory.</p>
+    <ol class="notes">
+      <li data-i="1" tabindex="0"><span class="n">01</span><span class="name">Agarwood</span><span class="desc">Smoky. Deep. Sacred.</span></li>
+      <li data-i="2" tabindex="0"><span class="n">02</span><span class="name">Frankincense</span><span class="desc">Resinous. Meditative. Timeless.</span></li>
+      <li data-i="3" tabindex="0"><span class="n">03</span><span class="name">Labdanum</span><span class="desc">Warm. Amber. Velvety.</span></li>
+      <li data-i="4" tabindex="0"><span class="n">04</span><span class="name">Vetiver</span><span class="desc">Earthy. Grounding. Enduring.</span></li>
+    </ol>
+  </div>
+  <div class="sid" aria-hidden="true"><p class="meta">Extra&#8209;Terra</p><p class="num">001</p></div>
 </section>
 
 <div class="hold hold--s"></div>
@@ -1187,6 +1274,26 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     });
   }
 })();
+
+  /* ---- the scent: the lines draw once in view; the list points at the plate ---- */
+  (function(){
+    var sec = document.getElementById('scent'); if(!sec) return;
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(es){ if(es[0].isIntersecting){ sec.classList.add('in'); io.disconnect(); } }, {threshold:.35});
+      io.observe(sec);
+    } else sec.classList.add('in');
+    function point(i){
+      sec.classList.toggle('focus', !!i);
+      sec.querySelectorAll('[data-i]').forEach(function(el){ el.classList.toggle('on', el.getAttribute('data-i') === i); });
+    }
+    sec.querySelectorAll('.notes li').forEach(function(li){
+      var i = li.getAttribute('data-i');
+      li.addEventListener('mouseenter', function(){ point(i); });
+      li.addEventListener('focus', function(){ point(i); });
+      li.addEventListener('mouseleave', function(){ point(null); });
+      li.addEventListener('blur', function(){ point(null); });
+    });
+  })();
 </script>
 </body>
 </html>
