@@ -39,7 +39,7 @@ img{display:block;max-width:100%}
 /* masthead */
 .mast{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;justify-content:space-between;align-items:center;
   padding:clamp(16px,2.4vh,26px) var(--gutter);pointer-events:none}
-.mast .lock{position:relative;display:block;width:clamp(96px,8.6vw,128px);aspect-ratio:440/251;line-height:0}
+.mast .lock{position:relative;display:block;width:clamp(84px,7.2vw,110px);opacity:.72;aspect-ratio:440/251;line-height:0}
 .mast .lock img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s ease}
 .mast .lock .ink{opacity:0}
 .mast.on-light .lock .bone{opacity:0}
@@ -88,7 +88,7 @@ img{display:block;max-width:100%}
     radial-gradient(120% 90% at 50% 40%, transparent 52%, rgba(0,0,0,.55) 100%)}
 /* the object comes up from below the surface of the page: a horizon that rises
    through it, never a cut, never a fade-in of the whole picture */
-#hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
+#hero{filter:brightness(var(--hb,.42));-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
           mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%))}
 /* Hero, as an exhibition: darkness above, the statement on the left, a sparse
    constellation, a single light from the upper left, black stone, and the
@@ -103,11 +103,13 @@ img{display:block;max-width:100%}
 .lede .rl{display:block;width:clamp(64px,7.4vw,118px);height:1px;margin:clamp(26px,3.1vw,48px) 0 0;background:rgba(205,184,148,.38)}
 .lede .sub{margin:clamp(26px,2.9vw,44px) 0 0;font-family:var(--sans);font-weight:300;font-size:clamp(11.5px,.86vw,14px);line-height:1.78;letter-spacing:.06em;color:#A2957F}
 .lede > *{animation:ledeIn 1.8s cubic-bezier(.2,.7,.2,1) both}
-.lede .st{animation-delay:.2s}.lede .rl{animation-delay:.45s}.lede .sub{animation-delay:.6s}
+.lede .eyebrow{animation-delay:1.1s}.lede .st{animation-delay:1.35s}.lede .rl{animation-delay:1.7s}
+.const{animation:constIn 2.4s ease .2s both}
+@keyframes constIn{from{opacity:0}to{opacity:1}}
 @keyframes ledeIn{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
 /* one light, from the upper left, entering a dark room */
 .beam{position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;opacity:var(--bo,1);
-  background:linear-gradient(112deg, transparent 6%, rgba(150,124,92,.10) 15%, rgba(120,98,72,.05) 22%, transparent 31%)}
+  background:linear-gradient(112deg, transparent 6%, rgba(150,124,92,.055) 15%, rgba(120,98,72,.025) 22%, transparent 31%)}
 /* black stone at the lower left, in front of the floor, never over the vessel */
 .arrival .pin .rock{position:absolute;z-index:4;inset:auto auto 0 0;height:min(50vh,520px);width:auto;max-width:28vw;object-fit:cover;object-position:left bottom;pointer-events:none;opacity:var(--ko,.7)}
 /* the constellation: a diagram, not a sky */
@@ -134,7 +136,7 @@ img{display:block;max-width:100%}
   .const{width:34vw;top:7svh;right:4vw;opacity:calc(var(--co,1)*.7)}
   .cue{display:none}
 }
-@media(prefers-reduced-motion:reduce){.lede > *{animation:none}}
+@media(prefers-reduced-motion:reduce){.lede > *,.const{animation:none}#hero{filter:none}}
 /* the ground: a dark reflective surface the vessel stands on, warmed where it sits */
 .floor{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:3;pointer-events:none;opacity:var(--fo,0);
   background:radial-gradient(46% 30% at 57% 20%, rgba(120,98,74,.10) 0%, transparent 70%),
@@ -408,7 +410,6 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       <p class="eyebrow">An extraordinary object</p>
       <h1 class="st"><span>Before the <em>light,</em></span><span>there is the object.</span></h1>
       <span class="rl" aria-hidden="true"></span>
-      <p class="sub">A vessel for light, scent and memory.<br>Born from earth. Shaped by time.<br>Made for what cannot be seen.</p>
     </div>
     <p class="cue" id="cue" aria-hidden="true">Scroll<span></span></p>
     <div class="id" id="id">
@@ -798,14 +799,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
     if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
     var rise = sm(0.0, 0.62);                       /* the base is there from the start; the rest rises through the words */
-    var rh0 = innerWidth < 760 ? 22 : 6;            /* phones frame the vessel higher */
+    var rh0 = innerWidth < 760 ? 14 : 2;            /* phones frame the vessel higher */
     rhNow = rh0 + rise*(100-rh0);
+    hero.style.setProperty('--hb', (0.42 + 0.58*sm(0.0, 0.55)).toFixed(3));   /* at the end: the render, untouched */
     hero.parentNode.style.setProperty('--rh', rhNow.toFixed(1) + '%');
     mirror();
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
     floor.style.setProperty('--fo', '1');                                   /* the ground is always there */
     var envIn = sm(0.0, 0.42);                       /* the room becomes perceptible as the eye adjusts */
-    if(rockEl) rockEl.style.setProperty('--ko', (0.55 + envIn*0.45).toFixed(3));
+    if(rockEl) rockEl.style.setProperty('--ko', (0.32 + envIn*0.38).toFixed(3));
 
     /* the mark stands in the dark, then gives the frame over to the object */
     idc.classList.toggle('on', p < 0.90);
