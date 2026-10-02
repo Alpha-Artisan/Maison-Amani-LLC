@@ -220,7 +220,7 @@ img{display:block;max-width:100%}
 /* inside the light: the hero's line answered — 'Before the light' becomes 'Become the light' —
    then the invitation. Both come out of the glow by focus, on the left, and go the same way. */
 .opening .gc{position:absolute;z-index:4;left:var(--gutter);top:50%;margin:0;pointer-events:none;
-  opacity:var(--go,0);filter:blur(var(--gb,18px));transform:translate3d(0,calc(-50% + var(--gy,0px)),0);
+  opacity:var(--go,0);filter:blur(var(--gb,18px));transform:translate3d(0,-50%,0) scale(var(--gs,.78));transform-origin:28% 50%;
   will-change:opacity,filter,transform;color:#2A1F17}
 .opening .gc1{font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
   text-transform:uppercase;font-size:clamp(64px,10.5vw,190px);line-height:.84;letter-spacing:-.012em}
@@ -795,10 +795,11 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   function focusIn(el, q, a, b, c, d){
     if(!el) return;
     var e = function(x,y){ var t = clamp((q-x)/(y-x),0,1); return t*t*(3-2*t); };
+    /* it travels with the camera: from deep in the light to sharp, then on past the viewer */
     var i = e(a,b), o = e(c,d), v = i*(1-o);
     el.style.setProperty('--go', v.toFixed(3));
-    el.style.setProperty('--gb', ((1-v)*18).toFixed(2)+'px');
-    el.style.setProperty('--gy', ((1-i)*18 - o*18).toFixed(1)+'px');
+    el.style.setProperty('--gb', ((1-i)*18 + o*14).toFixed(2)+'px');
+    el.style.setProperty('--gs', (0.78 + i*0.22 + o*0.55).toFixed(4));
   }
   var opening = document.getElementById('opening');
   var live = true;
@@ -836,8 +837,8 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       /* 0–62%: the lid lifts and the eye goes in. 62–92%: inside the light, two lines. 92–100%: the dark closes */
       var qo = clamp(q/0.62, 0, 1);
       putOpen(Math.round(qo*(ON-1)));
-      focusIn(gc1, q, 0.63, 0.68, 0.74, 0.78);
-      focusIn(gc2, q, 0.79, 0.84, 0.90, 0.935);
+      focusIn(gc1, q, 0.62, 0.69, 0.72, 0.79);
+      focusIn(gc2, q, 0.79, 0.86, 0.89, 0.94);
       var dk = clamp((q-0.92)/0.08, 0, 1);
       dk = dk*dk*(3-2*dk);
       dusk.style.setProperty('--r', (150 - dk*190).toFixed(1) + '%');   /* the dark closes in on the light, to a point, then over it */
