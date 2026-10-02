@@ -90,7 +90,7 @@ img{display:block;max-width:100%}
 /* the one sentence that is not a riddle */
 .label{margin:0;text-align:center;color:#7B766D;font-size:clamp(13px,1.2vw,15px);
   letter-spacing:.04em;font-weight:300}
-.object .label{margin-top:clamp(-14px,-1.4vh,-8px)}
+.object .label{margin-top:calc(clamp(12px,1.1vw,16px) - clamp(30px,6vh,72px))}   /* headline → caption: 16px (12px on phones) */
 
 /* 03 the surface — full bleed band */
 .surface{margin:0;position:relative}
@@ -225,9 +225,9 @@ img{display:block;max-width:100%}
 .say{max-width:46ch;margin:0;color:var(--dim);font-size:clamp(13px,1.15vw,15px);line-height:1.85;letter-spacing:.012em}
 
 /* 07 first edition */
-.first{position:relative;min-height:96svh;display:grid;align-items:center;background:var(--deep);padding:clamp(80px,14vh,160px) 0}
+.first{position:relative;display:grid;background:var(--deep);padding:clamp(40px,3vw,48px) 0 clamp(54px,4.7vw,68px)}   /* sized to the pause around it, not the screen */
 .first .inner{position:relative;z-index:2;padding:0 var(--gutter);max-width:32rem}
-.join{margin-top:clamp(26px,5vh,52px)}
+.join{margin-top:clamp(28px,2.2vw,32px)}
 .join .row{display:flex;gap:14px;align-items:baseline;border-bottom:1px solid rgba(233,228,218,.2);padding-bottom:10px;max-width:24rem}
 .join input{flex:1;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:15px;padding:6px 0}
 .join input::placeholder{color:#57534C}
@@ -241,10 +241,10 @@ img{display:block;max-width:100%}
 .join .note{margin-top:14px;min-height:1.2em}
 
 /* 08 afterimage */
-.after{min-height:92svh;display:grid;place-items:center;text-align:center;background:var(--night);padding:0 var(--gutter)}
+.after{display:grid;place-items:center;text-align:center;background:var(--night);padding:clamp(56px,6vw,90px) var(--gutter) clamp(120px,12vw,173px)}
 /* the record: a catalogue card, not a spec sheet. values line up because an
    archive lines up; nothing is emphasised, including the word candle. */
-.record{margin:clamp(40px,7vh,84px) auto 0;display:grid;grid-template-columns:auto auto;
+.record{margin:clamp(32px,2.8vw,40px) auto 0;display:grid;grid-template-columns:auto auto;
   gap:9px clamp(18px,3vw,34px);width:max-content;text-align:left;
   font-family:var(--sans);font-size:9px;letter-spacing:.32em;text-transform:uppercase}
 .record dt{color:rgba(214,206,193,.30);margin:0}
