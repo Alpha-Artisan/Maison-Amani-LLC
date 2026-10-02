@@ -88,7 +88,7 @@ img{display:block;max-width:100%}
     radial-gradient(120% 90% at 50% 40%, transparent 52%, rgba(0,0,0,.55) 100%)}
 /* the object comes up from below the surface of the page: a horizon that rises
    through it, never a cut, never a fade-in of the whole picture */
-#hero,#heroFront{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
+#hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
           mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%))}
 /* The headline as a wall of type the object moves through: compressed black
    capitals sized to the width, line one in front of the vessel, line two behind
@@ -661,9 +661,15 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
      the vessel's exact outline (vk/ and vmk/: one outline per frame, shadows
      included). Line one stays in front of the vessel; line two sits behind it. */
   var front = document.getElementById('heroFront'), fx = front ? front.getContext('2d') : null;
-  var KSET = SET === 'v' ? 'vk' : 'vmk', kcache = [];
+  var KSET = SET === 'v' ? 'vk' : 'vmk', kcache = [], off = document.createElement('canvas'), ox = off.getContext('2d'), last = null, rhNow = 6;
   function warmK(i){ if(kcache[i]) return kcache[i]; var k = new Image(); k.decoding = 'async'; k.src = KSET + '/' + pad(i) + '.png'; kcache[i] = k; return k; }
   var ledeEl = document.getElementById('lede'), fcBase = 0;
+  function baseline(el){                               /* the y of an element's text baseline */
+    var pr = el.querySelector('.bl');
+    if(!pr){ pr = document.createElement('i'); pr.className = 'bl';
+      pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline'; el.appendChild(pr); }
+    return pr.getBoundingClientRect().top;
+  }
   function fitLede(){
     if(!ledeEl) return;
     var l2 = ledeEl.querySelector('.l2'), W = ledeEl.parentNode.clientWidth, ws = ledeEl.querySelectorAll('.w');
@@ -675,26 +681,50 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         var ww = ws[j].getBoundingClientRect().width || 1;
         ws[j].style.setProperty('--wfs', (100*W*0.9/ww).toFixed(2)+'px');
       }
-      r2 = ws[2].getBoundingClientRect();
+      r2 = baseline(ws[1]);
     } else {
       var w = l2.getBoundingClientRect().width || 1;
       ledeEl.style.setProperty('--fs', (100*W*0.94/w).toFixed(2)+'px');
-      r2 = l2.getBoundingClientRect();
+      r2 = baseline(ledeEl.querySelector('.l1'));
     }
     var pin = ledeEl.parentNode.getBoundingClientRect();
-    fcBase = r2.top - pin.top + r2.height*0.08;          /* the vessel comes in front from line two's cap line */
+    /* the vessel comes in front from just under the baseline of the line above:
+       the gap between the lines, so no part of the lower line's letters is left over it */
+    fcBase = r2 - pin.top + 2;
     ledeEl.parentNode.style.setProperty('--fc', fcBase.toFixed(1)+'px');
   }
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitLede(); });
+  /* The front copy, drawn as an object in front of the type would be:
+     where the vessel has risen it is the frame itself, unaltered; just above,
+     where it is still in the dark, it is dark, so the letters behind are hidden
+     by its shadow rather than showing through it. */
+  function riseGrad(ctx, a, b){                        /* solid to the rise + a, gone by the rise + b */
+    var g = ctx.createLinearGradient(0, HH, 0, 0), r = rhNow/100;
+    g.addColorStop(0, 'rgba(0,0,0,1)');
+    g.addColorStop(Math.min(1, Math.max(0, r + a)), 'rgba(0,0,0,1)');
+    g.addColorStop(Math.min(1, Math.max(0, r + b)), 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    return g;
+  }
   function mirror(im, dx, dy, dw, dh){
     if(!fx) return;
+    if(im) last = {im:im, dx:dx, dy:dy, dw:dw, dh:dh};
+    if(!last) return;
+    im = last.im; dx = last.dx; dy = last.dy; dw = last.dw; dh = last.dh;
     var n = curFrame >= 0 ? curFrame : F0, k = warmK(n);
     fx.setTransform(HD,0,0,HD,0,0); fx.globalCompositeOperation = 'source-over'; fx.clearRect(0,0,HW,HH);
-    if(!(k.complete && k.naturalWidth)){ k.onload = function(){ if((curFrame >= 0 ? curFrame : F0) === n) mirror(im, dx, dy, dw, dh); }; return; }
-    fx.drawImage(k, dx, dy, dw, dh);                    /* the outline */
-    fx.globalCompositeOperation = 'source-in';
-    fx.drawImage(im, 0, 0, im.naturalWidth, im.naturalHeight, dx, dy, dw, dh);   /* the vessel, as rendered */
-    fx.globalCompositeOperation = 'source-over';
+    if(!(k.complete && k.naturalWidth)){ k.onload = function(){ if((curFrame >= 0 ? curFrame : F0) === n) mirror(); }; return; }
+    if(off.width !== front.width || off.height !== front.height){ off.width = front.width; off.height = front.height; }
+    /* 1. its shadow: the outline in the house's dark, reaching a little ahead of the light */
+    fx.drawImage(k, dx, dy, dw, dh);
+    fx.globalCompositeOperation = 'source-in'; fx.fillStyle = '#000'; fx.fillRect(0,0,HW,HH);
+    fx.globalCompositeOperation = 'destination-in'; fx.fillStyle = riseGrad(fx, 0.18, 0.34); fx.fillRect(0,0,HW,HH);
+    /* 2. the vessel itself, as rendered, with the same rise as the canvas beneath */
+    ox.setTransform(HD,0,0,HD,0,0); ox.globalCompositeOperation = 'source-over'; ox.clearRect(0,0,HW,HH);
+    ox.drawImage(k, dx, dy, dw, dh);
+    ox.globalCompositeOperation = 'source-in'; ox.drawImage(im, 0, 0, im.naturalWidth, im.naturalHeight, dx, dy, dw, dh);
+    ox.globalCompositeOperation = 'destination-in'; ox.fillStyle = riseGrad(ox, 0, 0.26); ox.fillRect(0,0,HW,HH);
+    fx.globalCompositeOperation = 'source-over'; fx.setTransform(1,0,0,1,0,0); fx.drawImage(off, 0, 0);
   }
   function paint(im){
     if(!im || !im.naturalWidth) return;
@@ -806,8 +836,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
     if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
     var rise = sm(0.0, 0.62);                       /* the base is there from the start; the rest rises through the words */
-    var rh0 = innerWidth < 760 ? 30 : 6;            /* phones frame the vessel higher */
-    hero.parentNode.style.setProperty('--rh', (rh0 + rise*(100-rh0)).toFixed(1) + '%');
+    var rh0 = innerWidth < 760 ? 22 : 6;            /* phones frame the vessel higher */
+    rhNow = rh0 + rise*(100-rh0);
+    hero.parentNode.style.setProperty('--rh', rhNow.toFixed(1) + '%');
+    mirror();
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
     floor.style.setProperty('--fo', (sm(0.50, 0.90)).toFixed(3));           /* and the ground it stands on is there */
 
