@@ -88,8 +88,8 @@ img{display:block;max-width:100%}
     radial-gradient(120% 90% at 50% 40%, transparent 52%, rgba(0,0,0,.55) 100%)}
 /* the object comes up from below the surface of the page: a horizon that rises
    through it, never a cut, never a fade-in of the whole picture */
-#hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,-26%),transparent calc(var(--rh,-26%) + 26%));
-          mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,-26%),transparent calc(var(--rh,-26%) + 26%))}
+#hero{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
+          mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%))}
 /* The headline as a wall of type the object moves through: compressed black
    capitals sized to the width, line one in front of the vessel, line two behind
    it. The vessel is drawn twice: once under the type, and once, keyed off its
@@ -97,14 +97,13 @@ img{display:block;max-width:100%}
 .lede{position:absolute;z-index:5;left:0;right:0;top:clamp(110px,21vh,240px);margin:0;text-align:center;
   font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
   text-transform:uppercase;letter-spacing:-.012em;line-height:.84;font-size:var(--fs,12vw);
-  opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0) scale(var(--ls,1));filter:blur(var(--lb,0px));
-  transform-origin:50% 40%;will-change:opacity,transform,filter}
+  opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
 .lede .l1,.lede .l2{display:table;margin:0 auto;white-space:nowrap;animation:ledeIn 1.6s cubic-bezier(.2,.7,.2,1) .25s both}
 .lede .w{background:linear-gradient(to bottom,#F5F0E7 0%,#EDE6DA 48%,#CFC6B7 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .lede .l2{animation-delay:.45s}
 @keyframes ledeIn{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
-#heroFront{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;display:none;
+#heroFront{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;display:block;
   clip-path:inset(var(--fc,60%) 0 0 0);opacity:var(--lo2,1)}
 /* phones: a poster stack, four lines, each the width of the screen */
 @media(max-width:760px){.lede{top:clamp(92px,14svh,140px);line-height:.86}
@@ -537,9 +536,9 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var im = new Image(); im.decoding = 'async'; im.src = FRAMES[i]; cache[i] = im; return im;
   }
   /* the page opens with the base already lit under the words: the sequence starts at frame F0 */
-  var F0 = 0;                                   /* the render begins in the dark */
+  var F0 = 48;
   for(var i=F0;i<F0+8;i++) warm(i);
-  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); });
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); for(var j=F0;j<N;j++) warmK(j); });
   if(shot2) shot2.src = (innerWidth > 760 ? 'op' : 'opm') + '/00.webp';
 
   /* ---- the frame, painted full bleed, carrying its own ground ----
@@ -565,7 +564,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   /* The copy in front of the second line is the frame itself, unaltered, cut to
      the vessel's exact outline (vk/ and vmk/: one outline per frame, shadows
      included). Line one stays in front of the vessel; line two sits behind it. */
-  var front = null, fx = null;                     /* the words and the vessel no longer share the frame */
+  var front = document.getElementById('heroFront'), fx = front ? front.getContext('2d') : null;
   var KSET = SET === 'v' ? 'vk' : 'vmk', kcache = [], off = document.createElement('canvas'), ox = off.getContext('2d'), last = null, rhNow = 6;
   function warmK(i){ if(kcache[i]) return kcache[i]; var k = new Image(); k.decoding = 'async'; k.src = KSET + '/' + pad(i) + '.png'; kcache[i] = k; return k; }
   var ledeEl = document.getElementById('lede'), fcBase = 0;
@@ -637,6 +636,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var s  = Math.min(HW/iw, HH/ih) * ZOOM;
     var dw = iw*s, dh = ih*s;
     var dx = (HW-dw)/2, dy = (HH-dh)/2;
+    if(HW <= 760) dy += HH*0.12;                       /* phones: the base starts under the words, not on them */
 
     hx.fillStyle = '#000'; hx.fillRect(0,0,HW,HH);
     hx.drawImage(im, 0,0,iw,ih, dx,dy,dw,dh);
@@ -729,29 +729,27 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     live = r.bottom > 0 && r.top < innerHeight;
     var p = clamp(-r.top/(span||1), 0, 1);
     /* it arrives at the last frame and stays there — the scroll runs both ways */
-    /* the frames only begin once the words have gone: first the line, then the object */
-    var fp = clamp((p-0.17)/0.83, 0, 1);
-    putHero(Math.round(F0 + fp*(N-1-F0)));
+    putHero(Math.round(F0 + p*(N-1-F0)));
 
     /* curtain → atmosphere → revelation → object. Every value below is a pure
        function of the scroll, so scrolling back plays it in reverse exactly. */
     var sm = function(a,b){ var t = clamp((p-a)/(b-a),0,1); return t*t*(3-2*t); };
     /* identity → text → curiosity → object → product */
-    /* Act one: the words, alone, in the dark. Act two: they go back into it.
-       Act three: the object comes up into the space they left. Never both at once. */
-    var said = sm(0.03, 0.26);
+    var said = sm(0.52, 0.80);                      /* the words hold while the vessel rises through them, then go */
     lede.style.setProperty('--lo', (1-said).toFixed(3));
-    lede.style.setProperty('--ly', (-said*36).toFixed(1) + 'px');
-    lede.style.setProperty('--ls', (1 + said*0.06).toFixed(4));
-    lede.style.setProperty('--lb', (said*12).toFixed(2) + 'px');
-    var rise = sm(0.16, 0.54);
-    rhNow = -26 + rise*126;                          /* starts wholly below the surface */
+    lede.style.setProperty('--ly', (-said*40).toFixed(1) + 'px');
+    hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
+    if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
+    var rise = sm(0.0, 0.62);                       /* the base is there from the start; the rest rises through the words */
+    var rh0 = innerWidth < 760 ? 22 : 6;            /* phones frame the vessel higher */
+    rhNow = rh0 + rise*(100-rh0);
     hero.parentNode.style.setProperty('--rh', rhNow.toFixed(1) + '%');
+    mirror();
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
     floor.style.setProperty('--fo', (sm(0.50, 0.90)).toFixed(3));           /* and the ground it stands on is there */
 
     /* the mark stands in the dark, then gives the frame over to the object */
-    idc.classList.toggle('on', p > 0.40 && p < 0.90);   /* the name arrives with the object, not over the words */
+    idc.classList.toggle('on', p < 0.90);
 
     /* ---- the opening: what the page has been withholding ---- */
     if(opening && putOpen){
