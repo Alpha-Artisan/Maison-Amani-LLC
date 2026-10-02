@@ -7,8 +7,12 @@
 <meta name="description" content="Extra-Terra 001. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wght@300;400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Archivo:wght@300;400&family=Newsreader:opsz,wght@6..72,300&display=swap">
 <style>
+/* Canela Light (Commercial Type), for the hero line only. Put the licensed web
+   file in /fonts under this name and it is used; until then Newsreader Light. */
+@font-face{font-family:'Canela';font-weight:300;font-style:normal;font-display:swap;
+  src:local('Canela Light'),local('Canela-Light'),url(fonts/Canela-Light-Web.woff2) format('woff2')}
 :root{
   --night:#0B0806; --deep:#080605;            /* espresso, near black */
   --paper:#ECE4D6;
@@ -90,8 +94,8 @@ img{display:block;max-width:100%}
    on arrival a band of light crosses the words once and leaves them lit. As the
    vessel rises beneath, they lift and fade so the object takes the frame. */
 .lede{position:absolute;z-index:6;left:var(--gutter);right:var(--gutter);top:clamp(96px,16vh,180px);margin:0;
-  text-align:center;font-family:var(--display);font-weight:400;
-  font-size:clamp(40px,6.2vw,108px);line-height:1.04;letter-spacing:-.018em;
+  text-align:center;font-family:'Canela','Newsreader',Georgia,serif;font-weight:300;font-variation-settings:'opsz' 72;
+  font-size:clamp(40px,6.2vw,108px);line-height:1.06;letter-spacing:-.015em;
   opacity:var(--lo,1);transform:translate3d(0,var(--ly,0px),0);will-change:opacity,transform}
 .lede span{display:block;padding:0 .04em;
   background:linear-gradient(100deg, #EFE7D9 0%, #EFE7D9 38%, #FFF8EA 46%, #EFE7D9 54%, rgba(239,231,217,.16) 66%, rgba(239,231,217,.16) 100%);
