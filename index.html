@@ -88,8 +88,8 @@ img{display:block;max-width:100%}
     radial-gradient(120% 90% at 50% 40%, transparent 52%, rgba(0,0,0,.55) 100%)}
 /* the object comes up from below the surface of the page: a horizon that rises
    through it, never a cut, never a fade-in of the whole picture */
-#hero,#heroFront{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%));
-          mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,0%),transparent calc(var(--rh,0%) + 26%))}
+#hero,#heroFront{-webkit-mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%));
+          mask-image:linear-gradient(to top,#000 0%,#000 var(--rh,6%),transparent calc(var(--rh,6%) + 26%))}
 /* The headline as a wall of type the object moves through: compressed black
    capitals sized to the width, line one in front of the vessel, line two behind
    it. The vessel is drawn twice: once under the type, and once, keyed off its
@@ -225,6 +225,9 @@ img{display:block;max-width:100%}
 .opening .gc1{font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
   text-transform:uppercase;font-size:clamp(64px,10.5vw,190px);line-height:.84;letter-spacing:-.012em}
 .opening .gc1 span{display:block}
+/* the invitation answers from the other side */
+.opening .gc2{left:auto;right:var(--gutter);text-align:right;transform-origin:72% 50%}
+.opening .gc2 .t{margin-left:auto}
 .opening .gc2 .t span{display:block;white-space:nowrap}
 .opening .gc2 .t{margin:0;font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
   text-transform:uppercase;font-size:clamp(42px,5.8vw,104px);line-height:.88;letter-spacing:-.01em;max-width:7.5em}
@@ -628,8 +631,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     if(cache[i]) return cache[i];
     var im = new Image(); im.decoding = 'async'; im.src = FRAMES[i]; cache[i] = im; return im;
   }
-  for(var i=0;i<8;i++) warm(i);
-  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=8;i<N;i++) warm(i); });
+  /* the page opens with the base already lit under the words: the sequence starts at frame F0 */
+  var F0 = 48;
+  for(var i=F0;i<F0+8;i++) warm(i);
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); });
   if(shot2) shot2.src = (innerWidth > 760 ? 'op' : 'opm') + '/00.webp';
 
   /* ---- the frame, painted full bleed, carrying its own ground ----
@@ -810,7 +815,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     live = r.bottom > 0 && r.top < innerHeight;
     var p = clamp(-r.top/(span||1), 0, 1);
     /* it arrives at the last frame and stays there — the scroll runs both ways */
-    putHero(Math.round(p*(N-1)));
+    putHero(Math.round(F0 + p*(N-1-F0)));
 
     /* curtain → atmosphere → revelation → object. Every value below is a pure
        function of the scroll, so scrolling back plays it in reverse exactly. */
@@ -821,8 +826,9 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     lede.style.setProperty('--ly', (-said*40).toFixed(1) + 'px');
     hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
     if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
-    var rise = sm(0.22, 0.84);                      /* the object surfaces, base first */
-    hero.parentNode.style.setProperty('--rh', (-26 + rise*126).toFixed(1) + '%');
+    var rise = sm(0.0, 0.62);                       /* the base is there from the start; the rest rises through the words */
+    var rh0 = innerWidth < 760 ? 30 : 6;            /* phones frame the vessel higher */
+    hero.parentNode.style.setProperty('--rh', (rh0 + rise*(100-rh0)).toFixed(1) + '%');
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
     floor.style.setProperty('--fo', (sm(0.50, 0.90)).toFixed(3));           /* and the ground it stands on is there */
 
@@ -860,7 +866,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   addEventListener('resize', function(){ fitHero(); tick(); }, {passive:true});
 
   function ignite(){
-    var first = warm(reduce ? N-1 : 0);
+    var first = warm(reduce ? N-1 : F0);
     function go(){ curFrame = -1; paint(first); hero.classList.add('lit'); if(!reduce) onScroll(); }
     if(first.complete && first.naturalWidth) go();
     else first.addEventListener('load', go, {once:true});
