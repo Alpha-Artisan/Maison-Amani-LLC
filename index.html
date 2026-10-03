@@ -536,6 +536,18 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
      everything above the point the vessel has reached is kept. So a letter in the
      span stays until the rising vessel arrives at it, then goes from the bottom
      up as the vessel appears, and the two never sit on each other. */
+  var rowC = document.createElement('canvas'), rowX = rowC.getContext('2d', {willReadFrequently:true}); rowC.width = 480; rowC.height = 1;
+  function vesselEdges(y){                         /* the vessel's left and right edge at height y (pin px), from its outline */
+    if(!last) return null;
+    var k = warmK(curFrame >= 0 ? curFrame : F0); if(!(k.complete && k.naturalWidth)) return null;
+    var fy = (y - last.dy)/last.dh; if(fy < 0 || fy > 1) return null;
+    rowX.clearRect(0,0,480,1);
+    rowX.drawImage(k, 0, Math.min(k.naturalHeight-1, Math.floor(fy*k.naturalHeight)), k.naturalWidth, 1, 0, 0, 480, 1);
+    var d = rowX.getImageData(0,0,480,1).data, a = -1, b = -1;
+    for(var i=0;i<480;i++){ if(d[i*4+3] > 100){ if(a < 0) a = i; b = i; } }
+    if(a < 0) return null;
+    return [last.dx + a/480*last.dw, last.dx + (b+1)/480*last.dw];
+  }
   function clearing(){
     var l2 = ledeEl && ledeEl.querySelector('.l2'); if(!l2 || !gap) return;
     var pr = ledeEl.parentNode.getBoundingClientRect(), lr = l2.getBoundingClientRect();
@@ -545,8 +557,16 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     var gone = yOf(rhNow + 24), whole = yOf(rhNow + 44);   /* the letters leave just ahead of it */
     if(whole > lr.height + 2){ l2.style.webkitMaskImage = l2.style.maskImage = ''; }
     else {
-      var across = 'linear-gradient(to right,#000 ' + gap.a.toFixed(1) + 'px,transparent ' + gap.b.toFixed(1) + 'px,transparent ' +
-                   gap.c.toFixed(1) + 'px,#000 ' + gap.d.toFixed(1) + 'px)';
+      /* The borders are measured from the vessel itself, not the letters: at the
+         foot of line two, where the dome is widest within the line, read the
+         vessel's outline for this frame and find its two edges. The text is clear
+         at each edge and whole again one letter's width out, so the E on the left
+         and the O on the right fade toward the object alike, whichever of them it
+         happens to cover. Between them nothing is left. */
+      var fw = gap.b - gap.a, cl = gap.b, cr = gap.c, e = vesselEdges(lr.bottom - pr.top);
+      if(e){ cl = Math.min(cl, e[0] - (lr.left - pr.left)); cr = Math.max(cr, e[1] - (lr.left - pr.left)); }
+      var across = 'linear-gradient(to right,#000 ' + (cl - fw).toFixed(1) + 'px,transparent ' + cl.toFixed(1) + 'px,transparent ' +
+                   cr.toFixed(1) + 'px,#000 ' + (cr + fw).toFixed(1) + 'px)';
       var down = 'linear-gradient(to bottom,#000 ' + whole.toFixed(1) + 'px,transparent ' + gone.toFixed(1) + 'px)';
       l2.style.webkitMaskImage = l2.style.maskImage = across + ',' + down;
     }
@@ -592,9 +612,26 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     g.addColorStop(1, 'rgba(0,0,0,0)');
     return g;
   }
+  /* The vessel is solid: nothing in the sky shows through it. Its outline for the
+     frame on screen, revealed exactly as the vessel itself is revealed, is cut out
+     of the star layer, so the stars stop at its edge. */
+  var vc = document.createElement('canvas'), vcx = vc.getContext('2d'), vcKey = '';
+  function vesselCut(){
+    if(!last) return null;
+    var n = curFrame >= 0 ? curFrame : F0, k = warmK(n);
+    if(!(k.complete && k.naturalWidth)) return vcKey ? vc : null;
+    var key = n + '|' + rhNow.toFixed(2) + '|' + HW + 'x' + HH + '|' + last.dx.toFixed(1);
+    if(key === vcKey) return vc;
+    if(vc.width !== hero.width || vc.height !== hero.height){ vc.width = hero.width; vc.height = hero.height; }
+    vcx.setTransform(HD,0,0,HD,0,0); vcx.globalCompositeOperation = 'source-over'; vcx.clearRect(0,0,HW,HH);
+    vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh);
+    vcx.globalCompositeOperation = 'destination-in'; vcx.fillStyle = riseGrad(vcx, 0, 0.26); vcx.fillRect(0,0,HW,HH);
+    vcKey = key; return vc;
+  }
+  window.__vesselCut = vesselCut;
   function mirror(im, dx, dy, dw, dh){
-    if(!fx) return;
     if(im) last = {im:im, dx:dx, dy:dy, dw:dw, dh:dh};
+    if(!fx) return;
     if(!last) return;
     im = last.im; dx = last.dx; dy = last.dy; dw = last.dw; dh = last.dh;
     var n = curFrame >= 0 ? curFrame : F0, k = warmK(n);
@@ -913,6 +950,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
         g.globalAlpha=.6*peak; g.fillStyle='#F6F0E6';
         g.beginPath(); g.arc(meteor.x,meteor.y,1.1,0,6.283); g.fill();
         if(k>1) meteor=null;
+      }
+      /* and nothing of it over the vessel */
+      var cut = window.__vesselCut && window.__vesselCut();
+      if(cut){
+        g.globalAlpha = 1; g.globalCompositeOperation = 'destination-out';
+        g.setTransform(1,0,0,1,0,0); g.drawImage(cut, 0, 0, cv.width, cv.height);
+        g.setTransform(D,0,0,D,0,0); g.globalCompositeOperation = 'source-over';
       }
       g.globalAlpha=1; requestAnimationFrame(frame);
     }
