@@ -147,9 +147,9 @@ img{display:block;max-width:100%}
   background:radial-gradient(64% 70% at 46% 48%, transparent 0%, rgba(11,8,6,.34) 52%, rgba(11,8,6,.94) 100%)}
 .surface picture{position:absolute;inset:0}
 .surface img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 44%;
-  transform:scale(var(--ss,1.16));transform-origin:46% 48%;will-change:transform;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 78%,transparent 100%);
-          mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 78%,transparent 100%)}
+  transform:scale(var(--ss,1.04));transform-origin:46% 48%;will-change:transform;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 52%,rgba(0,0,0,.55) 76%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 52%,rgba(0,0,0,.55) 76%,transparent 100%)}
 @media(max-width:760px){.surface img{object-position:38% 44%}}
 @media(prefers-reduced-motion:reduce){.surface img{transform:none}}
 
@@ -352,8 +352,8 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 <!-- 03 -->
 <figure class="surface" aria-label="Surface">
   <picture>
-    <source media="(max-width:760px)" srcset="img/r-surface-m.webp" width="680" height="780">
-    <img src="img/r-surface.webp" width="1060" height="580" loading="lazy" decoding="async" alt="The relief of the dome, close, under a low light">
+    <source media="(max-width:760px)" srcset="img/r-surface-m.webp" width="1100" height="1920">
+    <img src="img/r-surface.webp" width="3840" height="2160" loading="lazy" decoding="async" alt="The relief of the dome, close, under a low light">
   </picture>
 </figure>
 
@@ -1155,7 +1155,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     function upd(){
       q = false;
       var r = fig.getBoundingClientRect(), k = clamp((innerHeight - r.top)/(innerHeight + r.height), 0, 1);
-      fig.style.setProperty('--ss', (1.03 + k*0.13).toFixed(4));
+      fig.style.setProperty('--ss', (1.0 + k*0.08).toFixed(4));   /* never past the plate's own resolution */
     }
     addEventListener('scroll', function(){ if(!q){ q = true; requestAnimationFrame(upd); } }, {passive:true});
     upd();
