@@ -178,10 +178,12 @@ img{display:block;max-width:100%}
 .opening .gc{position:absolute;z-index:4;left:var(--gutter);top:50%;margin:0;pointer-events:none;
   opacity:var(--go,0);filter:blur(var(--gb,18px));transform:translate3d(0,-50%,0) scale(var(--gs,.78));transform-origin:28% 50%;
   will-change:opacity,filter,transform;color:#2A1F17}
-/* inside the light there is nothing to read for a while; then one line, in the quiet voice, at the centre */
+/* inside the light there is nothing to read for a while; then one line, at the centre, in the hero's
+   voice: compressed black capitals, so the light answers the words that opened the page */
 .opening .gc2{left:var(--gutter);right:var(--gutter);text-align:center;transform-origin:50% 50%;
-  font-family:var(--display);font-weight:300;font-variation-settings:'opsz' 72;font-size:clamp(28px,3.4vw,58px);
-  line-height:1.12;letter-spacing:-.018em;color:#2A1F17;text-wrap:balance}
+  font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;text-transform:uppercase;
+  font-size:clamp(46px,7.4vw,140px);line-height:.86;letter-spacing:-.012em;color:#2A1F17;text-wrap:balance}
+@media(max-width:620px){.opening .gc2{font-size:17vw}}   /* phones: the width of the screen, as the hero is */
 @media(prefers-reduced-motion:reduce){.opening .gc{display:none}}
 /* phones: the invitation's line breaks evenly, never leaving one word alone */
 /* the light, once reached, goes down to the house's dark before the next room */
