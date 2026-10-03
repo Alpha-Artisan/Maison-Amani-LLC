@@ -31,6 +31,8 @@ body{margin:0;background:var(--night);color:var(--silver);
 img{display:block;max-width:100%}
 ::selection{background:#3A2C1F;color:var(--mineral)}
 
+/* read by search and screen readers, not shown */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 .meta{font-size:10px;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:400}
 .d{font-family:var(--display);font-weight:300;font-variation-settings:'opsz' 72;letter-spacing:-.022em;line-height:1.02;margin:0;color:var(--mineral)}
 .d-xl{font-size:clamp(42px,8vw,132px)}
@@ -172,25 +174,16 @@ img{display:block;max-width:100%}
 .opening .pin figure{margin:0;z-index:1;position:absolute;inset:0;width:100%;height:100%}
 .opening .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
 .opening .halo,.opening .nova{display:none}
-/* inside the light: the hero's line answered — 'Before the light' becomes 'Become the light' —
-   then the invitation. Both come out of the glow by focus, on the left, and go the same way. */
+/* inside the light: a line that comes out of the glow by focus and goes the same way */
 .opening .gc{position:absolute;z-index:4;left:var(--gutter);top:50%;margin:0;pointer-events:none;
   opacity:var(--go,0);filter:blur(var(--gb,18px));transform:translate3d(0,-50%,0) scale(var(--gs,.78));transform-origin:28% 50%;
   will-change:opacity,filter,transform;color:#2A1F17}
-.opening .gc1{font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
-  text-transform:uppercase;font-size:clamp(64px,10.5vw,190px);line-height:.84;letter-spacing:-.012em}
-.opening .gc1 span{display:block}
-/* the invitation answers from the other side */
-.opening .gc2{left:auto;right:var(--gutter);text-align:right;transform-origin:72% 50%}
-.opening .gc2 .t{margin-left:auto}
-.opening .gc2 .t span{display:block;white-space:nowrap}
-.opening .gc2 .t{margin:0;font-family:var(--sans);font-weight:900;font-variation-settings:'wdth' 62;font-stretch:62%;
-  text-transform:uppercase;font-size:clamp(42px,5.8vw,104px);line-height:.88;letter-spacing:-.01em;max-width:7.5em}
-.opening .gc2 .s{margin:clamp(14px,1.6vw,26px) 0 0;font-family:var(--sans);font-weight:300;font-size:clamp(15px,1.15vw,19px);
-  letter-spacing:.03em;color:#6A5847}
+/* inside the light there is nothing to read for a while; then one line, in the quiet voice, at the centre */
+.opening .gc2{left:var(--gutter);right:var(--gutter);text-align:center;transform-origin:50% 50%;
+  font-family:var(--display);font-weight:300;font-variation-settings:'opsz' 72;font-size:clamp(28px,3.4vw,58px);
+  line-height:1.12;letter-spacing:-.018em;color:#2A1F17;text-wrap:balance}
 @media(prefers-reduced-motion:reduce){.opening .gc{display:none}}
 /* phones: the invitation's line breaks evenly, never leaving one word alone */
-@media(max-width:620px){.opening .gc2 .s{max-width:17em;margin-left:auto;text-wrap:balance;line-height:1.5}}
 /* the light, once reached, goes down to the house's dark before the next room */
 .opening .dusk{position:absolute;inset:0;z-index:3;pointer-events:none;
   background:radial-gradient(circle at 50% 50%, rgba(11,8,6,0) var(--r,150%), var(--night) calc(var(--r,150%) + 36%))}
@@ -326,7 +319,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     <canvas id="sky" aria-hidden="true"></canvas>
     <div class="field" id="field" aria-hidden="true"></div>
     <div class="floor" id="floor" aria-hidden="true"></div>
-    <h1 class="lede" id="lede"><span class="l1"><span class="w">Before the </span><span class="w">light</span></span><span class="l2"><span class="w">there is the </span><span class="w">Object</span></span></h1>
+    <h1 class="lede" id="lede"><span class="l1"><span class="w">Before the </span><span class="w">light</span></span><span class="sr">, </span><span class="l2"><span class="w">there is the </span><span class="w">object</span></span><span class="sr">.</span></h1>
     <canvas id="heroFront" aria-hidden="true"></canvas>
     <div class="id" id="id">
       <p class="meta">Extra&#8209;Terra</p>
@@ -404,7 +397,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 
 <!-- 07 -->
 <section class="vessel" aria-label="The vessel stays">
-  <p class="d d-xl rise"><span class="l1">The vessel stays.</span><span class="l2">The light changes.</span></p>
+  <p class="d d-xl rise"><span class="l1">The vessel stays.</span> <span class="l2">The light changes.</span></p>
 </section>
 
 <!-- 08 — the opening -->
@@ -417,8 +410,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     </figure>
     <div class="nova" id="nova" aria-hidden="true"></div>
     <div class="dusk" id="dusk" aria-hidden="true"></div>
-    <p class="gc gc1" id="gc1"><span>Become</span><span>the light</span></p>
-    <div class="gc gc2" id="gc2"><p class="t"><span>Be first</span> <span>to the light.</span></p><p class="s">Leave your address below. We&rsquo;ll write the moment it&rsquo;s lit.</p></div>
+    <p class="gc gc2" id="gc2">We&rsquo;ll write when it is lit.</p>
   </div>
 </section>
 
@@ -449,6 +441,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       <dt>Form</dt><dd>Vessel</dd>
       <dt>Light</dt><dd>Candle</dd>
       <dt>Scent</dt><dd>Sealed</dd>
+      <dt>Composition</dt><dd>Agarwood<br>Frankincense<br>Labdanum<br>Vetiver</dd>
       <dt>Refill</dt><dd>Yes</dd>
     </dl>
     <p class="by fade">An object by an award&#8209;winning collective <br>of multidisciplinary artists, designers and creatives.</p>
@@ -790,8 +783,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       /* 0–62%: the lid lifts and the eye goes in. 62–92%: inside the light, two lines. 92–100%: the dark closes */
       var qo = clamp(q/0.62, 0, 1);
       putOpen(Math.round(qo*(ON-1)));
-      focusIn(gc1, q, 0.62, 0.69, 0.72, 0.79);
-      focusIn(gc2, q, 0.79, 0.86, 0.89, 0.94);
+      focusIn(gc2, q, 0.72, 0.79, 0.85, 0.91);   /* the light held in silence first */
       var dk = clamp((q-0.92)/0.08, 0, 1);
       dk = dk*dk*(3-2*dk);
       dusk.style.setProperty('--r', (150 - dk*190).toFixed(1) + '%');   /* the dark closes in on the light, to a point, then over it */
