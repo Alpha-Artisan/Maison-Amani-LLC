@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Maison Amani — Extra-Terra 001</title>
-<meta name="description" content="Extra-Terra 001. Maison Amani.">
+<meta name="description" content="Extra-Terra 001. An art object by Adaramati Shogo. Maison Amani.">
+<meta name="author" content="Adaramati Shogo">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:opsz,wght@6..72,300&display=swap">
@@ -127,8 +128,8 @@ img{display:block;max-width:100%}
 
 /* 02 the object — a single plate, centred, nothing else */
 .object{min-height:100svh;padding:clamp(70px,10vh,120px) var(--gutter);display:grid;justify-items:center;align-content:center;gap:clamp(26px,4.5vh,56px);
-  background:radial-gradient(52% 44% at 50% 36%, rgba(120,96,72,.06) 0%, transparent 70%)}   /* the faintest ground, not a glow */
-.object figure{margin:0;width:min(74vw,50svh,560px)}
+  background:var(--night)}   /* the black edition, on the house's dark: no plate, no glow */
+.object figure{margin:0;width:min(84vw,56svh,640px)}
 .object img{width:100%;height:auto}
 .object .line{text-align:center}
 
@@ -145,6 +146,7 @@ img{display:block;max-width:100%}
 /* a low raking light on the material: the plate keeps its colour, the room around it goes dark */
 .surface::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
   background:radial-gradient(64% 70% at 46% 48%, transparent 0%, rgba(11,8,6,.34) 52%, rgba(11,8,6,.94) 100%)}
+.surface picture{position:absolute;inset:0}
 .surface img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 44%;
   transform:scale(var(--ss,1.16));transform-origin:46% 48%;will-change:transform;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 78%,transparent 100%);
@@ -286,6 +288,10 @@ img{display:block;max-width:100%}
 .record dt{color:rgba(214,206,193,.56)}
 .record dd{color:rgba(236,227,210,.88);text-align:right}
 @media(max-width:620px){.record{font-size:10px;letter-spacing:.2em}}
+/* the author, once, in words: the quiet voice, not a credit line */
+.after .by{margin:clamp(36px,4.4vw,58px) auto 0;max-width:28em;font-family:var(--display);font-weight:300;font-variation-settings:'opsz' 24;
+  font-size:clamp(16px,1.35vw,20px);line-height:1.5;letter-spacing:0;color:#A89B86;text-wrap:balance}
+@media(max-width:620px){.after .by br{display:none}}
 .after .wm{margin:clamp(48px,9vh,110px) auto 0;width:clamp(132px,13vw,186px);aspect-ratio:440/251}
 .after .wm img{width:100%;height:100%;object-fit:contain;opacity:.86}
 footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--rule)}
@@ -346,7 +352,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 
 <!-- 03 -->
 <figure class="surface" aria-label="Surface">
-  <img src="img/a-surface-b.webp" width="2600" height="1417" loading="lazy" decoding="async" alt="Surface, close">
+  <picture>
+    <source media="(max-width:760px)" srcset="img/r-surface-m.webp" width="680" height="780">
+    <img src="img/r-surface.webp" width="1060" height="580" loading="lazy" decoding="async" alt="The relief of the dome, close, under a low light">
+  </picture>
 </figure>
 
 <!-- 05 — said, then nothing: what is sealed is not shown -->
@@ -384,7 +393,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   <div class="obj">
     <span class="shade" aria-hidden="true"></span>
     <img src="img/a-front-black-b.webp" width="1905" height="1803" loading="lazy" decoding="async" alt="Extra-Terra 001 at night">
-    <img src="img/a-front-bone-b.webp" width="1905" height="1803" loading="lazy" decoding="async" alt="Extra-Terra 001 in daylight"
+    <img src="img/a-front-sand.webp" width="1905" height="1803" loading="lazy" decoding="async" alt="Extra-Terra 001 in daylight, warm sand"
          id="objDay" style="position:absolute;inset:0;clip-path:inset(0 0 0 var(--ox,50%))">
   </div>
 
@@ -437,11 +446,13 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
          never avoids it. -->
     <dl class="record fade">
       <dt>Object</dt><dd>001</dd>
+      <dt>Artist</dt><dd>Adaramati Shogo</dd>
       <dt>Form</dt><dd>Vessel</dd>
       <dt>Light</dt><dd>Candle</dd>
       <dt>Scent</dt><dd>Sealed</dd>
       <dt>Refill</dt><dd>Yes</dd>
     </dl>
+    <p class="by fade">An object by Adaramati Shogo, <br>award&#8209;winning artist and creative director.</p>
     <div class="wm fade"><img src="img/lockup-bone.png" width="440" height="251" alt="Maison Amani" loading="lazy"></div>
   </div>
 </section>
@@ -503,10 +514,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 
   /* the type is sized so line two spans the width; line one follows at the same size */
   /* The copy in front of the second line is the frame itself, unaltered, cut to
-     the vessel's exact outline (vk/ and vmk/: one outline per frame, shadows
+     the vessel's exact outline (vk/: one outline per frame, shadows
      included). Line one stays in front of the vessel; line two sits behind it. */
   var front = PHONE ? null : document.getElementById('heroFront'), fx = front ? front.getContext('2d') : null;
-  var KSET = SET === 'v' ? 'vk' : 'vmk', kcache = [], off = document.createElement('canvas'), ox = off.getContext('2d'), last = null, rhNow = 6;
+  var KSET = 'vk', kcache = [], off = document.createElement('canvas'), ox = off.getContext('2d'), last = null, rhNow = 6;
   function warmK(i){ if(kcache[i]) return kcache[i]; var k = new Image(); k.decoding = 'async'; k.src = KSET + '/' + pad(i) + '.png'; kcache[i] = k; return k; }
   var ledeEl = document.getElementById('lede'), fcBase = 0;
   function baseline(el){                               /* the y of an element's text baseline */
