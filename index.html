@@ -525,6 +525,32 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline'; el.appendChild(pr); }
     return pr.getBoundingClientRect().top;
   }
+  var gap = null;
+  function charRect(el, i){
+    var t = el && el.firstChild; if(!t || t.nodeType !== 3 || t.length <= i) return null;
+    var r = document.createRange(); r.setStart(t, i); r.setEnd(t, i + 1); return r.getBoundingClientRect();
+  }
+  /* Line two opens around the object, in step with it. Two masks, added together:
+     across the line, everything outside the E-to-O span is kept, the E and the O
+     themselves fading across their own width as the soft borders; down the line,
+     everything above the point the vessel has reached is kept. So a letter in the
+     span stays until the rising vessel arrives at it, then goes from the bottom
+     up as the vessel appears, and the two never sit on each other. */
+  function clearing(){
+    var l2 = ledeEl && ledeEl.querySelector('.l2'); if(!l2 || !gap) return;
+    var pr = ledeEl.parentNode.getBoundingClientRect(), lr = l2.getBoundingClientRect();
+    /* the vessel's reveal is solid to rh and gone by rh + 26 (% from the bottom); the
+       letters are gone by the time it begins to show, and fade over the stretch just above */
+    var yOf = function(p){ return pr.height*(1 - p/100) - (lr.top - pr.top); };
+    var gone = yOf(rhNow + 24), whole = yOf(rhNow + 44);   /* the letters leave just ahead of it */
+    if(whole > lr.height + 2){ l2.style.webkitMaskImage = l2.style.maskImage = ''; }
+    else {
+      var across = 'linear-gradient(to right,#000 ' + gap.a.toFixed(1) + 'px,transparent ' + gap.b.toFixed(1) + 'px,transparent ' +
+                   gap.c.toFixed(1) + 'px,#000 ' + gap.d.toFixed(1) + 'px)';
+      var down = 'linear-gradient(to bottom,#000 ' + whole.toFixed(1) + 'px,transparent ' + gone.toFixed(1) + 'px)';
+      l2.style.webkitMaskImage = l2.style.maskImage = across + ',' + down;
+    }
+  }
   function fitLede(){
     if(!ledeEl) return;
     var l2 = ledeEl.querySelector('.l2'), W = ledeEl.parentNode.clientWidth, ws = ledeEl.querySelectorAll('.w');
@@ -541,6 +567,11 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       var w = l2.getBoundingClientRect().width || 1;
       ledeEl.style.setProperty('--fs', (100*W*0.94/w).toFixed(2)+'px');
       r2 = baseline(ledeEl.querySelector('.l1'));
+      /* the clearing on line two: from the E of THERE to the O of OBJECT. Measured
+         from the letters themselves, so it holds at any width the type is set to. */
+      var l2b = l2.getBoundingClientRect(), wsL = ledeEl.querySelectorAll('.w');
+      var eR = charRect(wsL[2], 4), oR = charRect(wsL[3], 0);
+      if(eR && oR) gap = { a: eR.left - l2b.left, b: eR.right - l2b.left, c: oR.left - l2b.left, d: oR.right - l2b.left };
     }
     var pin = ledeEl.parentNode.getBoundingClientRect();
     /* the vessel comes in front from just under the baseline of the line above:
@@ -704,6 +735,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
       hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
       if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
       rhNow = 6 + sm(0.0, 0.62)*94;                   /* the base is there from the start; the rest rises through the words */
+      clearing();
       hero.parentNode.style.setProperty('--rh', rhNow.toFixed(1) + '%');
       mirror();
     }
