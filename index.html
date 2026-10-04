@@ -171,7 +171,7 @@ img{display:block;max-width:100%}
 /* the f_3 render: the lid lifts, the eye goes down into the vessel, and the
    frame ends in its light. Full bleed; the render brings its own glow, so the
    drawn halo and flare stay off. */
-.opening .pin figure{margin:0;z-index:1;position:absolute;inset:0;width:100%;height:100%}
+.opening .pin figure{margin:0;z-index:1;position:absolute;inset:0;width:100%;height:100%;opacity:var(--oe,1)}
 .opening .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
 .opening .halo,.opening .nova{display:none}
 /* inside the light: a line that comes out of the glow by focus and goes the same way */
@@ -779,6 +779,10 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
     /* ---- the opening: what the page has been withholding ---- */
     if(opening && putOpen){
       var o = opening.getBoundingClientRect(), ospan = o.height - innerHeight;
+      /* the object does not slide in as a panel: while the room is still arriving it stays
+         in the dark, and comes up out of it in place, the last stretch before the room holds */
+      var en = clamp(1 - o.top/innerHeight, 0, 1), ev = clamp((en - 0.55)/0.45, 0, 1);
+      opening.style.setProperty('--oe', (ev*ev*(3-2*ev)).toFixed(3));
       var q = clamp(-o.top/(ospan||1), 0, 1);
       /* the opening runs over the first 84% of the scroll; the rest is the light held, then let down */
       /* 0–62%: the lid lifts and the eye goes in. 62–92%: inside the light, two lines. 92–100%: the dark closes */
