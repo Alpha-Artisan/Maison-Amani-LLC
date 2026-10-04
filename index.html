@@ -189,7 +189,7 @@ img{display:block;max-width:100%}
 /* the light, once reached, goes down to the house's dark before the next room */
 .opening .dusk{position:absolute;inset:0;z-index:3;pointer-events:none;
   background:radial-gradient(circle at 50% 50%, rgba(11,8,6,0) var(--r,150%), var(--night) calc(var(--r,150%) + 36%))}
-/* phones get their own portrait frames (opm/): the vessel framed for a tall screen, the render's own edge colour above and below */
+/* phones get their own portrait render (opm/, from f_3 at 4000x8000): framed for a tall screen, nothing padded */
 .opening::before{content:'';position:absolute;left:0;right:0;top:0;height:30vh;z-index:5;pointer-events:none;
   background:linear-gradient(to bottom,var(--night),rgba(11,8,6,0))}
 @media(prefers-reduced-motion:reduce){.opening{height:auto}.opening .pin{position:relative;height:auto;padding:14vh 0}.opening .pin figure{position:relative;inset:auto;height:auto;aspect-ratio:1920/938}}
