@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<script>
+/* A private preview: the page waits behind a password. This keeps casual visitors out;
+   it is not security (the files themselves remain reachable). Only a SHA-256 of the
+   password is stored here. To change it, replace GATE with the new password's hash. */
+var GATE = "e1546ae94f9f67f4765c6940f9062e1a40b780af0c305940ef409a9817ba5b54";
+(function(){ var ok = false; try { ok = localStorage.getItem('ma_gate') === GATE; } catch(e){}
+  if(!ok) document.documentElement.classList.add('locked'); })();
+</script>
 <title>Maison Amani — Extra-Terra 001</title>
 <meta name="description" content="Extra-Terra 001. An art object by an award-winning collective of artists, designers and creatives. Maison Amani.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -300,9 +309,60 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
   .sun{box-shadow:0 0 46px 14px rgba(255,248,226,.80), 0 0 120px 50px rgba(255,238,196,.30), 0 0 300px 150px rgba(255,240,204,.12)}
 }
 
+/* the gate */
+.gate{display:none}
+html.locked{overflow:hidden}
+html.locked body > :not(.gate){visibility:hidden}
+html.locked .lede .l1,html.locked .lede .l2{animation:none}
+html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:center;background:var(--night);padding:0 var(--gutter)}
+.gate form{display:grid;justify-items:center;gap:clamp(22px,3vh,34px);width:min(100%,22rem);text-align:center}
+.gate img{width:clamp(120px,11vw,160px);height:auto;opacity:.9}
+.gate .row{display:flex;gap:14px;align-items:baseline;width:100%;border-bottom:1px solid rgba(205,184,148,.30);padding-bottom:8px}
+.gate input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--mineral);font-family:var(--sans);font-weight:300;font-size:16px;padding:12px 0;min-height:44px;letter-spacing:.06em}
+.gate input::placeholder{color:#75685A}
+.gate button{background:none;border:0;cursor:pointer;color:var(--silver);font-size:19px;padding:11px 4px 11px 14px}
+.gate button:hover{color:var(--mineral)}
+.gate .note{min-height:1.2em}
+.gate.no .row{animation:gateNo .5s cubic-bezier(.4,0,.2,1)}
+@keyframes gateNo{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 </style>
 </head>
 <body>
+
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-label="Private preview">
+  <form id="gateForm" autocomplete="off">
+    <img src="img/lockup-bone.png" width="440" height="251" alt="Maison Amani">
+    <label class="meta" for="gatePw">Private preview</label>
+    <div class="row">
+      <input id="gatePw" type="password" placeholder="Password" autocomplete="current-password" required>
+      <button type="submit" aria-label="Enter">&#8594;</button>
+    </div>
+    <p class="meta note" id="gateNote" role="status" aria-live="polite"></p>
+  </form>
+</div>
+<script>
+(function(){
+  var root = document.documentElement, g = document.getElementById('gate');
+  if(!root.classList.contains('locked')){ g.remove(); return; }
+  var f = document.getElementById('gateForm'), pw = document.getElementById('gatePw'), note = document.getElementById('gateNote');
+  setTimeout(function(){ try { pw.focus(); } catch(e){} }, 300);
+  function hex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join(''); }
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!(window.crypto && crypto.subtle)){ note.textContent = 'Open this page over https.'; return; }
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw.value)).then(function(d){
+      if(hex(d) === GATE){
+        try { localStorage.setItem('ma_gate', GATE); } catch(err){}
+        root.classList.remove('locked'); g.remove(); scrollTo(0,0);
+        dispatchEvent(new Event('resize'));
+      } else {
+        note.textContent = 'Not this one.'; pw.value = '';
+        g.classList.remove('no'); void g.offsetWidth; g.classList.add('no');
+      }
+    });
+  });
+})();
+</script>
 
 <header class="mast" id="mast" aria-label="Maison Amani">
   <a class="lock" href="#arrival" aria-label="Maison Amani">
