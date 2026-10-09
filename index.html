@@ -185,6 +185,8 @@ img{display:block;max-width:100%}
    drawn halo and flare stay off. */
 .opening .pin figure{margin:0;z-index:1;position:absolute;inset:0;width:100%;height:100%;opacity:var(--oe,1)}
 .opening .pin img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+.opening .pin canvas#shot2c{position:absolute;inset:0;width:100%;height:100%;display:block}
+.opening.drawn .pin img{visibility:hidden}
 .opening .halo,.opening .nova{display:none}
 /* inside the light: a line that comes out of the glow by focus and goes the same way */
 .opening .gc{position:absolute;z-index:4;left:var(--gutter);top:50%;margin:0;pointer-events:none;
@@ -476,6 +478,7 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
     <figure>
       <img id="shot2" src="opm/00.webp" width="1920" height="938" loading="lazy" decoding="async"
            alt="Extra-Terra 001, opening">
+      <canvas id="shot2c" aria-hidden="true"></canvas>
     </figure>
     <div class="nova" id="nova" aria-hidden="true"></div>
     <div class="dusk" id="dusk" aria-hidden="true"></div>
@@ -547,11 +550,50 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
     if(cache[i]) return cache[i];
     var im = new Image(); im.decoding = 'async'; im.src = FRAMES[i]; cache[i] = im; return im;
   }
+  /* Frames are decoded ahead of the scroll, off the main thread, at the size they are shown,
+     into a rolling window around the frame on screen. Scrolling then only ever draws an
+     already-decoded picture: no frame waits on a decode, and memory stays bounded. */
+  var BITMAP = !!window.createImageBitmap, RESIZE_OK = true, blobs = {};
+  /* each frame is fetched once as compressed bytes and decoded from those bytes: decoding a Blob
+     runs off the main thread, so the scroll never pays for it */
+  function bytes(url){ return blobs[url] || (blobs[url] = fetch(url).then(function(r){ if(!r.ok) throw 0; return r.blob(); })); }
+  function decodeUrl(url, w){
+    if(!BITMAP){ var im = new Image(); im.src = url; return (im.decode ? im.decode() : new Promise(function(r){ im.onload = r; })).then(function(){ return im; }); }
+    return bytes(url).then(function(b){
+      if(RESIZE_OK) return createImageBitmap(b, {resizeWidth: w, resizeQuality: 'high'}).catch(function(){ RESIZE_OK = false; return createImageBitmap(b); });
+      return createImageBitmap(b);
+    });
+  }
+  function dims(im){ return im ? [im.naturalWidth || im.width, im.naturalHeight || im.height] : [0,0]; }
+  function Store(url, count, width, natural, ahead, onReady){
+    var bm = [], busy = [], cur = 0, keep = ahead*2 + 2;
+    function want(i){
+      if(i < 0 || i >= count || bm[i] || busy[i]) return;
+      busy[i] = true;
+      decodeUrl(url(i), Math.min(width(), natural)).then(function(b){
+        busy[i] = false;
+        if(Math.abs(i - cur) > keep){ if(b.close) b.close(); return; }
+        bm[i] = b; onReady(i);
+      }, function(){ busy[i] = false; });
+    }
+    return {
+      get: function(i){ return bm[i] || null; },
+      near: function(i){                            /* the closest decoded frame, so a fast scroll never shows a gap */
+        for(var d=0; d<count; d++){ if(bm[i-d]) return i-d; if(bm[i+d]) return i+d; } return -1;
+      },
+      focus: function(i, dir){
+        cur = i; want(i);
+        for(var d=1; d<=ahead; d++){ want(i + d*(dir||1)); if(d <= 2) want(i - d*(dir||1)); }
+        for(var j=0; j<count; j++) if(bm[j] && Math.abs(j - i) > keep){ if(bm[j].close) bm[j].close(); bm[j] = null; }
+      },
+      reset: function(){ for(var j=0; j<count; j++) if(bm[j]){ if(bm[j].close) bm[j].close(); bm[j] = null; } }
+    };
+  }
   /* the page opens with the base already lit under the words: the sequence starts at frame F0 */
   var PHONE = innerWidth <= 760;                /* phones: words alone first, the vessel after */
   var F0 = PHONE ? 0 : 48;
-  for(var i=F0;i<F0+8;i++) warm(i);
-  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0+8;i<N;i++) warm(i); if(!PHONE) for(var j=F0;j<N;j++) warmK(j); });
+  warm(F0);                                     /* the first picture, shown as the page opens */
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,300); })(function(){ for(var i=F0;i<N;i++) bytes(FRAMES[i]); if(!PHONE) for(var j=F0;j<N;j++) warmK(j); });
   if(shot2) shot2.src = (innerWidth > 760 ? 'op' : 'opm') + '/00.webp';
 
   /* ---- the frame, painted full bleed, carrying its own ground ----
@@ -570,7 +612,8 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
     hx.setTransform(HD,0,0,HD,0,0);
     if(front){ front.width = hero.width; front.height = hero.height; }
     fitLede();
-    curFrame = -1;
+    curFrame = -1; mirrorKey = ''; vcKey = ''; edgeMemo = {};
+    if(typeof heroStore !== 'undefined' && heroStore){ heroStore.reset(); heroWant = -1; }
   }
 
   /* the type is sized so line two spans the width; line one follows at the same size */
@@ -600,10 +643,16 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
      span stays until the rising vessel arrives at it, then goes from the bottom
      up as the vessel appears, and the two never sit on each other. */
   var rowC = document.createElement('canvas'), rowX = rowC.getContext('2d', {willReadFrequently:true}); rowC.width = 480; rowC.height = 1;
+  var edgeMemo = {};
   function vesselEdges(y){                         /* the vessel's left and right edge at height y (pin px), from its outline */
     if(!last) return null;
     var k = warmK(curFrame >= 0 ? curFrame : F0); if(!(k.complete && k.naturalWidth)) return null;
     var fy = (y - last.dy)/last.dh; if(fy < 0 || fy > 1) return null;
+    var mk = (curFrame >= 0 ? curFrame : F0) + '|' + Math.round(fy*400) + '|' + last.dx.toFixed(1) + '|' + last.dw.toFixed(1);
+    if(mk in edgeMemo) return edgeMemo[mk];
+    return (edgeMemo[mk] = vesselEdgesRead(k, fy));
+  }
+  function vesselEdgesRead(k, fy){
     rowX.clearRect(0,0,480,1);
     rowX.drawImage(k, 0, Math.min(k.naturalHeight-1, Math.floor(fy*k.naturalHeight)), k.naturalWidth, 1, 0, 0, 480, 1);
     var d = rowX.getImageData(0,0,480,1).data, a = -1, b = -1;
@@ -680,20 +729,23 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
   /* The vessel is solid: nothing in the sky shows through it. Its outline for the
      frame on screen, revealed exactly as the vessel itself is revealed, is cut out
      of the star layer, so the stars stop at its edge. */
-  var vc = document.createElement('canvas'), vcx = vc.getContext('2d'), vcKey = '';
+  var vc = document.createElement('canvas'), vcx = vc.getContext('2d'), vcKey = '', vcBox = null;
   function vesselCut(){
     if(!last) return null;
     var n = curFrame >= 0 ? curFrame : F0, k = warmK(n);
-    if(!(k.complete && k.naturalWidth)) return vcKey ? vc : null;
-    var key = n + '|' + rhNow.toFixed(2) + '|' + HW + 'x' + HH + '|' + last.dx.toFixed(1);
-    if(key === vcKey) return vc;
+    if(!(k.complete && k.naturalWidth)) return vcKey ? vcBox : null;
+    var key = n + '|' + rhNow.toFixed(1) + '|' + HW + 'x' + HH + '|' + last.dx.toFixed(1);
+    if(key === vcKey) return vcBox;
     if(vc.width !== hero.width || vc.height !== hero.height){ vc.width = hero.width; vc.height = hero.height; }
-    vcx.setTransform(HD,0,0,HD,0,0); vcx.globalCompositeOperation = 'source-over'; vcx.clearRect(0,0,HW,HH);
-    vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh); vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh); vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh);
-    vcx.globalCompositeOperation = 'destination-in'; vcx.fillStyle = riseGrad(vcx, 0, 0.26); vcx.fillRect(0,0,HW,HH);
-    vcKey = key; return vc;
+    var bx = Math.max(0, last.dx), by = Math.max(0, last.dy), bw = Math.min(HW, last.dx + last.dw) - bx, bh = Math.min(HH, last.dy + last.dh) - by;
+    vcx.setTransform(HD,0,0,HD,0,0); vcx.globalCompositeOperation = 'source-over'; vcx.clearRect(bx, by, bw, bh);
+    vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh); if(PHONE){ vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh); vcx.drawImage(k, last.dx, last.dy, last.dw, last.dh); }
+    vcx.globalCompositeOperation = 'destination-in'; vcx.fillStyle = riseGrad(vcx, 0, 0.26); vcx.fillRect(bx, by, bw, bh);
+    vcBox = {c: vc, x: Math.floor(bx*HD), y: Math.floor(by*HD), w: Math.ceil(bw*HD), h: Math.ceil(bh*HD)};
+    vcKey = key; return vcBox;
   }
   window.__vesselCut = vesselCut;
+  var mirrorKey = '', bandNow = [0, 0];
   function mirror(im, dx, dy, dw, dh){
     if(im) last = {im:im, dx:dx, dy:dy, dw:dw, dh:dh};
     if(!fx) return;
@@ -702,22 +754,35 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
     var n = curFrame >= 0 ? curFrame : F0, k = warmK(n);
     /* an outline not yet loaded keeps the last good copy up rather than leaving the words showing through */
     if(!(k.complete && k.naturalWidth)){ k.onload = function(){ if((curFrame >= 0 ? curFrame : F0) === n) mirror(); }; return; }
+    /* only the band of line two is ever shown (the canvas is clipped to it), so only that band is drawn,
+       and only when the frame, the rise or the band has moved */
+    var y0 = Math.max(0, Math.floor(bandNow[0]) - 2), y1 = Math.min(HH, Math.ceil(HH - bandNow[1]) + 2);
+    if(y1 <= y0) return;
+    var key = n + '|' + rhNow.toFixed(2) + '|' + y0 + '|' + y1 + '|' + HW + 'x' + HH + '|' + dx.toFixed(1) + '|' + (im === last.im);
+    if(key === mirrorKey) return; mirrorKey = key;
+    var bh = y1 - y0, iw = dims(im)[0], ih = dims(im)[1];
     fx.setTransform(HD,0,0,HD,0,0); fx.globalCompositeOperation = 'source-over'; fx.clearRect(0,0,HW,HH);
     if(off.width !== front.width || off.height !== front.height){ off.width = front.width; off.height = front.height; }
+    fx.save(); fx.beginPath(); fx.rect(0, y0, HW, bh); fx.clip();
     /* 1. its shadow: the outline in the house's dark, solid wherever the vessel shows, nowhere it doesn't */
-    fx.drawImage(k, dx, dy, dw, dh); fx.drawImage(k, dx, dy, dw, dh); fx.drawImage(k, dx, dy, dw, dh);
-    fx.globalCompositeOperation = 'source-in'; fx.fillStyle = '#000'; fx.fillRect(0,0,HW,HH);
-    fx.globalCompositeOperation = 'destination-in'; fx.fillStyle = riseGrad(fx, 0.15, 0.26); fx.fillRect(0,0,HW,HH);
+    fx.drawImage(k, dx, dy, dw, dh);
+    fx.globalCompositeOperation = 'source-in'; fx.fillStyle = '#000'; fx.fillRect(0, y0, HW, bh);
+    fx.globalCompositeOperation = 'destination-in'; fx.fillStyle = riseGrad(fx, 0.15, 0.26); fx.fillRect(0, y0, HW, bh);
+    fx.restore();
     /* 2. the vessel itself, as rendered, with the same rise as the canvas beneath */
-    ox.setTransform(HD,0,0,HD,0,0); ox.globalCompositeOperation = 'source-over'; ox.clearRect(0,0,HW,HH);
-    ox.drawImage(k, dx, dy, dw, dh); ox.drawImage(k, dx, dy, dw, dh); ox.drawImage(k, dx, dy, dw, dh);
-    ox.globalCompositeOperation = 'source-in'; ox.drawImage(im, 0, 0, im.naturalWidth, im.naturalHeight, dx, dy, dw, dh);
-    ox.globalCompositeOperation = 'destination-in'; ox.fillStyle = riseGrad(ox, 0, 0.26); ox.fillRect(0,0,HW,HH);
-    fx.globalCompositeOperation = 'source-over'; fx.setTransform(1,0,0,1,0,0); fx.drawImage(off, 0, 0);
+    ox.setTransform(HD,0,0,HD,0,0); ox.globalCompositeOperation = 'source-over'; ox.clearRect(0, y0, HW, bh);
+    ox.save(); ox.beginPath(); ox.rect(0, y0, HW, bh); ox.clip();
+    ox.drawImage(k, dx, dy, dw, dh);
+    ox.globalCompositeOperation = 'source-in'; ox.drawImage(im, 0, 0, iw, ih, dx, dy, dw, dh);
+    ox.globalCompositeOperation = 'destination-in'; ox.fillStyle = riseGrad(ox, 0, 0.26); ox.fillRect(0, y0, HW, bh);
+    ox.restore();
+    var sy0 = Math.floor(y0*HD), sh = Math.min(front.height - sy0, Math.ceil(bh*HD));
+    fx.globalCompositeOperation = 'source-over'; fx.setTransform(1,0,0,1,0,0);
+    if(sh > 0) fx.drawImage(off, 0, sy0, front.width, sh, 0, sy0, front.width, sh);
   }
   function paint(im){
-    if(!im || !im.naturalWidth) return;
-    var iw = im.naturalWidth, ih = im.naturalHeight;
+    var dd = dims(im); if(!im || !dd[0]) return;
+    var iw = dd[0], ih = dd[1];
     var s  = Math.min(HW/iw, HH/ih) * ZOOM;
     var dw = iw*s, dh = ih*s;
     var dx = (HW-dw)/2, dy = (HH-dh)/2;
@@ -758,31 +823,56 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
     }
   }
 
+  var heroWant = -1, heroDir = 1;
+  var heroStore = Store(function(i){ return FRAMES[i]; }, N, function(){ return Math.min(2560, Math.round(Math.min(HW*16/9, HW, HH*16/9)*HD) || 1920); }, PHONE ? 1000 : 3840, 6,
+    function(i){ if(i === heroWant && curFrame !== i){ curFrame = i; paint(heroStore.get(i)); } });
   function seq(){                        /* holds which frame is showing, repaints only on change */
     return function(n){
       n = Math.max(0, Math.min(N-1, n));
-      if(n === curFrame) return;
-      var im = warm(n);
-      if(im.complete && im.naturalWidth){ curFrame = n; paint(im); }
-      else im.onload = function(){ curFrame = n; paint(im); };
+      if(n === heroWant) return;
+      heroDir = n >= heroWant ? 1 : -1; heroWant = n;
+      heroStore.focus(n, heroDir);
+      var b = heroStore.get(n);
+      if(b){ curFrame = n; paint(b); }
+      else { var ni = heroStore.near(n); if(ni >= 0 && ni !== curFrame){ curFrame = ni; paint(heroStore.get(ni)); } }
     };
   }
   /* the opening act keeps its own numbering: frames 58-71 in o/ and om/ */
   var ON = 100, OSEALED = -1;                    /* f_3: frames 00-99 in op/ and opm/ */
   var OSET = innerWidth > 760 ? 'op' : 'opm';
   var OPEN = Array.from({length:ON}, function(_,i){ return OSET + '/' + pad(i) + '.webp'; });
+  var OASPECT = OSET === 'op' ? 16/9 : 0.5;          /* op/ is 16:9; opm/ is a tall portrait render */
   var ocache = [];
   function warmO(i){ if(ocache[i]) return; var im = new Image(); im.decoding='async'; im.src = OPEN[i]; ocache[i]=im; }
-  (window.requestIdleCallback || function(cb){ setTimeout(cb,900); })(function(){ for(var i=OSEALED+1;i<ON;i++) warmO(i); });
+  (window.requestIdleCallback || function(cb){ setTimeout(cb,900); })(function(){ for(var i=OSEALED+1;i<ON;i++) bytes(OPEN[i]); });
+  /* The opening is drawn on a canvas from frames decoded ahead of the scroll (the img stays as
+     the poster and for reduced motion), so swapping frames never stalls on a 4K decode. */
+  var oc = document.getElementById('shot2c'), ocx = oc ? oc.getContext('2d', {alpha:false}) : null, OW = 0, OH = 0, OD = 1, oShown = -1;
+  function fitOpen(){
+    if(!oc) return;
+    OD = Math.min(devicePixelRatio || 1, 2); OW = oc.clientWidth; OH = oc.clientHeight;
+    oc.width = Math.round(OW*OD); oc.height = Math.round(OH*OD); oShown = -1;
+  }
+  function drawOpen(b){
+    if(!ocx || !b || !OW) return;
+    var d = dims(b), s = Math.max(OW/d[0], OH/d[1]), w = d[0]*s, h = d[1]*s;
+    ocx.setTransform(OD,0,0,OD,0,0);
+    ocx.drawImage(b, 0, 0, d[0], d[1], (OW-w)/2, (OH-h)/2, w, h);
+    if(opening && !opening.classList.contains('drawn')) opening.classList.add('drawn');
+  }
+  var openWant = -1;
+  var openStore = Store(function(i){ return OPEN[i]; }, ON,
+    function(){ var w = Math.max(OW, OH*OASPECT) * OD; return Math.min(2560, Math.round(w) || 1920); }, OSET === 'op' ? 3840 : 1080, 6,
+    function(i){ if(i === openWant && oShown !== i){ oShown = i; drawOpen(openStore.get(i)); } });
   function seqO(el){
-    var cur = -1;
     return function(n){
       n = Math.max(OSEALED+1, Math.min(ON-1, n));
-      if(n === cur) return;
-      cur = n; warmO(n);
-      var im = ocache[n];
-      if(im.complete && im.naturalWidth) el.src = OPEN[n];
-      else im.onload = function(){ if(cur === n) el.src = OPEN[n]; };
+      if(n === openWant) return;
+      var dir = n >= openWant ? 1 : -1; openWant = n;
+      openStore.focus(n, dir);
+      var b = openStore.get(n);
+      if(b){ oShown = n; drawOpen(b); }
+      else { var ni = openStore.near(n); if(ni >= 0 && ni !== oShown){ oShown = ni; drawOpen(openStore.get(ni)); } }
     };
   }
   var putHero = seq();
@@ -843,11 +933,13 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
       lede.style.setProperty('--ly', (-said*40).toFixed(1) + 'px');
       hero.parentNode.style.setProperty('--fc', (fcBase - said*40).toFixed(1) + 'px');
       hero.parentNode.style.setProperty('--fcb', (fcbBase + said*40).toFixed(1) + 'px');
-      if(front) front.style.setProperty('--lo2', (1 - sm(0.80, 0.92)).toFixed(3));   /* once the words have gone the copy is not needed */
+      bandNow[0] = fcBase - said*40; bandNow[1] = fcbBase + said*40;
+      var lo2 = 1 - sm(0.80, 0.92);
+      if(front) front.style.setProperty('--lo2', lo2.toFixed(3));   /* once the words have gone the copy is not needed */
       rhNow = 6 + sm(0.0, 0.62)*94;                   /* the base is there from the start; the rest rises through the words */
-      clearing();
+      if(lo2 > 0) clearing();
       hero.parentNode.style.setProperty('--rh', rhNow.toFixed(1) + '%');
-      mirror();
+      if(lo2 > 0) mirror();
     }
     field.style.setProperty('--fd', (1 - 0.6*sm(0.40, 0.92)).toFixed(3));   /* the field gives way, never fully */
     floor.style.setProperty('--fo', (sm(0.50, 0.90)).toFixed(3));           /* and the ground it stands on is there */
@@ -896,8 +988,10 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
 
   /* ---- boot: black, then the first frame comes up out of it ---- */
   fitHero();
-  addEventListener('resize', function(){ sy = scrollY; fitHero(); tick(); }, {passive:true});
+  addEventListener('resize', function(){ sy = scrollY; fitHero(); fitOpen(); openStore.reset(); openWant = -1; tick(); }, {passive:true});
+  fitOpen();
 
+  heroStore.focus(F0, 1);
   function ignite(){
     var first = warm(reduce ? N-1 : F0);
     function go(){ curFrame = -1; paint(first); hero.classList.add('lit'); if(!reduce) onScroll(); }
@@ -1039,9 +1133,11 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
       }
       /* and nothing of it over the vessel */
       var cut = window.__vesselCut && window.__vesselCut();
-      if(cut){
+      if(cut && cut.w > 0 && cut.h > 0){
         g.globalAlpha = 1; g.globalCompositeOperation = 'destination-out';
-        g.setTransform(1,0,0,1,0,0); g.drawImage(cut, 0, 0, cv.width, cv.height);
+        g.setTransform(1,0,0,1,0,0);
+        var sx = cv.width / cut.c.width, sy2 = cv.height / cut.c.height;
+        g.drawImage(cut.c, cut.x, cut.y, cut.w, cut.h, cut.x*sx, cut.y*sy2, cut.w*sx, cut.h*sy2);
         g.setTransform(D,0,0,D,0,0); g.globalCompositeOperation = 'source-over';
       }
       g.globalAlpha=1; requestAnimationFrame(frame);
@@ -1315,7 +1411,9 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
       mast.classList.toggle('on-light', on);
     }
     mast._test = test;
-    addEventListener('scroll', test, {passive:true}); addEventListener('resize', test, {passive:true}); test();
+    var mq = false;
+    function soon(){ if(!mq){ mq = true; requestAnimationFrame(function(){ mq = false; test(); }); } }
+    addEventListener('scroll', soon, {passive:true}); addEventListener('resize', soon, {passive:true}); test();
   })();
 
   /* ---- arrivals ---- */
