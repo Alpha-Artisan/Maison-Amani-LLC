@@ -39,6 +39,10 @@ body{margin:0;background:var(--night);color:var(--silver);
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{display:block;max-width:100%}
 ::selection{background:#3A2C1F;color:var(--mineral)}
+/* a fine grain over the whole page, set by script: it dithers every gradient, so the long dark
+   falloffs and the day sky stay continuous instead of stepping into visible rings and bands */
+body::after{content:'';position:fixed;inset:-50%;z-index:90;pointer-events:none;
+  background-image:var(--grain,none);background-size:180px 180px;opacity:.55;transform:translateZ(0)}
 
 /* read by search and screen readers, not shown */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
@@ -133,7 +137,7 @@ img{display:block;max-width:100%}
 
 /* a held breath between chapters */
 .hold{height:34vh}
-.arrival + .hold{background:linear-gradient(to bottom,#000 0%,var(--night) 100%)}
+.arrival + .hold{background:linear-gradient(to bottom,#000 0%,#020101 18%,#060403 46%,#090605 74%,var(--night) 100%)}
 .hold--s{height:22vh}
 
 /* 02 the object — a single plate, centred, nothing else */
@@ -157,6 +161,9 @@ img{display:block;max-width:100%}
 .surface::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
   background:radial-gradient(64% 70% at 46% 48%, transparent 0%, rgba(11,8,6,.34) 52%, rgba(11,8,6,.94) 100%)}
 .surface picture{position:absolute;inset:0}
+.surface::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(to bottom,rgba(11,8,6,1) 0.0%,rgba(11,8,6,0.957) 12.5%,rgba(11,8,6,0.844) 25.0%,rgba(11,8,6,0.684) 37.5%,rgba(11,8,6,0.5) 50.0%,rgba(11,8,6,0.316) 62.5%,rgba(11,8,6,0.156) 75.0%,rgba(11,8,6,0.043) 87.5%,rgba(11,8,6,0) 100.0%) top/100% 24% no-repeat,
+             linear-gradient(to top,rgba(11,8,6,1) 0.0%,rgba(11,8,6,0.957) 12.5%,rgba(11,8,6,0.844) 25.0%,rgba(11,8,6,0.684) 37.5%,rgba(11,8,6,0.5) 50.0%,rgba(11,8,6,0.316) 62.5%,rgba(11,8,6,0.156) 75.0%,rgba(11,8,6,0.043) 87.5%,rgba(11,8,6,0) 100.0%) bottom/100% 34% no-repeat}
 .surface img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 44%;
   transform:scale(var(--ss,1.04));transform-origin:46% 48%;will-change:transform;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 52%,rgba(0,0,0,.55) 76%,transparent 100%);
@@ -197,19 +204,20 @@ img{display:block;max-width:100%}
 /* phones: the invitation's line breaks evenly, never leaving one word alone */
 /* the light, once reached, goes down to the house's dark before the next room */
 .opening .dusk{position:absolute;inset:0;z-index:3;pointer-events:none;
-  background:radial-gradient(circle at 50% 50%, rgba(11,8,6,0) var(--r,150%), var(--night) calc(var(--r,150%) + 36%))}
+  background:radial-gradient(circle at 50% 50%, rgba(11,8,6,0) var(--r,150%), rgba(11,8,6,.16) calc(var(--r,150%) + 9%),
+    rgba(11,8,6,.5) calc(var(--r,150%) + 20%), rgba(11,8,6,.84) calc(var(--r,150%) + 32%), var(--night) calc(var(--r,150%) + 44%))}
 /* phones get their own portrait render (opm/, from f_3 at 4000x8000): framed for a tall screen, nothing padded;
    desktops get the 4K render (op/, 3840x2160) */
-.opening::before{content:'';position:absolute;left:0;right:0;top:0;height:30vh;z-index:5;pointer-events:none;
-  background:linear-gradient(to bottom,var(--night),rgba(11,8,6,0))}
+.opening::before{content:'';position:absolute;left:0;right:0;top:0;height:40vh;z-index:5;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(11,8,6,1) 0.0%,rgba(11,8,6,0.957) 12.5%,rgba(11,8,6,0.844) 25.0%,rgba(11,8,6,0.684) 37.5%,rgba(11,8,6,0.5) 50.0%,rgba(11,8,6,0.316) 62.5%,rgba(11,8,6,0.156) 75.0%,rgba(11,8,6,0.043) 87.5%,rgba(11,8,6,0) 100.0%)}
 @media(prefers-reduced-motion:reduce){.opening{height:auto}.opening .pin{position:relative;height:auto;padding:14vh 0}.opening .pin figure{position:relative;inset:auto;height:auto;aspect-ratio:16/9}}
 
 /* 06 two states — one object, one line, two skies */
 .states{position:relative;height:100svh;min-height:620px;overflow:hidden;user-select:none;touch-action:pan-y;background:#070504}
 /* the skies are a room, not a card: their top and bottom dissolve into the house's dark */
-.states::before,.states::after{content:'';position:absolute;left:0;right:0;height:14vh;z-index:4;pointer-events:none}
-.states::before{top:0;background:linear-gradient(to bottom,var(--night),rgba(11,8,6,0))}
-.states::after{bottom:0;background:linear-gradient(to top,var(--night),rgba(11,8,6,0))}
+.states::before,.states::after{content:'';position:absolute;left:0;right:0;height:24%;z-index:4;pointer-events:none}
+.states::before{top:0;background:linear-gradient(to bottom,rgba(11,8,6,1) 0.0%,rgba(11,8,6,0.957) 12.5%,rgba(11,8,6,0.844) 25.0%,rgba(11,8,6,0.684) 37.5%,rgba(11,8,6,0.5) 50.0%,rgba(11,8,6,0.316) 62.5%,rgba(11,8,6,0.156) 75.0%,rgba(11,8,6,0.043) 87.5%,rgba(11,8,6,0) 100.0%)}
+.states::after{bottom:0;background:linear-gradient(to top,rgba(11,8,6,1) 0.0%,rgba(11,8,6,0.957) 12.5%,rgba(11,8,6,0.844) 25.0%,rgba(11,8,6,0.684) 37.5%,rgba(11,8,6,0.5) 50.0%,rgba(11,8,6,0.316) 62.5%,rgba(11,8,6,0.156) 75.0%,rgba(11,8,6,0.043) 87.5%,rgba(11,8,6,0) 100.0%)}
 .states .layer{position:absolute;inset:0}
 .states .sky-night,.states .sky-day{top:-190px;bottom:-190px;will-change:transform}
 .states .stars{top:-170px;bottom:-170px;height:auto}
@@ -223,7 +231,7 @@ img{display:block;max-width:100%}
   radial-gradient(120% 96% at 81% 14%, #F5EFE4 0%, #EAE0CF 32%, #DCCCB2 66%, #CBB696 100%)}
 
 /* the seat: sun and moon occupy the same sky */
-.orb{position:absolute;right:19%;top:14%;width:clamp(58px,6.6vw,96px);aspect-ratio:1;border-radius:50%}
+.orb{position:absolute;right:19%;top:21%;width:clamp(58px,6.6vw,96px);aspect-ratio:1;border-radius:50%}
 .sun{background:radial-gradient(circle at 50% 50%, #FFFBF2 0%, #FBF2E2 24%, #F2E2C4 42%, rgba(232,210,170,.40) 62%, rgba(226,204,160,0) 78%);
   box-shadow:0 0 70px 22px rgba(250,240,220,.75), 0 0 200px 90px rgba(236,218,184,.34), 0 0 520px 260px rgba(232,214,180,.14)}
 .moon{background:radial-gradient(circle at 38% 34%, #F7F3E9 0%, #E7E1D3 44%, #CBC5B6 74%, #ADA79A 100%);
@@ -250,7 +258,9 @@ img{display:block;max-width:100%}
 .states .shade{position:absolute;left:50%;bottom:-3%;transform:translateX(-50%);
   width:78%;height:9%;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(22px);z-index:-1}
 .states .cut{position:absolute;top:0;bottom:0;left:var(--x,50%);width:1px;background:#fff;z-index:5;
-  mix-blend-mode:difference}
+  mix-blend-mode:difference;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 8%,#000 30%,#000 70%,transparent 92%);
+          mask-image:linear-gradient(to bottom,transparent 8%,#000 30%,#000 70%,transparent 92%)}
 .states .grip{position:absolute;top:0;bottom:0;left:var(--x,50%);transform:translateX(-50%);z-index:6;
   width:44px;background:transparent;cursor:ew-resize;outline:none}
 .states .grip:focus-visible::after{content:'';position:absolute;inset:0 21px;background:rgba(236,227,210,.9)}
@@ -306,7 +316,7 @@ footer{padding:clamp(36px,7vh,80px) var(--gutter) clamp(46px,8vh,100px);display:
 .fade.in{opacity:1}
 @media(prefers-reduced-motion:reduce){.rise,.fade{opacity:1;transform:none;transition:none}.arrival{height:auto}.pin{position:relative;height:auto;padding:14vh 0}}
 @media(max-width:620px){
-  .orb{right:14%;top:11%;width:clamp(54px,16vw,80px)}
+  .orb{right:14%;top:19%;width:clamp(54px,16vw,80px)}
   .sun{box-shadow:0 0 46px 14px rgba(255,248,226,.80), 0 0 120px 50px rgba(255,238,196,.30), 0 0 300px 150px rgba(255,240,204,.12)}
 }
 
@@ -522,6 +532,21 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
 (function(){
   "use strict";
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* the grain: 180px of random light and dark specks at a few per cent, tiled. It is
+     below what the eye reads as texture, and just enough to dither every gradient. */
+  (function(){
+    try {
+      var G = 180, c = document.createElement('canvas'); c.width = c.height = G;
+      var x = c.getContext('2d'), im = x.createImageData(G, G), d = im.data;
+      for(var i=0;i<d.length;i+=4){
+        var v = Math.random() < .5 ? 0 : 255;
+        d[i] = d[i+1] = d[i+2] = v; d[i+3] = (Math.random()*Math.random()*30)|0;
+      }
+      x.putImageData(im, 0, 0);
+      document.body.style.setProperty('--grain', 'url(' + c.toDataURL('image/png') + ')');
+    } catch(e){}
+  })();
   var clamp = function(v,a,b){ return Math.max(a, Math.min(b,v)); };
   var arrival = document.getElementById('arrival');
 
@@ -797,9 +822,16 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
   var opening = document.getElementById('opening');
   var live = true;
 
+  /* The scrubbed sequences follow the scroll with a short, critically damped lag
+     (about 70 ms), so a wheel notch that jumps 100 px plays the frames in between
+     instead of skipping them. Pinned layout still moves with the real scroll; only
+     the frames and the light read the eased value. */
+  var sy = scrollY, syPrev = 0;
+  function lag(){ return scrollY - sy; }                 /* how far the eased scroll trails the real one */
+  function vrect(el){ var b = el.getBoundingClientRect(), d = lag(); return {top: b.top + d, bottom: b.bottom + d, height: b.height}; }
+
   function onScroll(){
-    queued = false;
-    var r = arrival.getBoundingClientRect(), span = r.height - innerHeight;
+    var r = vrect(arrival), span = r.height - innerHeight;
     live = r.bottom > 0 && r.top < innerHeight;
     var p = clamp(-r.top/(span||1), 0, 1);
     /* it arrives at the last frame and stays there — the scroll runs both ways */
@@ -839,7 +871,7 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
 
     /* ---- the opening: what the page has been withholding ---- */
     if(opening && putOpen){
-      var o = opening.getBoundingClientRect(), ospan = o.height - innerHeight;
+      var o = vrect(opening), ospan = o.height - innerHeight;
       /* the object does not slide in as a panel: while the room is still arriving it stays
          in the dark, and comes up out of it in place, the last stretch before the room holds */
       var en = clamp(1 - o.top/innerHeight, 0, 1), ev = clamp((en - 0.55)/0.45, 0, 1);
@@ -864,11 +896,21 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
       nova.style.setProperty('--ns', (0.24 + ease*1.30).toFixed(3));
     }
   }
-  function tick(){ if(!queued){ queued = true; requestAnimationFrame(onScroll); } }
+  function step(ts){
+    var dt = syPrev ? Math.min((ts - syPrev)/1000, 0.05) : 0.016; syPrev = ts;
+    var d = scrollY - sy;
+    if(Math.abs(d) > innerHeight*3) sy = scrollY;           /* a jump (a link, a reload): go there, do not travel */
+    else sy += d * (1 - Math.exp(-dt*14));
+    if(Math.abs(scrollY - sy) < 0.5) sy = scrollY;
+    onScroll();
+    if(sy !== scrollY) requestAnimationFrame(step);
+    else { queued = false; syPrev = 0; }
+  }
+  function tick(){ if(!queued){ queued = true; requestAnimationFrame(step); } }
 
   /* ---- boot: black, then the first frame comes up out of it ---- */
   fitHero();
-  addEventListener('resize', function(){ fitHero(); tick(); }, {passive:true});
+  addEventListener('resize', function(){ sy = scrollY; fitHero(); tick(); }, {passive:true});
 
   function ignite(){
     var first = warm(reduce ? N-1 : F0);
