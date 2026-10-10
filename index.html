@@ -560,33 +560,55 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
   function decodeUrl(url, w){
     if(!BITMAP){ var im = new Image(); im.src = url; return (im.decode ? im.decode() : new Promise(function(r){ im.onload = r; })).then(function(){ return im; }); }
     return bytes(url).then(function(b){
-      if(RESIZE_OK) return createImageBitmap(b, {resizeWidth: w, resizeQuality: 'high'}).catch(function(){ RESIZE_OK = false; return createImageBitmap(b); });
-      return createImageBitmap(b);
+      var p = RESIZE_OK ? createImageBitmap(b, {resizeWidth: w, resizeQuality: 'high'}).catch(function(){ RESIZE_OK = false; return createImageBitmap(b); })
+                        : createImageBitmap(b);
+      return p.then(function(bm){
+        if(!(w > 0) || bm.width <= w*1.25) return bm;
+        /* the option was ignored (full 4K came back): scale it down once and let the large one go */
+        var h = Math.round(bm.height * w / bm.width), c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(bm, 0, 0, w, h); if(bm.close) bm.close(); return c;
+      });
     });
   }
   function dims(im){ return im ? [im.naturalWidth || im.width, im.naturalHeight || im.height] : [0,0]; }
   function Store(url, count, width, natural, ahead, onReady){
-    var bm = [], busy = [], cur = 0, keep = ahead*2 + 2;
-    function want(i){
-      if(i < 0 || i >= count || bm[i] || busy[i]) return;
-      busy[i] = true;
-      decodeUrl(url(i), Math.min(width(), natural)).then(function(b){
-        busy[i] = false;
-        if(Math.abs(i - cur) > keep){ if(b.close) b.close(); return; }
-        bm[i] = b; onReady(i);
-      }, function(){ busy[i] = false; });
+    /* A small scheduler, not a queue: at most two decodes at a time, always the frame on
+       screen first, then the ones just ahead in the direction of travel. Frames the scroll
+       has left behind are dropped from the line, so a jump never waits on stale work. */
+    var bm = [], busy = [], cur = 0, dir = 1, keep = ahead + 8, line = [], live = 0, MAXD = 2;
+    function score(i){ var d = i - cur; return Math.abs(d) + (d !== 0 && (d > 0 ? 1 : -1) !== dir ? 4 : 0); }
+    function pump(){
+      while(live < MAXD && line.length){
+        line.sort(function(a, b){ return score(a) - score(b); });
+        var i = line.shift();
+        if(bm[i] || busy[i] || Math.abs(i - cur) > keep) continue;
+        busy[i] = true; live++;
+        (function(i){
+          decodeUrl(url(i), Math.min(width(), natural)).then(function(b){
+            busy[i] = false; live--;
+            if(Math.abs(i - cur) > keep){ if(b.close) b.close(); }
+            else { bm[i] = b; onReady(i); }
+            pump();
+          }, function(){ busy[i] = false; live--; pump(); });
+        })(i);
+      }
     }
+    function want(i){ if(i < 0 || i >= count || bm[i] || busy[i] || line.indexOf(i) >= 0) return; line.push(i); }
     return {
       get: function(i){ return bm[i] || null; },
       near: function(i){                            /* the closest decoded frame, so a fast scroll never shows a gap */
         for(var d=0; d<count; d++){ if(bm[i-d]) return i-d; if(bm[i+d]) return i+d; } return -1;
       },
-      focus: function(i, dir){
-        cur = i; want(i);
-        for(var d=1; d<=ahead; d++){ want(i + d*(dir||1)); if(d <= 2) want(i - d*(dir||1)); }
+      focus: function(i, d){
+        cur = i; dir = d || 1;
+        line = line.filter(function(j){ return Math.abs(j - i) <= ahead + 2; });
+        want(i);
+        for(var k=1; k<=ahead; k++){ want(i + k*dir); if(k <= 3) want(i - k*dir); }
         for(var j=0; j<count; j++) if(bm[j] && Math.abs(j - i) > keep){ if(bm[j].close) bm[j].close(); bm[j] = null; }
+        pump();
       },
-      reset: function(){ for(var j=0; j<count; j++) if(bm[j]){ if(bm[j].close) bm[j].close(); bm[j] = null; } }
+      has: function(i){ return !!bm[i]; },
+      reset: function(){ line = []; for(var j=0; j<count; j++) if(bm[j]){ if(bm[j].close) bm[j].close(); bm[j] = null; } }
     };
   }
   /* the page opens with the base already lit under the words: the sequence starts at frame F0 */
@@ -824,7 +846,7 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
   }
 
   var heroWant = -1, heroDir = 1;
-  var heroStore = Store(function(i){ return FRAMES[i]; }, N, function(){ return Math.min(2560, Math.round(Math.min(HW*16/9, HW, HH*16/9)*HD) || 1920); }, PHONE ? 1000 : 3840, 6,
+  var heroStore = Store(function(i){ return FRAMES[i]; }, N, function(){ return Math.min(2048, Math.round(Math.min(HW, HH*16/9)*HD) || 1920); }, PHONE ? 1000 : 3840, PHONE ? 8 : 16,
     function(i){ if(i === heroWant && curFrame !== i){ curFrame = i; paint(heroStore.get(i)); } });
   function seq(){                        /* holds which frame is showing, repaints only on change */
     return function(n){
@@ -834,7 +856,15 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
       heroStore.focus(n, heroDir);
       var b = heroStore.get(n);
       if(b){ curFrame = n; paint(b); }
-      else { var ni = heroStore.near(n); if(ni >= 0 && ni !== curFrame){ curFrame = ni; paint(heroStore.get(ni)); } }
+      else {
+        var ni = heroStore.near(n);
+        if(ni >= 0 && Math.abs(ni - n) <= 1){ if(ni !== curFrame){ curFrame = ni; paint(heroStore.get(ni)); } }
+        else {
+          var im = warm(n);
+          if(im.complete && im.naturalWidth){ curFrame = n; paint(im); }
+          else im.onload = function(){ if(heroWant === n && !heroStore.has(n)){ curFrame = n; paint(im); } };
+        }
+      }
     };
   }
   /* the opening act keeps its own numbering: frames 58-71 in o/ and om/ */
@@ -862,7 +892,7 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
   }
   var openWant = -1;
   var openStore = Store(function(i){ return OPEN[i]; }, ON,
-    function(){ var w = Math.max(OW, OH*OASPECT) * OD; return Math.min(2560, Math.round(w) || 1920); }, OSET === 'op' ? 3840 : 1080, 6,
+    function(){ var w = Math.max(OW, OH*OASPECT) * OD; return Math.min(2048, Math.round(w) || 1920); }, OSET === 'op' ? 3840 : 1080, PHONE ? 8 : 16,
     function(i){ if(i === openWant && oShown !== i){ oShown = i; drawOpen(openStore.get(i)); } });
   function seqO(el){
     return function(n){
@@ -872,7 +902,15 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
       openStore.focus(n, dir);
       var b = openStore.get(n);
       if(b){ oShown = n; drawOpen(b); }
-      else { var ni = openStore.near(n); if(ni >= 0 && ni !== oShown){ oShown = ni; drawOpen(openStore.get(ni)); } }
+      else {
+        var ni = openStore.near(n);
+        if(ni >= 0 && Math.abs(ni - n) <= 1){ if(ni !== oShown){ oShown = ni; drawOpen(openStore.get(ni)); } }
+        else {
+          warmO(n); var im = ocache[n];
+          if(im.complete && im.naturalWidth){ oShown = n; drawOpen(im); }
+          else im.onload = function(){ if(openWant === n && !openStore.has(n)){ oShown = n; drawOpen(im); } };
+        }
+      }
     };
   }
   var putHero = seq();
@@ -907,6 +945,7 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
 
   function onScroll(){
     var r = vrect(arrival), span = r.height - innerHeight;
+    if(r.bottom < -innerHeight*1.5 && heroWant !== -1){ heroStore.reset(); heroWant = -1; }   /* far below the hero: let its frames go */
     live = r.bottom > 0 && r.top < innerHeight;
     var p = clamp(-r.top/(span||1), 0, 1);
     /* it arrives at the last frame and stays there — the scroll runs both ways */
@@ -950,6 +989,9 @@ html.locked .gate{display:grid;position:fixed;inset:0;z-index:100;place-items:ce
     /* ---- the opening: what the page has been withholding ---- */
     if(opening && putOpen){
       var o = vrect(opening), ospan = o.height - innerHeight;
+      var near = o.top < innerHeight*2.5 && o.bottom > -innerHeight;
+      if(near && openWant < 0){ openWant = -2; openStore.focus(0, 1); }     /* the first stretch, decoded before it is seen */
+      if(!near && openWant !== -1){ openStore.reset(); openWant = -1; oShown = -1; }
       /* the object does not slide in as a panel: while the room is still arriving it stays
          in the dark, and comes up out of it in place, the last stretch before the room holds */
       var en = clamp(1 - o.top/innerHeight, 0, 1), ev = clamp((en - 0.55)/0.45, 0, 1);
